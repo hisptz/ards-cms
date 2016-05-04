@@ -1,0 +1,35 @@
+<div class="row " ng-repeat="content in tabContents" ng-show="content.menu==currentSubTabCapitalize">
+    <div >
+        <!-- ARTICLE CONTROL BUTTONS-->
+        <div class="btn-group  pull-right">
+            <a class="btn btn-default btn-sm " href="#/cms/articles/sub/{{currentSubTab}}/action/{{'edit'}}/{{content.id}}" title="Edit" style="color:orange;"><i class="fa fa-edit"></i></a>
+            <a class="btn btn-default btn-sm "  title="Hide"><i class="fa fa-minus"></i></a>
+            <a class="btn btn-default btn-sm " title="make it top" style="color:green;"><i class="fa fa-arrow-up"></i></a>
+            <a class="btn btn-default btn-sm "  title="Delete" style="color:red;"><i class="fa fa-times"></i></a>
+        </div>
+        <br/>
+
+        <div  class="col-md-12  conteiner" ng-bind-html="content.content" >
+
+        </div>
+
+    </div>
+</div>
+
+<div class="row " ng-repeat="content in tabContents" ng-show="currentSubTabCapitalize=='All'">
+    <div >
+        <!-- ARTICLE CONTROL BUTTONS-->
+        <div class="btn-group  pull-right">
+            <a class="btn btn-default btn-sm " href="#/cms/articles/sub/{{currentSubTab}}/action/edit/{{content.id}}" title="Edit" style="color:orange;"><i class="fa fa-edit"></i></a>
+            <a class="btn btn-default btn-sm "  title="Hide"><i class="fa fa-minus"></i></a>
+            <a class="btn btn-default btn-sm " title="make it top" style="color:green;"><i class="fa fa-arrow-up"></i></a>
+            <a class="btn btn-default btn-sm "  title="Delete" style="color:red;"><i class="fa fa-times"></i></a>
+        </div>
+        <br/>
+
+        <div  class="col-md-12  conteiner" ng-bind-html="content.content" >
+
+        </div>
+
+    </div>
+</div>

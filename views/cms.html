@@ -1,0 +1,47 @@
+<div  style="margin-top:125px!important;padding-left:10px;" >
+    <div class="container-fluid">
+        <div class="row">
+            <div class="{{leftColumn}}" >
+                <d2-left-bar></d2-left-bar>
+            </div>
+            <div class="{{centerColumn}}">
+                <div class="col-md-12 col-sm-12" >
+
+                    <div class="col-md-12 col-sm-12">
+                        <div class="row" >
+                            <div id="page_switcher">
+                                <div class="onoffswitch pull-right">
+                                    <input type="checkbox" class="toggleBtn onoffswitch-checkbox" checked="" id="onoffswitch6" ng-click="toggleToHOME()">
+                                    <label for="onoffswitch6" class="onoffswitch-label">
+                                        <div class="onoffswitch-inner" style=""></div>
+                                        <div class="onoffswitch-switch" style="">
+                                        </div>
+                                    </label>
+                                </div>
+
+                            </div>
+                        </div>
+                        <!--&lt;!&ndash;current-tab="tabMenu"&ndash;&gt;-->
+                        <cms-tabs
+                                current-tab="currentTab"
+                                home-page-tab-object="tabs"
+                                home-page-tab-content-object="tabContents"
+                                available-messages="messages"
+                        ></cms-tabs>
+                        <div ng-show="currentTab=='articles'" ng-include="'views/partials/cmsArticleContent.html'"></div>
+                        <div ng-show="currentTab=='home page menus'" ng-include="'views/partials/cmsMenuContent.html'"></div>
+                        <div ng-show="currentTab=='messages'" ng-include="'views/partials/cmsMessagesContent.html'"></div>
+                        <div ng-show="currentTab=='information sharing'" ng-include="'views/partials/cmsSharingContent.html'"></div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-md-2 col-xs-12">
+                <cms-right-menu message-object="messages" chart-object="charts"></cms-right-menu>
+            </div>
+        </div>
+    </div>
+    <!--<div ng-view></div>-->
+</div>
