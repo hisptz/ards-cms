@@ -1,0 +1,11 @@
+<form ng-submit="updateArticle(category,editedContent)">
+    <div class="form-group">
+        <div ckeditor="editOptions" ng-model="editContent" ready="onReady()"></div>
+    </div>
+    <select class="btn btn-default" id="update_picked_cat" ng-model="category" required="required">
+        <option selected="selected" disabled="disabled" name="origin">Select Category</option>
+        <option ng-repeat="tab in tabs">{{tab.value}}</option>
+    </select>
+    <button type="submit" class="btn btn-default" >Update Item</button>
+    <a type="button" class="btn btn-danger" href="#/cms/articles/sub/all/action/list">Cancel</a>
+</form>

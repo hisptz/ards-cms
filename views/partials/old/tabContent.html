@@ -1,0 +1,5 @@
+<div class="col-md-12 conteiner" ng-repeat="content in tabContents track by $index" ng-if="currentTab!='All'&&currentTab==content.menu" ng-bind-html="content.content">
+</div>
+
+<div class="col-md-12 conteiner" ng-repeat="content in tabContents track by $index" ng-if="currentTab=='All'" ng-bind-html="content.content">
+</div>

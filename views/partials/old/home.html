@@ -1,0 +1,23 @@
+<div ng-controller="homeController" class="row">
+
+	<div class="row">
+			 <!--Nav tabs -->
+			<ul id="tabs">
+				<!--<li role="presentation" class="{{tabs[$index].active}}" ng-repeat="tab in tabs"><a style="cursor: pointer;" aria-controls="{{tab.link}}" role="tab" data-toggle="tab" ng-click="toggleableTab($index,tab)">{{tab.title}}</a></li>-->
+				<li id="{{tabs[$index].active}}" ng-repeat="tab in tabs track by $index" ><a  href="#/home/{{tab.value}}/tab" style="cursor: pointer;" ng-click="toggleableTab($index,tab)" id="id_{{tab.value}}" ><em>{{tab.value}}</em></a></li>
+			</ul>
+
+			<div class="tab-content" id="content">
+
+				<div class="row {{tab.content}}" id="tab1" ng-repeat="tab in tabs track by $index" >
+					<div class="col-md-12 conteiner" ng-repeat="content in tabContents track by $index" ng-if="content.menu==tab.value" ng-bind-html="content.content">
+
+					</div>
+				</div>
+			</div>
+
+
+	</div>
+
+
+</div>
