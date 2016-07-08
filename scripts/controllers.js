@@ -5,433 +5,592 @@
 /* Controllers */
 var cmsControllers = angular.module('cmsControllers', [])
 
-.controller('MainController', function($scope, $window,$routeParams,$location,$http, ModalService,cmsService,utilityService) {
+//Controller for settings page
+.controller('MainController',
+        function($rootScope,
+                $scope,
+                $modal,
+                $translate,
+                $anchorScroll,
+                $window,
+                orderByFilter,
+                SessionStorageService,
+                Paginator,
+                MetaDataFactory,
+                ProgramFactory,                               
+                DHIS2EventFactory,
+                DHIS2EventService,
+                ContextMenuSelectedItem,                
+                DateUtils,
+                CalendarService,
+                GridColumnService,
+                CustomFormService,
+                ECStorageService,
+                CurrentSelection,
+                ModalService,
+                DialogService,
+                CommonUtils,
+                FileService,
+                AuthorityService,
+                TrackerRulesExecutionService,
+                TrackerRulesFactory) {
+    
+    $scope.formUnsaved = false;
+    $scope.fileNames = [];
+    $scope.currentFileNames = [];
 
-    //// layout modals
-    $scope.leftColumn = "col-md-2 col-xs-12";
-    $scope.centerColumn = "col-md-8 col-xs-12 ";
-    $scope.changeBootstrapClass = function(action){
-        if(action=="show"){
-            $scope.leftColumn = "col-md-2 col-xs-12";
-            $scope.centerColumn = "col-md-8 col-xs-12 ";
+
+    $scope.downloadFile = function(eventUid, dataElementUid, e) {
+        eventUid = eventUid ? eventUid : $scope.currentEvent.event ? $scope.currentEvent.event : null;        
+        if( !eventUid || !dataElementUid){
+            
+            var dialogOptions = {
+                headerText: 'error',
+                bodyText: 'missing_file_identifier'
+            };
+
+            DialogService.showDialog({}, dialogOptions);
+            return;
+        }
+        
+        $window.open('../api/events/files?eventUid=' + eventUid +'&dataElementUid=' + dataElementUid, '_blank', '');
+        if(e){
+            e.stopPropagation();
+            e.preventDefault();
+        }
+    };
+    
+    $scope.deleteFile = function(dataElement){
+        
+        if( !dataElement ){            
+            var dialogOptions = {
+                headerText: 'error',
+                bodyText: 'missing_file_identifier'
+            };
+            DialogService.showDialog({}, dialogOptions);
+            return;
+        }
+        
+        var modalOptions = {
+            closeButtonText: 'cancel',
+            actionButtonText: 'remove',
+            headerText: 'remove',
+            bodyText: 'are_you_sure_to_remove'
+        };
+
+        ModalService.showModal({}, modalOptions).then(function(result){            
+            $scope.fileNames[$scope.currentEvent.event][dataElement] = null;
+            $scope.currentEvent[dataElement] = null;
+            $scope.updateEventDataValue($scope.currentEvent, dataElement);
+        });
+    };
+    
+    $scope.updateFileNames = function(){        
+        for(var dataElement in $scope.currentFileNames){
+            if($scope.currentFileNames[dataElement]){
+                if(!$scope.fileNames[$scope.currentEvent.event]){
+                    $scope.fileNames[$scope.currentEvent.event] = [];
+                }                 
+                $scope.fileNames[$scope.currentEvent.event][dataElement] = $scope.currentFileNames[dataElement];
+            }
+        }
+    };
+
+
+   String.prototype.Capitalize = function() {
+        return this.charAt(0).toUpperCase() + this.slice(1);
+   }
+})
+
+.controller('cmsController',function($scope, $window,$routeParams,$location,$filter,cmsService,utilityService){
+
+        $scope.currentTab = 'articles';
+        if($routeParams.tab){
+            $scope.currentTab = $routeParams.tab.replace(/-/g," ");
         }
 
-        if(action=="hide"){
-            $scope.leftColumn = "";
-            $scope.centerColumn = "col-md-10 col-xs-12 ";
+
+        String.prototype.Capitalize = function() {
+            return this.charAt(0).toUpperCase() + this.slice(1);
         }
 
-        if(action=="extend"){
-            $scope.leftColumn = "col-md-4 col-xs-12";
-            $scope.centerColumn = "col-md-6 col-xs-12 ";
+
+        $scope.currentSubTab = 'all';
+        if($routeParams.subtab){
+            $scope.currentSubTab = $routeParams.subtab;
+            $scope.currentSubTabCapitalize = $scope.currentSubTab.Capitalize();
         }
-    }
 
-
-
-    $scope._appPrograms = [];
-    $scope._tabProgram = "";
-    $scope._tabContentProgram = "";
-    $scope._smsProgram = "";
-    $scope._linkProgram = "";
-    $scope._appCharts = [];
-    $scope._currentUser = null;
-    $scope._users = [];
-    $scope.activeClass = [];
-    $scope.documents = [];
-    $scope.analysis = [];
-
-    cmsService.getUsers().then(function(value){
-        $scope._users = cmsService.processUsers(value.users);
-    });
-    cmsService.loggedUser().then(function(value){
-        $scope._currentUser = value;
-    });
-
-    // app resources functions
-    $scope.loadPrograms = function(){
-        cmsService.getPrograms().then(function(response){
-            $scope.Programs = $scope.groupPrograms(response.programs);
-        });
-    }
-    $scope.loadCharts = function(){
-        cmsService.retrieveSetting().then(function(response){
-            $scope.charts = response.selectedCharts;
-        },function(error){
-            $scope.errors  = true;
-        });
-    }
-
-    $scope.groupPrograms = function(appPrograms){
-        angular.forEach(appPrograms,function(programObject,programIndex){
-            if(programObject.name.indexOf('cms')>=0){
-                cmsService._appPrograms.push(programObject);
-
-            }
-            if(programObject.name.indexOf('home page menu')>=0){
-                cmsService._tabProgram = programObject;
-                $scope._tabProgram = programObject;
-                //$scope.createTab(cmsService._tabProgram)
-                $scope.loadTabs(cmsService._tabProgram);
-            }
-            if(programObject.name.indexOf('cms article')>=0){
-                cmsService._tabContentProgram = programObject;
-                $scope._tabContentProgram = programObject;
-
-                var content = '';
-                //$scope.createTabContent(cmsService._tabContentProgram,content,"Livestock",2);
-                $scope.loadTabContent(cmsService._tabContentProgram);
-            }
-            if(programObject.name.indexOf('cms messages')>=0){
-                cmsService._smsProgram = programObject;
-                $scope._smsProgram = programObject;
-
-                var content = '';
-                //$scope.createTabContent(cmsService._tabContentProgram,content,"Livestock",2);
-                //$scope.loadMessages(cmsService._smsProgram);
-                //$scope.createMessage(cmsService._smsProgram,JSON.stringify({type:"users",list:[{id: "K8jZ8exCsNH",name: "Leonard Mpande"}]}),JSON.stringify({id:"K8jZ8exCsNH",name:"Leonard Mpande"}),"Stay Tuned","Hellow User Stay tuned");
-            }
-            if(programObject.name.indexOf('cms extenal links')>=0){
-                cmsService._linkProgram = programObject;
-
-                $scope.loadExternalLinks(cmsService._linkProgram);
-                //$scope.addExternalLinks(cmsService._linkProgram,"http://www.countrystat.org/","CountryStat",'shown');
-                //$scope.createMessage(cmsService._smsProgram,JSON.stringify({type:"users",list:[{id: "K8jZ8exCsNH",name: "Leonard Mpande"}]}),JSON.stringify({id:"K8jZ8exCsNH",name:"Leonard Mpande"}),"Stay Tuned","Hellow User Stay tuned");
-            }
-
-        });
-    }
-
-    $scope.loadTabs = function(tabProgram){
-        var eventObject = utilityService.prepareEventObject(tabProgram);
-        cmsService.getTabs(eventObject).then(function(response){
-            $scope.tabs = utilityService.refineTabs(response.events);
-            $scope.setDefaultUrl();
-        });
-    }
-
-    $scope.createTab = function(tabProgram,tabValue){
-        var payload = {
-            "program":tabProgram.id,
-            "orgUnit": cmsService.parentOrganisationUnit,
-            "eventDate": "2013-05-17",
-            "status": "COMPLETED",
-            "storedBy": "admin",
-            "dataValues": [
-                { "dataElement": "RJ6cGZcjlB6", "value": tabValue }
-            ]
+        $scope.subTabAction = 'list';
+        if($routeParams.action_id){
+            $scope.subTabAction = $routeParams.action_id;
         }
-        cmsService.addTab(payload).then(function(response){
-            $scope.loadTabs(tabProgram);
-            $scope.add_menu_name = "";
-            $scope.update_menu_name = "";
-            $scope.editMenuForm = false;
+
+
+
+        /**
+         * Process add article form event
+         * */
+
+            // Called when the editor is completely ready.
+        $scope.onReady = function () {
+
+
+        };
+
+        $scope.Options = {
+            language: 'en',
+            allowedContent: true,
+            entities: false
+        };
+
+        var orderBy = $filter('orderBy');
+        /**
+         * Process edit article form event
+         * */
+
+            // Editor options.
+        $scope.editOptions = {
+            language: 'en',
+            allowedContent: true,
+            entities: false
+        };
+
+        $scope.tabsLinks = [];
+        $scope.articles = [];
+        // checking the current action
+        if($routeParams.action_id){
+            if($routeParams.action_id=="edit"){
+                if($routeParams.edit_item_id){
+                    angular.forEach($scope.tabContents,function(value){
+                        if(value.id==$routeParams.edit_item_id){
+                            $scope.editContent = value.content;
+                            $scope.category = value.menu;
+                            $scope.tabContent_id = value.id;
+                        }
+                    });
+
+                }
+            }
+
+            $scope.message_action        = $routeParams.action_id;
+            $scope.information_action    = $routeParams.action_id;
+
+        }
+
+        // checking for current selected item by id
+        if($routeParams.edit_id){
+
+            /**
+             * Edit messages
+             * */
+                //$scope.message_action = "edit";
+            $scope.editId = $routeParams.edit_id;
+
+
+            /**
+             * Edit menus
+             * */
+            $scope.menu_action = "edit";
+
+
+            $scope.edited_menu = null;
+
+            angular.forEach($scope.tabs,function(tab,tabIndex){
+                if(tab.event==$scope.editId){
+                    $scope.edited_menu = tab;
+                    $scope.menu_name = tab.value;
+                }
+            });
+
+            /**
+             * Edit information sharing
+             * */
+            $scope.information_action = "edit";
+            $scope.update_information = null;
+
+
+            cmsService.loadInformations().then(function(response){
+                $scope.informations = response;
+                $scope.update_information = $scope.informations[$routeParams.edit_id];
+            },function(error){
+
+            });
+
+
+        }
+
+
+
+        // save home menus
+        $scope.loadMenu = function(){
+
+            cmsService.getTabs().then(function(data){
+                if(data.success == false){
+                    cmsService.addTab(['All']).then(function(output){
+                    },function(error){
+                    })
+                }else{
+                    $scope.tabsLinks = data;
+                }
+
+            },function(response){
+
+            })
+        }
+
+
+        // save home menus
+        var tabs = [];
+        $scope.saveMenu = function(newMenu){
+            tabs = $scope.tabsLinks;
+            tabs.push(newMenu);
+            cmsService.addTab(tabs).then(function(data){
+                if(data.success == false){
+                    $scope.updateMenu(newMenu);
+                }else{
+                    $scope.tabsLinks = data;
+                }
+            },function(response){
+
+            })
+        }
+
+        // edit home menus
+        $scope.editMenu = function(tab){
+            $scope.currentTab = tab;
+            $scope.update_menu_name = tab.value;
+            $scope.editMenuForm = true;
             $scope.newMenuForm = false;
-        });
+        }
 
-    }
+         $scope.editingItem = null;
+        $scope.editMenuItem = function(index){
+            $scope.editingItem = index;
+        }
+        $scope.add_menu_name = "";
+        $scope.cancelEditAdd = function(){
+            $scope.editingItem = null;
+            $scope.add_menu_name = null;
+        }
 
-    $scope.loadTabContent = function(contentProgram){
-        var eventObject = utilityService.prepareEventObject(contentProgram);
-        cmsService.getTabContent(eventObject).then(function(response){
-            $scope.tabContents = utilityService.refineTabContent(response.events);
-        });
-    }
-    $scope.loadExternalLinks = function(contentProgram){
+        // update home menus
+        $scope.menuItems = [];
+        $scope.updateMenu = function(index){
+            tabs = $scope.tabsLinks;
+            tabs[index] = $scope.menuItems[index];
+            cmsService.updateTab(tabs).then(function(data){
+                if(data.success == false){
+                }else{
+                    $scope.loadMenu();
+                    $scope.editingItem = null;
+                }
+            },function(response){
 
-        var eventObject = utilityService.prepareEventObject(contentProgram);
-        cmsService.getExternalLinks(eventObject).then(function(response){
-            $scope.externalLinks = utilityService.refineExternalLinks(response.events);
-        });
-    }
+            })
 
+        }
 
-    $scope.addExternalLinks = function(tabProgram,url,name,status){
+        // delete home menus
+        $scope.deleteMenu = function(menuId){
+            $scope.tabsLinks.splice(menuId,1);
+            cmsService.updateTab($scope.tabsLinks).then(function(data){
+                if(data.success == false){
+                }else{
+                    $scope.loadMenu();
+                }
+            },function(response){
 
-        if(typeof  tabProgram !=="undefined"){
-            var payload = {
-                "program":tabProgram.id,
-                "orgUnit": cmsService.parentOrganisationUnit,
-                "eventDate": "2013-05-17",
-                "status": "COMPLETED",
-                "storedBy": "admin",
-                "dataValues": [
-                    { "dataElement": "fNpPvw46Mxl", "value": url },
-                    { "dataElement": "cReJPO8bM6C", "value": name },
-                    { "dataElement": "CqGEDx5xw2Y", "value": status }
-                ]
-            }
-
-            cmsService.addExternalLinks(payload).then(function(response){
-            });
+            })
         }
 
 
 
+        $scope.loadRawCharts = function(){
+            cmsService.getCharts().then(function(response){
+                var rowcharts = response.charts;
+                $scope.loadCharts().then(function(response){
+                    if(response){
 
-    }
+                        if(response.length==rowcharts.length){
+                            $scope.charts = response;//cmsService.getSelectedCharts(response.chartsStorage);
+                        }else{
+                            cmsService.saveCharts(rowcharts);
+                            if(response.length>0){
+                                cmsService.updateCharts(rowcharts);
+                            }
+                        }
 
-    $scope.setDefaultUrl = function(){
-        if($routeParams.tabId){
-            angular.forEach($scope.tabs,function(tabValue,tabIndex){
-                if(tabValue.active=="current"){
-                    $scope.tabs[tabIndex].active = "";
+                    }else{
+                        cmsService.saveCharts(rowcharts);
+                    }
+
+
+                },function(error){
+                    console.log(error);
+                });
+            },function(error){
+
+            });
+        }
+
+        $scope.loadCharts = function(){
+            return cmsService.loadChartStorage();
+        }
+
+
+        $scope.loadInformations = function(){
+
+            /**
+             * Loading informations sharing
+             * */
+            cmsService.loadInformations().then(function(response){
+                $scope.informations = response;
+            },function(error){
+
+            });
+
+
+        }
+        // add information
+        $scope.addInformation = function(informationtitle,informationContent){
+
+            var informationTemplate = {title:informationtitle,body:informationContent};
+
+
+            $scope.informations.push(informationTemplate);
+
+            cmsService.addInformations($scope.informations).then(function(data){
+                if(!data.success){
+                    cmsService.updateInformations($scope.informations).then(function(response){
+                        $location.path('/information-sharing');
+                    },function(error){
+
+                    })
                 }
 
-                if(tabValue.value==$routeParams.tabId){
-                    $scope.tabs[tabIndex].active = "current";
-                }
+            },function(errors){
+
             });
-            //$location.path('/cms/articles/'+$routeParams.tabId+"/tab");
-        }else{
-            angular.forEach($scope.tabs,function(tabValue,tabIndex){
-                if(tabValue.active=="current") {
-                    //$location.path('/cms/articles/' + tabValue.value + "/tab");
-                }
+
+
+        }
+
+
+
+        // update information
+        $scope.updateInformation = function(informationtitle,informationContent){
+
+            var informationTemplate = {title:informationtitle,body:informationContent};
+
+            $scope.informations[$scope.editId]=informationTemplate;
+            cmsService.updateInformations($scope.informations).then(function(response){
+                $location.path('/information-sharing');
+            },function(error){
+
             });
         }
 
-    }
+        // delete information
+        $scope.deleteInformation = function(informationId){
+            var informationTemplate = $scope.informations;
+            informationTemplate.splice(informationId,1);
+            cmsService.updateInformations(informationTemplate).then(function(response){
+                $location.path('/information-sharing');
+            },function(error){
 
-    $scope.createTabContent = function(tabProgram,content,menu,order){
+            });
 
-        if(typeof  tabProgram !=="undefined"){
-            var payload = {
-                "program":tabProgram.id,
-                "orgUnit": cmsService.parentOrganisationUnit,
-                "eventDate": "2013-05-17",
-                "status": "COMPLETED",
-                "storedBy": "admin",
-                "dataValues": [
-                    { "dataElement": "qYjGeQATsEh", "value": content },
-                    { "dataElement": "xiXnJ2aTlzz", "value": "shown" },
-                    { "dataElement": "JTvaqwY7kDy", "value": order },
-                    { "dataElement": "tz5ttCEyPhf", "value": menu }
-                ]
+
+        }
+
+        function getUpdatedArticles(tabContents,category,newArticle,id){
+            var article_template = {category:category,content:newArticle,order:tabContents.length,shown:true};
+            if(id){
+                tabContents[id] = article_template;
+            }else{
+                tabContents.push(article_template);
             }
 
-            cmsService.addTabContent(payload).then(function(response){
-                $scope.loadTabContent(tabProgram);
-                $scope.showAddForm = false;
-                $scope.showEditForm = false;
+            return tabContents;
+
+        }
+
+        // add article contents
+        var tabContents = [];
+        $scope.addArticle = function(category,newArticle){
+            tabContents = $scope.tabContents;
+            tabContents = getUpdatedArticles(tabContents,category,newArticle);
+            cmsService.addTabContent(tabContents).then(function(data){
+
+                if( data.success == false ) {
+                cmsService.updateTabContent(tabContents).then(function(data){
+                    $location.path("/articles/sub/all");
+                },function(error){
+
+                });
+
+                }else{
+
+
+                }
+
+            },function(){
+
             });
         }
 
 
+        $scope.loadArticles = function(){
+            cmsService.getTabContent().then(function(response){
+                $scope.tabContents = orderBy(response, 'order', false);
+            },function(error){
+
+            });
+        }
 
 
-    }
+        // update article contents
+        var tabContents = [];
+        $scope.updateArticle = function(category,content,id){
+            $scope.tabContents[id].content = content;
+            cmsService.updateTabContent($scope.tabContents).then(function(data){
+           },function(error){
 
+           });
+        }
 
-    $scope.updateTabContent = function(tabProgram,eventId,content,menu,order){
+        // hide article contents
+        $scope.hideArticle = function(index){
+            $scope.tabContents[index].shown = !$scope.tabContents[index].shown;
+            cmsService.updateTabContent($scope.tabContents).then(function(data){
+            },function(error){
 
-        if(typeof  tabProgram !=="undefined"){
-            var payload = {
-                "program":tabProgram.id,
-                "orgUnit": cmsService.parentOrganisationUnit,
-                "eventDate": "2016-04-26",
-                "dataValues": [
-                    { "dataElement": "qYjGeQATsEh", "value": content },
-                    { "dataElement": "xiXnJ2aTlzz", "value": "shown" },
-                    { "dataElement": "JTvaqwY7kDy", "value": order },
-                    { "dataElement": "tz5ttCEyPhf", "value": menu }
-                ]
+            });
+
+        }
+
+        // hide article contents
+        $scope.makeTopArticle = function(tabContents,index){
+            if(tabContents[index].order==0){
+                    return;
+            }else{
+                angular.forEach(tabContents,function(value,indexs){
+                    if(value.order==0){
+                        value.order = 1;
+                    }
+                })
             }
 
-            cmsService.updateEvent(payload,payload.dataValues,eventId,"Article Update failed").then(function(response){
-                $scope.loadTabContent(tabProgram);
-                $scope.showAddForm = false;
-                $scope.showEditForm = false;
-            });
-        }
-
-
-
-
-    }
-
-    $scope.toggleToCMS = function(){
-
-        $location.path('/cms/articles/sub/all');
-
-    }
-    $scope.toggleToHOME = function(){
-
-        $location.path('/home/all');
-
-    }
-    // Load favourites report tables
-    $scope.getReportTable = function(){
-        cmsService.getReportTables().then(function(reportTables){
-            $scope.analysis = utilityService.formatAnalysis(reportTables);
-        },function(error){
-            $scope.analysis = false;
-        });
-    }
-
-
-
-    //
-    //$scope.loadMessagesOld = function(){
-    //    //var eventObject = utilityService.prepareEventObject(contentProgram);
-    //    cmsService.getMessages().then(function(response){
-    //        $scope.messages = utilityService.refineMessage(response);
-    //    });
-    //}
-    $scope.loadMessages = function(){
-
-        cmsService.retrieveSetting().then(function(response){
-            $scope.first_message = null;
-            $scope.second_message = null;
-            $scope.messages = response.availableMessages;
-            angular.forEach($scope.messages,function(value,index){
-
-                if(typeof value.first_message !=="undefined"){
-                    $scope.first_message    = value.first_message;
-                    $scope.hideFirstMessage = value.hide;
-
-                }
-
-                if(typeof value.second_message !=="undefined"){
-                    $scope.second_message    = value.second_message;
-                    $scope.hideSecondMessage = value.hide;
-                }
+            tabContents[index].order = 0;
+            cmsService.updateTabContent(tabContents).then(function(data){
+                $scope.loadArticles();
+            },function(error){
 
             });
-        });
-    }
 
-    $scope.messageStatus = function(isRead){
-        if(isRead){
-            return "read";
-        }else{
-            return "notRead"
-        }
-    }
-
-    //$scope.createMessageOld = function(recepients,sender,subject,body){
-    //    if(typeof  $scope._smsProgram !==""){
-    //        var payload = {
-    //            "program":$scope._smsProgram.id,
-    //            "orgUnit": "m0frOspS7JY",
-    //            "eventDate": "2013-05-17",
-    //            "status": "COMPLETED",
-    //            "storedBy": "admin",
-    //            "dataValues": [
-    //                { "dataElement": "r7FUBZIK1iH", "value": JSON.stringify(sender) },
-    //                { "dataElement": "Am2wAwoJdCV", "value": JSON.stringify(recepients) },
-    //                { "dataElement": "QLfNQoTlAM9", "value": subject },
-    //                { "dataElement": "Wv5Ve9Iz8zv", "value": body }
-    //            ]
-    //        }
-    //
-    //        cmsService.addMessage(payload).then(function(response){
-    //            $scope.loadMessages($scope._smsProgram);
-    //        });
-    //    }
-    //}
-    //$scope.createMessage = function(body){
-    //
-    //}
-
-    $scope.readMessage = function(message){
-    }
-
-    //$scope.followUpMessage = function(message){
-    //    cmsService.followUpMessage(message.id).then(function(response){
-    //        $scope.loadMessages();
-    //    },function(error){
-    //
-    //    });
-    //
-    //}
-
-
-    $scope.deleteMessage = function(victim){
-        var object = "";
-
-        if(victim=="first"){
-            object = {second_message:$scope.second_message,hide:$scope.hideSecondMessage,expireDate:""}
         }
 
-        if(victim=="second"){
-            object = {first_message:$scope.first_message,hide:$scope.hideFirstMessage,expireDate:""};
+        // delete article content
+        $scope.deleteContent = function(index){
+            var contentCatche = [];
+            if($scope.tabContents){
+                contentCatche = $scope.tabContents;
+                contentCatche.splice(index,1);
+            }
+
+
+
+            var object = "";
+
+            // TODO:This confirm box should be removed with norma bootstrap widget
+            var r = confirm('"Are you sure you want to this article  "');
+            if (r == true) {
+                cmsService.updateTabContent(contentCatche).then(function(data){
+                },function(error){
+
+                });
+            } else {
+
+            }
+
         }
 
-        cmsService.deleteSetting(object).then(function(response){
-            $scope.loadMessages();
-        },function(error){
+
+        $scope.loadMessages = function(){
+        $scope.messages = [];
+        cmsService.getMessages().then(function(response){
+
+            if(response.messageOne){
+                $scope.messages.push(response.messageOne);
+            }
+
+            if(response.messageTwo){
+                $scope.messages.push(response.messageTwo);
+            }
+
 
         });
-    }
-
-
-    $scope.toggleableCMSTab = function(tab){
-
-        angular.forEach($scope.activeClass,function(tabD,index){
-            $scope.activeClass[index] = "";
-            if(index==tab){
-                $scope.activeClass[index] = "active";
-            }
-        })
-
-        if(typeof $scope.newMessageForm != "undefined"){
-            $scope.newMessageForm = false;
         }
 
+        // checking for current selected item by id
+        if($routeParams.edit_id){
+        /**
+         * Edit messages
+         * */
+        $scope.message_action = "edit";
+        $scope.editId = $routeParams.edit_id;
+        $scope.edited_message = null;
+
+            cmsService.getMessages().then(function(response){
+                $scope.messagesEdit = [];
+                if(response.messageOne){
+                    $scope.messagesEdit.push(response.messageOne);
+                }
+
+                if(response.messageTwo){
+                    $scope.messagesEdit.push(response.messageTwo);
+                }
+
+                angular.forEach($scope.messagesEdit,function(messageValue,messageIndex){
+                    if(messageValue.id==$scope.editId){
+                        $scope.edited_message = messageValue;
+                        $scope.messageTitle = $scope.edited_message.title;
+                        $scope.editContent = $scope.edited_message.body;
+                    }
+                });
+
+            });
+
+
+
+
     }
 
 
+        // hide message contents
+        $scope.hideMessage = function(message){
+        message.hidden = !message.hidden;
 
 
-    //$scope.showNewMessageForm = function(){
-    //    $scope.newMessageForm = true;
-    //}
-
-    $scope.cancelMessageSend = function(){
-        $scope.newBroadCastForm = false;
-        $scope.editBroadCastForm = false;
-    }
-
-    $scope.newMessageForm = function(){
-        $scope.newBroadCastForm = true;
-    }
-
-    $scope.editMessageForm = function(choice){
-        if(choice=="first"){
-            $scope.firstEdit = true;
-            $scope.secondEdit = false;
+        if(message.id==1){
+            cmsService.addMessage({messageOne:{id:message.id,title:message.title,body:message.body,expired_date:"",hidden:message.hidden}}).then(function(data){
+                $scope.loadMessages();
+            });
         }
-        if(choice=="second"){
-            $scope.firstEdit = false;
-            $scope.secondEdit = true;
+
+        if(message.id==2){
+
+            cmsService.addMessage({messageTwo:{id:message.id,title:message.title,body:message.body,expired_date:"",hidden:message.hidden}}).then(function(data){
+                $scope.loadMessages();
+            });
         }
-        $scope.editBroadCastForm = true;
+
+
     }
 
-    $scope.hideMessage = function(victim){
-        console.log($scope.hideFirstMessage)
-        if(victim=="first"){
-            if(!$scope.hideFirstMessage){
-                $scope.hideFirstMessage = true;
-            }
-
-        }
-        if(victim=="second"){
-            if(!$scope.hideSecondMessage){
-                $scope.hideSecondMessage = true;
-            }
-
-        }
-        console.log($scope.hideFirstMessage)
-        cmsService.saveSetting($scope.first_message,$scope.second_message,$scope.hideFirstMessage,$scope.hideSecondMessage).then(function(response){
-            $scope.loadMessages();
-        },function(error){
-
-        })
-
-    }
-    $scope.unHideMessage = function(victim){
+        // show  message contents
+        $scope.unHideMessage = function(messageToHideUnhide){
 
         if(victim=="first"){
             if($scope.hideFirstMessage){
@@ -454,1305 +613,136 @@ var cmsControllers = angular.module('cmsControllers', [])
 
     }
 
-    $scope.newBroadCastForm = false
-    $scope.sendMessage = function(first_message,second_message){
-        var hideMessageOne = false; var hideMessageTwo = false;
-        cmsService.saveSetting(first_message,second_message,hideMessageOne,hideMessageTwo).then(function(response){
-            $scope.newBroadCastForm = false;
-            $scope.editBroadCastForm = false;
-            $scope.loadMessages();
-        },function(error){
+        // save message contents
+        $scope.sendMessage = function(title,body){
 
-        })
+                if($scope.messages.length==1){
+                    if($scope.messages[0].id==1){
+                        cmsService.addMessage({messageTwo:{id:2,title:title,body:body,expired_date:"",hidden:false}}).then(function(data){
+                            $scope.loadMessages();
+                            $location.path("/messages/action/list");
+                        });
+                    }
+
+                    if($scope.messages[0].id==2){
+                        cmsService.addMessage({messageOne:{id:1,title:title,body:body,expired_date:"",hidden:false}}).then(function(data){
+                            $scope.loadMessages();
+                            $location.path("/messages/action/list");
+                        });
+                    }
+
+
+
+
+            }else{
+                cmsService.addMessage({messageOne:{id:1,title:title,body:body,expired_date:"",hidden:false}}).then(function(data){
+                    $scope.loadMessages();
+                    $location.path("/messages/action/list");
+                });
+            }
+
 
     }
 
-    $scope.newMenu = function(){
-        $scope.newMenuForm = true;
-        $scope.editMenuForm = false;
+        // update message contents
+        $scope.updateMessage = function(editId,title,body){
+
+        if(editId==1){
+            cmsService.addMessage({messageOne:{id:1,title:title,body:body,expired_date:"",hidden:false}}).then(function(data){
+                $scope.loadMessages();
+                $location.path("/messages/action/list");
+            });
+        }
+
+        if(editId==2){
+            cmsService.addMessage({messageTwo:{id:2,title:title,body:body,expired_date:"",hidden:false}}).then(function(data){
+                $scope.loadMessages();
+                $location.path("/messages/action/list");
+            });
+        }
+
+
+
+
     }
 
-    $scope.saveMenu = function(menu_name){
-        //
-        //var payload = {
-        //    "program": $scope._smsProgram.id,
-        //    "orgUnit": "m0frOspS7JY",
-        //    "eventDate": "2013-05-17",
-        //    "status": "COMPLETED",
-        //    "storedBy": "admin",
-        //    "dataValues": [
-        //        {"dataElement": "RJ6cGZcjlB6", "value": menu_name},
-        //    ]
-        //}
-        //console.log($scope._tabProgram);
-        $scope.createTab($scope._tabProgram,menu_name);
+        // delete message contents
+        $scope.deleteMessage = function(message){
+            if($scope.messages){
+                var object = "";
+
+                // TODO:This confirm box should be removed with norma bootstrap widget
+                var r = confirm('"Are you sure you want to delete message  "'+message.title+'"');
+                if (r == true) {
+
+                    if(message.id==1){
+                        object = "messageOne";
+                    }
+
+                    if(message.id==2){
+                        object = "messageTwo";
+                    }
+
+                    cmsService.deleteSetting(object).then(function(response){
+                        $scope.loadMessages();
+                    },function(error){
+
+                    });
+                } else {
+
+                }
+
+            }
+
+
+
     }
 
-    $scope.editMenu = function(tab){
-        $scope.currentTab = tab;
-        $scope.update_menu_name = tab.value;
-        $scope.editMenuForm = true;
-        $scope.newMenuForm = false;
-    }
 
-    $scope.updateMenu = function(update_menu_name){
-        $scope.currentTab.value = update_menu_name;
-        cmsService.updateEvent($scope.currentTab,[{ "dataElement": "RJ6cGZcjlB6", "value":update_menu_name}],$scope.currentTab.event,"error updating menu").then(function(response){
-            $scope.loadTabs(cmsService._tabProgram);
-            $scope.add_menu_name = "";
-            $scope.update_menu_name = "";
-            $scope.editMenuForm = false;
-            $scope.newMenuForm = false;
-        },function(){
 
-        })
-        $scope.editMenuForm = true;
-        $scope.newMenuForm = false;
-    }
-    //eventId
-    $scope.deleteTab = function(tab){
-        var eventId  = tab.event;
-        cmsService.deleteEvent(eventId).then(function(response){
-            $scope.loadTabs(cmsService._tabProgram);
-        },function(){
+        // get report tables
+        $scope.getReportTable = function () {
 
-        })
-    }
+            cmsService.getReportTables().then(function(reportTables){
+                var mainmenu = new Array();
+                var menuarr = [{'name':"Agriculture",values:[]},{'name':"Livestock",values:[]},{'name':"Fishery",values:[]},{'name':"Trade",values:[]},{'name':"General Information",values:[]}];
+                var arrayCounter = 0;
 
-    $scope.cancelUpdateMenu = function(){
-        $scope.add_menu_name = "";
-        $scope.update_menu_name = "";
-        $scope.editMenuForm = false;
-        $scope.newMenuForm = false;
-    }
+                $.each( reportTables.reportTables, function( key, value ) {
+                    var arr = value.displayName.split(':');
+                    if(arr.length != 1){
+                        angular.forEach(menuarr,function(menuValue){
+                            if(arr[0] == menuValue.name){
+                                menuValue.values.push({id:value.id,displayName:arr[1],shortName:arr[1].substring(0,20)+"..."});
+                            }
+                        })
 
-    $scope.cancelSaveMenu = function(){
-        $scope.add_menu_name = "";
-        $scope.update_menu_name = "";
-        $scope.editMenuForm = false;
-        $scope.newMenuForm = false;
-    }
-    //!showAddForm&&!showEditForm
-    $scope.getNewArticleForm = function(){
-        $scope.showAddForm = true;
-    }
-
-    $scope.getEditArticleForm = function(content){
-        $scope.currentArticle = content;
-        $scope.editedContent = content.content;
-        $scope.showEditForm = true;
-    }
-
-    function switchCMSTab (){
-        var link = $location.path();
-        console.log(link)
-        if(link.indexOf('tab')<=-1){
-            var url_length = link.length;
-            var cms = link.substr(5,url_length-1);
-            $scope.activeClass[cms] = 'active';
-        }else{
+                    }
+                });
+                $scope.analysis = menuarr;
+        });
 
         }
 
-    }
-    switchCMSTab();
 
-    $scope.users = [
-        { icon: "<i class='fa fa-user'></i>",               name: "Leonard Mpande",              maker: "(Opera Software)",        ticked: false  }
-    ];
+        if($routeParams.tab =="analysis") {
+            $scope.showAnalysis=true;
+        }
 
 
-    // Editor options.
-    $scope.options = {
-        language: 'en',
-        allowedContent: true,
-        entities: false
-    };
-
-    // Called when the editor is completely ready.
-    $scope.onReady = function () {
-
-
-    };
-
-    $scope.addArticle = function(category,content){
-        $scope.createTabContent($scope._tabContentProgram,content,category,'1');
-
-    }
-
-    $scope.updateArticle = function(category,content){
-        $scope.updateTabContent($scope._tabContentProgram,$scope.currentArticle.id,content,category,'1');
-        $scope.showAddForm = false;
-        $scope.showEditForm = false;
-    }
-
-    $scope.cancelAddArticle = function(){
-        $scope.showAddForm = false;
-        $scope.showEditForm = false;
-    }
-    // function calls
-
-    cmsService.getParentOrgUnit().then(function(response){
-        angular.forEach(response.organisationUnits,function(value){
-            cmsService.parentOrganisationUnit  = value.id;
-        });
-        $scope.loadPrograms();
+        $scope.getReportTable();
+        $scope.loadMenu();
+        $scope.loadArticles();
         $scope.loadMessages();
+        $scope.loadInformations();
+        $scope.loadRawCharts();
         $scope.loadCharts();
-    },function(){
-        console.log("there is error probable the network error");
-    });
-
-    $scope.getReportTable();
-
-
-
-    String.prototype.Capitalize = function() {
-        return this.charAt(0).toUpperCase() + this.slice(1);
-    }
-
-})
-
-.controller('homeController',function($scope, $window,$routeParams,$location, cmsService,utilityService){
-    //
-    //$scope._appPrograms = [];
-    //$scope._tabProgram = "";
-    //$scope._tabContentProgram = "";
-    //$scope._smsProgram = "";
-    //$scope._linkProgram = "";
-    //$scope._appCharts = [];
-    //$scope._currentUser = null;
-    //$scope._users = [];
-    //$scope.activeClass = [];
-    //$scope.documents = [];
-    //$scope.analysis = [];
-    //
-    //cmsService.getUsers().then(function(value){
-    //    $scope._users = cmsService.processUsers(value.users);
-    //});
-    //cmsService.loggedUser().then(function(value){
-    //    $scope._currentUser = value;
-    //});
-    //
-    //// app resources functions
-    //$scope.loadPrograms = function(){
-    //    cmsService.getPrograms().then(function(response){
-    //        $scope.Programs = $scope.groupPrograms(response.programs);
-    //    });
-    //}
-    //$scope.loadCharts = function(){
-    //    cmsService.retrieveSetting().then(function(response){
-    //        $scope.charts = response.selectedCharts;
-    //    },function(error){
-    //        $scope.errors  = true;
-    //    });
-    //}
-
-    //$scope.groupPrograms = function(appPrograms){
-    //    angular.forEach(appPrograms,function(programObject,programIndex){
-    //        if(programObject.name.indexOf('cms')>=0){
-    //            cmsService._appPrograms.push(programObject);
-    //
-    //        }
-    //        if(programObject.name.indexOf('home page menu')>=0){
-    //            cmsService._tabProgram = programObject;
-    //            $scope._tabProgram = programObject;
-    //            //$scope.createTab(cmsService._tabProgram)
-    //            $scope.loadTabs(cmsService._tabProgram);
-    //        }
-    //        if(programObject.name.indexOf('cms article')>=0){
-    //            cmsService._tabContentProgram = programObject;
-    //            $scope._tabContentProgram = programObject;
-    //
-    //            var content = '';
-    //            //$scope.createTabContent(cmsService._tabContentProgram,content,"Livestock",2);
-    //            $scope.loadTabContent(cmsService._tabContentProgram);
-    //        }
-    //        if(programObject.name.indexOf('cms messages')>=0){
-    //            cmsService._smsProgram = programObject;
-    //            $scope._smsProgram = programObject;
-    //
-    //            var content = '';
-    //            //$scope.createTabContent(cmsService._tabContentProgram,content,"Livestock",2);
-    //            //$scope.loadMessages(cmsService._smsProgram);
-    //            //$scope.createMessage(cmsService._smsProgram,JSON.stringify({type:"users",list:[{id: "K8jZ8exCsNH",name: "Leonard Mpande"}]}),JSON.stringify({id:"K8jZ8exCsNH",name:"Leonard Mpande"}),"Stay Tuned","Hellow User Stay tuned");
-    //        }
-    //        if(programObject.name.indexOf('cms extenal links')>=0){
-    //            cmsService._linkProgram = programObject;
-    //
-    //            $scope.loadExternalLinks(cmsService._linkProgram);
-    //            //$scope.addExternalLinks(cmsService._linkProgram,"http://www.countrystat.org/","CountryStat",'shown');
-    //            //$scope.createMessage(cmsService._smsProgram,JSON.stringify({type:"users",list:[{id: "K8jZ8exCsNH",name: "Leonard Mpande"}]}),JSON.stringify({id:"K8jZ8exCsNH",name:"Leonard Mpande"}),"Stay Tuned","Hellow User Stay tuned");
-    //        }
-    //
-    //    });
-    //}
-    //
-    //$scope.loadTabs = function(tabProgram){
-    //    var eventObject = utilityService.prepareEventObject(tabProgram);
-    //    cmsService.getTabs(eventObject).then(function(response){
-    //        $scope.tabs = utilityService.refineTabs(response.events);
-    //        $scope.setDefaultUrl();
-    //    });
-    //}
-    //
-    //$scope.createTab = function(tabProgram,tabValue){
-    //    var payload = {
-    //        "program":tabProgram.id,
-    //        "orgUnit": cmsService.parentOrganisationUnit,
-    //        "eventDate": "2013-05-17",
-    //        "status": "COMPLETED",
-    //        "storedBy": "admin",
-    //        "dataValues": [
-    //            { "dataElement": "RJ6cGZcjlB6", "value": tabValue }
-    //        ]
-    //    }
-    //    cmsService.addTab(payload).then(function(response){
-    //        $scope.loadTabs(tabProgram);
-    //        $scope.add_menu_name = "";
-    //        $scope.update_menu_name = "";
-    //        $scope.editMenuForm = false;
-    //        $scope.newMenuForm = false;
-    //    });
-    //
-    //}
-    //
-    //$scope.loadTabContent = function(contentProgram){
-    //    var eventObject = utilityService.prepareEventObject(contentProgram);
-    //    cmsService.getTabContent(eventObject).then(function(response){
-    //        $scope.tabContents = utilityService.refineTabContent(response.events);
-    //    });
-    //}
-    //$scope.loadExternalLinks = function(contentProgram){
-    //
-    //    var eventObject = utilityService.prepareEventObject(contentProgram);
-    //    cmsService.getExternalLinks(eventObject).then(function(response){
-    //        $scope.externalLinks = utilityService.refineExternalLinks(response.events);
-    //    });
-    //}
-    //
-    //
-    //$scope.addExternalLinks = function(tabProgram,url,name,status){
-    //
-    //    if(typeof  tabProgram !=="undefined"){
-    //        var payload = {
-    //            "program":tabProgram.id,
-    //            "orgUnit": cmsService.parentOrganisationUnit,
-    //            "eventDate": "2013-05-17",
-    //            "status": "COMPLETED",
-    //            "storedBy": "admin",
-    //            "dataValues": [
-    //                { "dataElement": "fNpPvw46Mxl", "value": url },
-    //                { "dataElement": "cReJPO8bM6C", "value": name },
-    //                { "dataElement": "CqGEDx5xw2Y", "value": status }
-    //            ]
-    //        }
-    //
-    //        cmsService.addExternalLinks(payload).then(function(response){
-    //        });
-    //    }
-    //
-    //
-    //
-    //
-    //}
-    //
-    //$scope.setDefaultUrl = function(){
-    //    if($routeParams.tabId){
-    //        angular.forEach($scope.tabs,function(tabValue,tabIndex){
-    //            if(tabValue.active=="current"){
-    //                $scope.tabs[tabIndex].active = "";
-    //            }
-    //
-    //            if(tabValue.value==$routeParams.tabId){
-    //                $scope.tabs[tabIndex].active = "current";
-    //            }
-    //        });
-    //        //$location.path('/cms/articles/'+$routeParams.tabId+"/tab");
-    //    }else{
-    //        angular.forEach($scope.tabs,function(tabValue,tabIndex){
-    //            if(tabValue.active=="current") {
-    //                //$location.path('/cms/articles/' + tabValue.value + "/tab");
-    //            }
-    //        });
-    //    }
-    //
-    //}
-    //
-    //$scope.createTabContent = function(tabProgram,content,menu,order){
-    //
-    //    if(typeof  tabProgram !=="undefined"){
-    //        var payload = {
-    //            "program":tabProgram.id,
-    //            "orgUnit": cmsService.parentOrganisationUnit,
-    //            "eventDate": "2013-05-17",
-    //            "status": "COMPLETED",
-    //            "storedBy": "admin",
-    //            "dataValues": [
-    //                { "dataElement": "qYjGeQATsEh", "value": content },
-    //                { "dataElement": "xiXnJ2aTlzz", "value": "shown" },
-    //                { "dataElement": "JTvaqwY7kDy", "value": order },
-    //                { "dataElement": "tz5ttCEyPhf", "value": menu }
-    //            ]
-    //        }
-    //
-    //        cmsService.addTabContent(payload).then(function(response){
-    //            $scope.loadTabContent(tabProgram);
-    //            $scope.showAddForm = false;
-    //            $scope.showEditForm = false;
-    //        });
-    //    }
-    //
-    //
-    //
-    //
-    //}
-    //
-    //
-    //$scope.updateTabContent = function(tabProgram,eventId,content,menu,order){
-    //
-    //    if(typeof  tabProgram !=="undefined"){
-    //        var payload = {
-    //            "program":tabProgram.id,
-    //            "orgUnit": cmsService.parentOrganisationUnit,
-    //            "eventDate": "2016-04-26",
-    //            "dataValues": [
-    //                { "dataElement": "qYjGeQATsEh", "value": content },
-    //                { "dataElement": "xiXnJ2aTlzz", "value": "shown" },
-    //                { "dataElement": "JTvaqwY7kDy", "value": order },
-    //                { "dataElement": "tz5ttCEyPhf", "value": menu }
-    //            ]
-    //        }
-    //
-    //        cmsService.updateEvent(payload,payload.dataValues,eventId,"Article Update failed").then(function(response){
-    //            $scope.loadTabContent(tabProgram);
-    //            $scope.showAddForm = false;
-    //            $scope.showEditForm = false;
-    //        });
-    //    }
-    //
-    //
-    //
-    //
-    //}
-    //
-    //$scope.togglePages = function(){
-    //
-    //    $location.path('/cms/articles/sub/all');
-    //
-    //}
-    //// Load favourites report tables
-    //$scope.getReportTable = function(){
-    //    cmsService.getReportTables().then(function(reportTables){
-    //        $scope.analysis = utilityService.formatAnalysis(reportTables);
-    //    },function(error){
-    //        $scope.analysis = false;
-    //    });
-    //}
-    //
-    //
-    //
-    ////
-    ////$scope.loadMessagesOld = function(){
-    ////    //var eventObject = utilityService.prepareEventObject(contentProgram);
-    ////    cmsService.getMessages().then(function(response){
-    ////        $scope.messages = utilityService.refineMessage(response);
-    ////    });
-    ////}
-    //$scope.loadMessages = function(){
-    //
-    //    cmsService.retrieveSetting().then(function(response){
-    //        $scope.first_message = null;
-    //        $scope.second_message = null;
-    //        $scope.messages = response.availableMessages;
-    //        angular.forEach($scope.messages,function(value,index){
-    //
-    //            if(typeof value.first_message !=="undefined"){
-    //                $scope.first_message    = value.first_message;
-    //                $scope.hideFirstMessage = value.hide;
-    //
-    //            }
-    //
-    //            if(typeof value.second_message !=="undefined"){
-    //                $scope.second_message    = value.second_message;
-    //                $scope.hideSecondMessage = value.hide;
-    //            }
-    //
-    //        });
-    //    });
-    //}
-    //
-    //$scope.messageStatus = function(isRead){
-    //    if(isRead){
-    //        return "read";
-    //    }else{
-    //        return "notRead"
-    //    }
-    //}
-    //
-    ////$scope.createMessageOld = function(recepients,sender,subject,body){
-    ////    if(typeof  $scope._smsProgram !==""){
-    ////        var payload = {
-    ////            "program":$scope._smsProgram.id,
-    ////            "orgUnit": "m0frOspS7JY",
-    ////            "eventDate": "2013-05-17",
-    ////            "status": "COMPLETED",
-    ////            "storedBy": "admin",
-    ////            "dataValues": [
-    ////                { "dataElement": "r7FUBZIK1iH", "value": JSON.stringify(sender) },
-    ////                { "dataElement": "Am2wAwoJdCV", "value": JSON.stringify(recepients) },
-    ////                { "dataElement": "QLfNQoTlAM9", "value": subject },
-    ////                { "dataElement": "Wv5Ve9Iz8zv", "value": body }
-    ////            ]
-    ////        }
-    ////
-    ////        cmsService.addMessage(payload).then(function(response){
-    ////            $scope.loadMessages($scope._smsProgram);
-    ////        });
-    ////    }
-    ////}
-    ////$scope.createMessage = function(body){
-    ////
-    ////}
-    //
-    //$scope.readMessage = function(message){
-    //}
-    //
-    ////$scope.followUpMessage = function(message){
-    ////    cmsService.followUpMessage(message.id).then(function(response){
-    ////        $scope.loadMessages();
-    ////    },function(error){
-    ////
-    ////    });
-    ////
-    ////}
-    //
-    //
-    //$scope.deleteMessage = function(victim){
-    //    var object = "";
-    //
-    //    if(victim=="first"){
-    //        object = {second_message:$scope.second_message,hide:$scope.hideSecondMessage,expireDate:""}
-    //    }
-    //
-    //    if(victim=="second"){
-    //        object = {first_message:$scope.first_message,hide:$scope.hideFirstMessage,expireDate:""};
-    //    }
-    //
-    //    cmsService.deleteSetting(object).then(function(response){
-    //        $scope.loadMessages();
-    //    },function(error){
-    //
-    //    });
-    //}
-    //
-    //
-    //$scope.toggleableCMSTab = function(tab){
-    //
-    //    angular.forEach($scope.activeClass,function(tabD,index){
-    //        $scope.activeClass[index] = "";
-    //        if(index==tab){
-    //            $scope.activeClass[index] = "active";
-    //        }
-    //    })
-    //
-    //    if(typeof $scope.newMessageForm != "undefined"){
-    //        $scope.newMessageForm = false;
-    //    }
-    //
-    //}
-    //
-    //
-    //
-    //
-    ////$scope.showNewMessageForm = function(){
-    ////    $scope.newMessageForm = true;
-    ////}
-    //
-    //$scope.cancelMessageSend = function(){
-    //    $scope.newBroadCastForm = false;
-    //    $scope.editBroadCastForm = false;
-    //}
-    //
-    //$scope.newMessageForm = function(){
-    //    $scope.newBroadCastForm = true;
-    //}
-    //
-    //$scope.editMessageForm = function(choice){
-    //    if(choice=="first"){
-    //        $scope.firstEdit = true;
-    //        $scope.secondEdit = false;
-    //    }
-    //    if(choice=="second"){
-    //        $scope.firstEdit = false;
-    //        $scope.secondEdit = true;
-    //    }
-    //    $scope.editBroadCastForm = true;
-    //}
-    //
-    //$scope.hideMessage = function(victim){
-    //    console.log($scope.hideFirstMessage)
-    //    if(victim=="first"){
-    //        if(!$scope.hideFirstMessage){
-    //            $scope.hideFirstMessage = true;
-    //        }
-    //
-    //    }
-    //    if(victim=="second"){
-    //        if(!$scope.hideSecondMessage){
-    //            $scope.hideSecondMessage = true;
-    //        }
-    //
-    //    }
-    //    console.log($scope.hideFirstMessage)
-    //    cmsService.saveSetting($scope.first_message,$scope.second_message,$scope.hideFirstMessage,$scope.hideSecondMessage).then(function(response){
-    //        $scope.loadMessages();
-    //    },function(error){
-    //
-    //    })
-    //
-    //}
-    //$scope.unHideMessage = function(victim){
-    //
-    //    if(victim=="first"){
-    //        if($scope.hideFirstMessage){
-    //            $scope.hideFirstMessage = false;
-    //        }
-    //
-    //    }
-    //    if(victim=="second"){
-    //        if($scope.hideSecondMessage){
-    //            $scope.hideSecondMessage = false;
-    //        }
-    //
-    //    }
-    //
-    //    cmsService.saveSetting($scope.first_message,$scope.second_message,$scope.hideFirstMessage,$scope.hideSecondMessage).then(function(response){
-    //        $scope.loadMessages();
-    //    },function(error){
-    //
-    //    })
-    //
-    //}
-    //
-    //$scope.newBroadCastForm = false
-    //$scope.sendMessage = function(first_message,second_message){
-    //    var hideMessageOne = false; var hideMessageTwo = false;
-    //    cmsService.saveSetting(first_message,second_message,hideMessageOne,hideMessageTwo).then(function(response){
-    //        $scope.newBroadCastForm = false;
-    //        $scope.editBroadCastForm = false;
-    //        $scope.loadMessages();
-    //    },function(error){
-    //
-    //    })
-    //
-    //}
-    //
-    //$scope.newMenu = function(){
-    //    $scope.newMenuForm = true;
-    //    $scope.editMenuForm = false;
-    //}
-    //
-    //$scope.saveMenu = function(menu_name){
-    //    //
-    //    //var payload = {
-    //    //    "program": $scope._smsProgram.id,
-    //    //    "orgUnit": "m0frOspS7JY",
-    //    //    "eventDate": "2013-05-17",
-    //    //    "status": "COMPLETED",
-    //    //    "storedBy": "admin",
-    //    //    "dataValues": [
-    //    //        {"dataElement": "RJ6cGZcjlB6", "value": menu_name},
-    //    //    ]
-    //    //}
-    //    //console.log($scope._tabProgram);
-    //    $scope.createTab($scope._tabProgram,menu_name);
-    //}
-    //
-    //$scope.editMenu = function(tab){
-    //    $scope.currentTab = tab;
-    //    $scope.update_menu_name = tab.value;
-    //    $scope.editMenuForm = true;
-    //    $scope.newMenuForm = false;
-    //}
-    //
-    //$scope.updateMenu = function(update_menu_name){
-    //    $scope.currentTab.value = update_menu_name;
-    //    cmsService.updateEvent($scope.currentTab,[{ "dataElement": "RJ6cGZcjlB6", "value":update_menu_name}],$scope.currentTab.event,"error updating menu").then(function(response){
-    //        $scope.loadTabs(cmsService._tabProgram);
-    //        $scope.add_menu_name = "";
-    //        $scope.update_menu_name = "";
-    //        $scope.editMenuForm = false;
-    //        $scope.newMenuForm = false;
-    //    },function(){
-    //
-    //    })
-    //    $scope.editMenuForm = true;
-    //    $scope.newMenuForm = false;
-    //}
-    ////eventId
-    //$scope.deleteTab = function(tab){
-    //    var eventId  = tab.event;
-    //    cmsService.deleteEvent(eventId).then(function(response){
-    //        $scope.loadTabs(cmsService._tabProgram);
-    //    },function(){
-    //
-    //    })
-    //}
-    //
-    //$scope.cancelUpdateMenu = function(){
-    //    $scope.add_menu_name = "";
-    //    $scope.update_menu_name = "";
-    //    $scope.editMenuForm = false;
-    //    $scope.newMenuForm = false;
-    //}
-    //
-    //$scope.cancelSaveMenu = function(){
-    //    $scope.add_menu_name = "";
-    //    $scope.update_menu_name = "";
-    //    $scope.editMenuForm = false;
-    //    $scope.newMenuForm = false;
-    //}
-    ////!showAddForm&&!showEditForm
-    //$scope.getNewArticleForm = function(){
-    //    $scope.showAddForm = true;
-    //}
-    //
-    //$scope.getEditArticleForm = function(content){
-    //    $scope.currentArticle = content;
-    //    $scope.editedContent = content.content;
-    //    $scope.showEditForm = true;
-    //}
-    //
-    //function switchCMSTab (){
-    //    var link = $location.path();
-    //    console.log(link)
-    //    if(link.indexOf('tab')<=-1){
-    //        var url_length = link.length;
-    //        var cms = link.substr(5,url_length-1);
-    //        $scope.activeClass[cms] = 'active';
-    //    }else{
-    //
-    //    }
-    //
-    //}
-    //switchCMSTab();
-    //
-    //$scope.users = [
-    //    { icon: "<i class='fa fa-user'></i>",               name: "Leonard Mpande",              maker: "(Opera Software)",        ticked: false  }
-    //];
-    //
-    //
-    //// Editor options.
-    //$scope.options = {
-    //    language: 'en',
-    //    allowedContent: true,
-    //    entities: false
-    //};
-    //
-    //// Called when the editor is completely ready.
-    //$scope.onReady = function () {
-    //
-    //
-    //};
-    //
-    //$scope.addArticle = function(category,content){
-    //    $scope.createTabContent($scope._tabContentProgram,content,category,'1');
-    //
-    //}
-    //
-    //$scope.updateArticle = function(category,content){
-    //    $scope.updateTabContent($scope._tabContentProgram,$scope.currentArticle.id,content,category,'1');
-    //    $scope.showAddForm = false;
-    //    $scope.showEditForm = false;
-    //}
-    //
-    //$scope.cancelAddArticle = function(){
-    //    $scope.showAddForm = false;
-    //    $scope.showEditForm = false;
-    //}
-    //// function calls
-    //
-    //cmsService.getParentOrgUnit().then(function(response){
-    //    angular.forEach(response.organisationUnits,function(value){
-    //        cmsService.parentOrganisationUnit  = value.id;
-    //    });
-    //    $scope.loadPrograms();
-    //    $scope.loadMessages();
-    //    $scope.loadCharts();
-    //},function(){
-    //    console.log("there is error probable the network error");
-    //});
-    //
-    //$scope.getReportTable();
-    //
-    $scope.currentTab = 'all';
-    if($routeParams.tabs){
-        $scope.currentTab = $routeParams.tabs;
-        $scope.currentTabCapitaize = $routeParams.tabs.Capitalize();
-    }
-
-    //$scope.currentSubTab = 'all';
-    //if($routeParams.subtab){
-    //    $scope.currentSubTab = $routeParams.subtab;
-    //    $scope.currentSubTabCapitalize = $scope.currentSubTab.Capitalize();
-    //}
-    //
-    //$scope.subTabAction = 'list';
-    //if($routeParams.action_id){
-    //    $scope.subTabAction = $routeParams.action_id;
-    //}
-
-
-})
-.controller('cmsController',function($scope, $window,$routeParams,$location, cmsService,utilityService){
-
-    //$scope._appPrograms = [];
-    //$scope._tabProgram = "";
-    //$scope._tabContentProgram = "";
-    //$scope._smsProgram = "";
-    //$scope._linkProgram = "";
-    //$scope._appCharts = [];
-    //$scope._currentUser = null;
-    //$scope._users = [];
-    //$scope.activeClass = [];
-//
-//    cmsService.getUsers().then(function(value){
-//        $scope._users = cmsService.processUsers(value.users);
-//    });
-//    cmsService.loggedUser().then(function(value){
-//        $scope._currentUser = value;
-//    });
-//
-//    // app resources functions
-//    $scope.loadPrograms = function(){
-//        cmsService.getPrograms().then(function(response){
-//            $scope.Programs = $scope.groupPrograms(response.programs);
-//        });
-//    }
-//    $scope.loadCharts = function(){
-//        cmsService.getCharts().then(function(response){
-//            $scope.charts = response.charts;
-//        });
-//    }
-//
-//    $scope.groupPrograms = function(appPrograms){
-//        angular.forEach(appPrograms,function(programObject,programIndex){
-//            if(programObject.name.indexOf('cms')>=0){
-//                cmsService._appPrograms.push(programObject);
-//
-//            }
-//            if(programObject.name.indexOf('home page menu')>=0){
-//                cmsService._tabProgram = programObject;
-//                $scope._tabProgram = programObject;
-//                //$scope.createTab(cmsService._tabProgram)
-//                $scope.loadTabs(cmsService._tabProgram);
-//                console.log("TABS LOADS HERE");
-//            }
-//            if(programObject.name.indexOf('cms article')>=0){
-//                cmsService._tabContentProgram = programObject;
-//                $scope._tabContentProgram = programObject;
-//
-//                var content = '';
-//                //$scope.createTabContent(cmsService._tabContentProgram,content,"Livestock",2);
-//                $scope.loadTabContent(cmsService._tabContentProgram);
-//            }
-//            if(programObject.name.indexOf('cms messages')>=0){
-//                cmsService._smsProgram = programObject;
-//                $scope._smsProgram = programObject;
-//
-//                var content = '';
-//                //$scope.createTabContent(cmsService._tabContentProgram,content,"Livestock",2);
-//                //$scope.loadMessages(cmsService._smsProgram);
-//                //$scope.createMessage(cmsService._smsProgram,JSON.stringify({type:"users",list:[{id: "K8jZ8exCsNH",name: "Leonard Mpande"}]}),JSON.stringify({id:"K8jZ8exCsNH",name:"Leonard Mpande"}),"Stay Tuned","Hellow User Stay tuned");
-//            }
-//            if(programObject.name.indexOf('cms extenal links')>=0){
-//                cmsService._linkProgram = programObject;
-//
-//                $scope.loadExternalLinks(cmsService._linkProgram);
-//                //$scope.addExternalLinks(cmsService._linkProgram,"http://www.countrystat.org/","CountryStat",'shown');
-//                //$scope.createMessage(cmsService._smsProgram,JSON.stringify({type:"users",list:[{id: "K8jZ8exCsNH",name: "Leonard Mpande"}]}),JSON.stringify({id:"K8jZ8exCsNH",name:"Leonard Mpande"}),"Stay Tuned","Hellow User Stay tuned");
-//            }
-//
-//        });
-//    }
-//
-//    $scope.loadTabs = function(tabProgram){
-//        var eventObject = utilityService.prepareEventObject(tabProgram);
-//        cmsService.getTabs(eventObject).then(function(response){
-//            $scope.tabs = utilityService.refineTabs(response.events);
-//            $scope.setDefaultUrl();
-//        });
-//    }
-//
-//    $scope.createTab = function(tabProgram,tabValue){
-//        var payload = {
-//            "program":tabProgram.id,
-//            "orgUnit": cmsService.parentOrganisationUnit,
-//            "eventDate": "2013-05-17",
-//            "status": "COMPLETED",
-//            "storedBy": "admin",
-//            "dataValues": [
-//                { "dataElement": "RJ6cGZcjlB6", "value": tabValue }
-//            ]
-//        }
-//        cmsService.addTab(payload).then(function(response){
-//            $scope.loadTabs(tabProgram);
-//            $scope.add_menu_name = "";
-//            $scope.update_menu_name = "";
-//            $scope.editMenuForm = false;
-//            $scope.newMenuForm = false;
-//        });
-//
-//    }
-//
-//    $scope.loadTabContent = function(contentProgram){
-//        var eventObject = utilityService.prepareEventObject(contentProgram);
-//        cmsService.getTabContent(eventObject).then(function(response){
-//            $scope.tabContents = utilityService.refineTabContent(response.events);
-//        });
-//    }
-//    $scope.loadExternalLinks = function(contentProgram){
-//
-//        var eventObject = utilityService.prepareEventObject(contentProgram);
-//        cmsService.getExternalLinks(eventObject).then(function(response){
-//            $scope.externalLinks = utilityService.refineExternalLinks(response.events);
-//        });
-//    }
-//
-//
-//    $scope.addExternalLinks = function(tabProgram,url,name,status){
-//
-//        if(typeof  tabProgram !=="undefined"){
-//            var payload = {
-//                "program":tabProgram.id,
-//                "orgUnit": cmsService.parentOrganisationUnit,
-//                "eventDate": "2013-05-17",
-//                "status": "COMPLETED",
-//                "storedBy": "admin",
-//                "dataValues": [
-//                    { "dataElement": "fNpPvw46Mxl", "value": url },
-//                    { "dataElement": "cReJPO8bM6C", "value": name },
-//                    { "dataElement": "CqGEDx5xw2Y", "value": status }
-//                ]
-//            }
-//
-//            cmsService.addExternalLinks(payload).then(function(response){
-//            });
-//        }
-//
-//
-//
-//
-//    }
-//
-//    $scope.setDefaultUrl = function(){
-//        if($routeParams.tabId){
-//            angular.forEach($scope.tabs,function(tabValue,tabIndex){
-//                if(tabValue.active=="current"){
-//                    $scope.tabs[tabIndex].active = "";
-//                }
-//
-//                if(tabValue.value==$routeParams.tabId){
-//                    $scope.tabs[tabIndex].active = "current";
-//                }
-//            });
-//            //$location.path('/cms/articles/'+$routeParams.tabId+"/tab");
-//        }else{
-//            angular.forEach($scope.tabs,function(tabValue,tabIndex){
-//                if(tabValue.active=="current") {
-//                    //$location.path('/cms/articles/' + tabValue.value + "/tab");
-//                }
-//            });
-//        }
-//
-//    }
-//
-//    $scope.createTabContent = function(tabProgram,content,menu,order){
-//
-//        if(typeof  tabProgram !=="undefined"){
-//            var payload = {
-//                "program":tabProgram.id,
-//                "orgUnit": cmsService.parentOrganisationUnit,
-//                "eventDate": "2013-05-17",
-//                "status": "COMPLETED",
-//                "storedBy": "admin",
-//                "dataValues": [
-//                    { "dataElement": "qYjGeQATsEh", "value": content },
-//                    { "dataElement": "xiXnJ2aTlzz", "value": "shown" },
-//                    { "dataElement": "JTvaqwY7kDy", "value": order },
-//                    { "dataElement": "tz5ttCEyPhf", "value": menu }
-//                ]
-//            }
-//
-//            cmsService.addTabContent(payload).then(function(response){
-//                $scope.loadTabContent(tabProgram);
-//                $scope.showAddForm = false;
-//                $scope.showEditForm = false;
-//            });
-//        }
-//
-//
-//
-//
-//    }
-//
-//
-//    $scope.updateTabContent = function(tabProgram,eventId,content,menu,order){
-//
-//        if(typeof  tabProgram !=="undefined"){
-//            var payload = {
-//                "program":tabProgram.id,
-//                "orgUnit": cmsService.parentOrganisationUnit,
-//                "eventDate": "2016-04-26",
-//                "dataValues": [
-//                    { "dataElement": "qYjGeQATsEh", "value": content },
-//                    { "dataElement": "xiXnJ2aTlzz", "value": "shown" },
-//                    { "dataElement": "JTvaqwY7kDy", "value": order },
-//                    { "dataElement": "tz5ttCEyPhf", "value": menu }
-//                ]
-//            }
-//
-//            cmsService.updateEvent(payload,payload.dataValues,eventId,"Article Update failed").then(function(response){
-//                $scope.loadTabContent(tabProgram);
-//                $scope.showAddForm = false;
-//                $scope.showEditForm = false;
-//            });
-//        }
-//
-//
-//
-//
-//    }
-//
-//
-//
-//    $scope.togglePages = function(){
-//
-//           $location.path('/home');
-//
-//}
-//
-//    $scope.loadMessages = function(){
-//
-//        cmsService.retrieveSetting().then(function(response){
-//            $scope.first_message = null;
-//            $scope.second_message = null;
-//            $scope.messages = response.SMS_CONFIG;
-//            angular.forEach($scope.messages,function(value,index){
-//
-//                if(typeof value.first_message !=="undefined"){
-//                        $scope.first_message    = value.first_message;
-//                        $scope.hideFirstMessage = value.hide;
-//
-//                }
-//
-//                if(typeof value.second_message !=="undefined"){
-//                        $scope.second_message    = value.second_message;
-//                    $scope.hideSecondMessage = value.hide;
-//                }
-//
-//            });
-//        });
-//    }
-//
-//    $scope.messageStatus = function(isRead){
-//        if(isRead){
-//            return "read";
-//        }else{
-//            return "notRead"
-//        }
-//    }
-//
-//    $scope.readMessage = function(message){
-//    }
-//
-//
-//    $scope.deleteMessage = function(victim){
-//        var object = "";
-//
-//        if(victim=="first"){
-//            object = {second_message:$scope.second_message,hide:$scope.hideSecondMessage,expireDate:""}
-//        }
-//
-//        if(victim=="second"){
-//            object = {first_message:$scope.first_message,hide:$scope.hideFirstMessage,expireDate:""};
-//        }
-//
-//        cmsService.deleteSetting(object).then(function(response){
-//           $scope.loadMessages();
-//        },function(error){
-//
-//        });
-//    }
-//
-//
-//    $scope.toggleableCMSTab = function(tab){
-//
-//        angular.forEach($scope.activate,function(tabD,index){
-//            $scope.activate[index] = "";
-//            if(index==tab){
-//                $scope.activate[index] = "active";
-//            }
-//        })
-//
-//        if(typeof $scope.newMessageForm != "undefined"){
-//            $scope.newMessageForm = false;
-//        }
-//
-//    }
-//
-//    $scope.cancelMessageSend = function(){
-//        $scope.newBroadCastForm = false;
-//        $scope.editBroadCastForm = false;
-//    }
-//
-//    $scope.newMessageForm = function(){
-//        $scope.newBroadCastForm = true;
-//    }
-//
-//    $scope.editMessageForm = function(choice){
-//        if(choice=="first"){
-//            $scope.firstEdit = true;
-//            $scope.secondEdit = false;
-//        }
-//        if(choice=="second"){
-//            $scope.firstEdit = false;
-//            $scope.secondEdit = true;
-//        }
-//        $scope.editBroadCastForm = true;
-//    }
-//
-//    $scope.hideMessage = function(victim){
-//        console.log($scope.hideFirstMessage)
-//        if(victim=="first"){
-//            if(!$scope.hideFirstMessage){
-//                $scope.hideFirstMessage = true;
-//            }
-//
-//        }
-//        if(victim=="second"){
-//            if(!$scope.hideSecondMessage){
-//                $scope.hideSecondMessage = true;
-//            }
-//
-//        }
-//        console.log($scope.hideFirstMessage)
-//        cmsService.saveSetting($scope.first_message,$scope.second_message,$scope.hideFirstMessage,$scope.hideSecondMessage).then(function(response){
-//            $scope.loadMessages();
-//        },function(error){
-//
-//        })
-//
-//    }
-//    $scope.unHideMessage = function(victim){
-//
-//        if(victim=="first"){
-//            if($scope.hideFirstMessage){
-//                $scope.hideFirstMessage = false;
-//            }
-//
-//        }
-//        if(victim=="second"){
-//            if($scope.hideSecondMessage){
-//                $scope.hideSecondMessage = false;
-//            }
-//
-//        }
-//
-//        cmsService.saveSetting($scope.first_message,$scope.second_message,$scope.hideFirstMessage,$scope.hideSecondMessage).then(function(response){
-//            $scope.loadMessages();
-//        },function(error){
-//
-//        })
-//
-//    }
-//
-//    $scope.newBroadCastForm = false
-//    $scope.sendMessage = function(first_message,second_message){
-//        var hideMessageOne = false; var hideMessageTwo = false;
-//        cmsService.saveSetting(first_message,second_message,hideMessageOne,hideMessageTwo).then(function(response){
-//            $scope.newBroadCastForm = false;
-//            $scope.editBroadCastForm = false;
-//            $scope.loadMessages();
-//        },function(error){
-//
-//        })
-//
-//    }
-//
-//    $scope.newMenu = function(){
-//        $scope.newMenuForm = true;
-//        $scope.editMenuForm = false;
-//    }
-//
-//    $scope.saveMenu = function(menu_name){
-//        //
-//        //var payload = {
-//        //    "program": $scope._smsProgram.id,
-//        //    "orgUnit": "m0frOspS7JY",
-//        //    "eventDate": "2013-05-17",
-//        //    "status": "COMPLETED",
-//        //    "storedBy": "admin",
-//        //    "dataValues": [
-//        //        {"dataElement": "RJ6cGZcjlB6", "value": menu_name},
-//        //    ]
-//        //}
-//        //console.log($scope._tabProgram);
-//        $scope.createTab($scope._tabProgram,menu_name);
-//    }
-//
-//    $scope.editMenu = function(tab){
-//        $scope.currentTab = tab;
-//        $scope.update_menu_name = tab.value;
-//        $scope.editMenuForm = true;
-//        $scope.newMenuForm = false;
-//    }
-//
-//    $scope.updateMenu = function(update_menu_name){
-//        $scope.currentTab.value = update_menu_name;
-//        cmsService.updateEvent($scope.currentTab,[{ "dataElement": "RJ6cGZcjlB6", "value":update_menu_name}],$scope.currentTab.event,"error updating menu").then(function(response){
-//            $scope.loadTabs(cmsService._tabProgram);
-//            $scope.add_menu_name = "";
-//            $scope.update_menu_name = "";
-//            $scope.editMenuForm = false;
-//            $scope.newMenuForm = false;
-//        },function(){
-//
-//        })
-//        $scope.editMenuForm = true;
-//        $scope.newMenuForm = false;
-//    }
-//    //eventId
-//    $scope.deleteTab = function(tab){
-//        var eventId  = tab.event;
-//        cmsService.deleteEvent(eventId).then(function(response){
-//            $scope.loadTabs(cmsService._tabProgram);
-//        },function(){
-//
-//        })
-//    }
-//
-//    $scope.cancelUpdateMenu = function(){
-//        $scope.add_menu_name = "";
-//        $scope.update_menu_name = "";
-//        $scope.editMenuForm = false;
-//        $scope.newMenuForm = false;
-//    }
-//
-//    $scope.cancelSaveMenu = function(){
-//        $scope.add_menu_name = "";
-//        $scope.update_menu_name = "";
-//        $scope.editMenuForm = false;
-//        $scope.newMenuForm = false;
-//    }
-//    //!showAddForm&&!showEditForm
-//    $scope.getNewArticleForm = function(){
-//        $scope.showAddForm = true;
-//    }
-//
-//    $scope.getEditArticleForm = function(content){
-//        $scope.currentArticle = content;
-//        $scope.editedContent = content.content;
-//        $scope.showEditForm = true;
-//    }
-//
-//    function switchCMSTab (){
-//        var link = $location.path();
-//
-//        if(link.indexOf('tab')<=-1){
-//            var url_length = link.length;
-//            var cms = link.substr(5,url_length-1);
-//            console.log(cms)
-//        }else{
-//
-//        }
-//
-//    }
-//    switchCMSTab();
-//
-//    $scope.users = [
-//        { icon: "<i class='fa fa-user'></i>",name: "Leonard Mpande",maker: "(Opera Software)",ticked: false  }
-//    ];
-//
-//
-//    // Editor options.
-//    $scope.options = {
-//        language: 'en',
-//        allowedContent: true,
-//        entities: false
-//    };
-//
-//    // Called when the editor is completely ready.
-//    $scope.onReady = function () {
-//
-//    };
-//
-//    $scope.addArticle = function(category,content){
-//        $scope.createTabContent($scope._tabContentProgram,content,category,'1');
-//    }
-//
-//    $scope.updateArticle = function(category,content){
-//        $scope.updateTabContent($scope._tabContentProgram,$scope.currentArticle.id,content,category,'1');
-//        $scope.showAddForm = false;
-//        $scope.showEditForm = false;
-//    }
-//
-//    $scope.cancelAddArticle = function(){
-//        $scope.showAddForm = false;
-//        $scope.showEditForm = false;
-//    }
-//
-//
-//    // function calls
-//    cmsService.getParentOrgUnit().then(function(response){
-//        angular.forEach(response.organisationUnits,function(value){
-//            cmsService.parentOrganisationUnit  = value.id;
-//        });
-//        $scope.loadPrograms();
-//        $scope.loadMessages();
-//        $scope.loadCharts();
-//    },function(){
-//        console.log("there is error probable the network error");
-//    });
-//
-
-    $scope.currentTab = 'articles';
-    if($routeParams.tab){
-        $scope.currentTab = $routeParams.tab;
-    }
-
-    $scope.currentSubTab = 'all';
-    if($routeParams.subtab){
-        $scope.currentSubTab = $routeParams.subtab;
-        $scope.currentSubTabCapitalize = $scope.currentSubTab.Capitalize();
-    }
-
-    $scope.subTabAction = 'list';
-    if($routeParams.action_id){
-        $scope.subTabAction = $routeParams.action_id;
-    }
-
-
-
-    /**
-     * Process add article form event
-     * */
-
-
-        // Called when the editor is completely ready.
-    $scope.onReady = function () {
-
-
-    };
-
-
 
     /**
      * Process edit article form event
      * */
 
-    //    // Editor options.
+        // Editor options.
     $scope.editOptions = {
         language: 'en',
         allowedContent: true,
@@ -1760,19 +750,37 @@ var cmsControllers = angular.module('cmsControllers', [])
     };
 
 
+    // checking the current action
     if($routeParams.action_id){
         if($routeParams.action_id=="edit"){
             if($routeParams.edit_item_id){
-                angular.forEach($scope.tabContents,function(value){
-                    console.log(value);
-                    if(value.id==$routeParams.edit_item_id){
-                        $scope.editContent = value.content;
+                cmsService.getTabContent().then(function(response){
+
+                    $scope.tabContents = orderBy(response, 'order', false);
+                    if(response.success == false){}else{
+                        $scope.editContent = response[$routeParams.edit_item_id].content;
+                        $scope.category = response[$routeParams.edit_item_id].category;
+                        $scope.tabContent_id = $routeParams.edit_item_id;
                     }
+
                 });
+
 
             }
         }
+
+        $scope.message_action        = $routeParams.action_id;
+        $scope.information_action    = $routeParams.action_id;
+
     }
+
+
+    })
+.controller('cmsLeftController',function($scope, $window,$routeParams,$location,cmsService,utilityService){
+
+    /**
+     * Process add article form event
+     * */
 
         // Called when the editor is completely ready.
     $scope.onReady = function () {
@@ -1780,81 +788,261 @@ var cmsControllers = angular.module('cmsControllers', [])
 
     };
 
+    $scope.Options = {
+        language: 'en',
+        allowedContent: true,
+        entities: false
+    };
 
 
-})
-.controller('rightController',function($scope, $window){
-    //
-    ////This is not a highcharts object. It just looks a little like one!
-    //$scope.chartConfig = {
-    //    //chart: {
-    //    //    type: 'pie'
-    //    //},
-    //    title: {
-    //        text: 'Monthly Average Rainfall',
-    //        style:{fontSize:'10px'}
-    //    },
-    //    subtitle: {
-    //        text: 'Source: WorldClimate.com',
-    //        style:{fontSize:'9px'}
-    //    },
-    //    xAxis: {
-    //        categories: [
-    //            'Jan',
-    //            'Feb',
-    //            'Mar'
-    //        ],
-    //        crosshair: true
-    //    },
-    //    yAxis: {
-    //        min: 0,
-    //        title: {
-    //            text: 'Rainfall (mm)'
-    //        }
-    //    },
-    //    tooltip: {
-    //        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-    //        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-    //        '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
-    //        footerFormat: '</table>',
-    //        shared: true,
-    //        useHTML: true
-    //    },
-    //    plotOptions: {
-    //        column: {
-    //            pointPadding: 0.1,
-    //            borderWidth: 0
-    //        }
-    //    },
-    //    series: [{
-    //        name: 'Tokyo',
-    //        data: [49.9, 71.5, 106.4]
-    //
-    //    }, {
-    //        name: 'New York',
-    //        data: [83.6, 78.8, 98.5]
-    //
-    //    }, {
-    //        name: 'London',
-    //        data: [48.9, 38.8, 39.3]
-    //
-    //    }]
-    //};
+    /**
+     * Process edit article form event
+     * */
+
+        // Editor options.
+    $scope.editOptions = {
+        language: 'en',
+        allowedContent: true,
+        entities: false
+    };
+
+
+    // checking the current action
+    if($routeParams.action_id){
+        if($routeParams.action_id=="edit"){
+            if($routeParams.edit_item_id){
+                angular.forEach($scope.tabContents,function(value){
+                    if(value.id==$routeParams.edit_item_id){
+                        $scope.editContent = value.content;
+                        $scope.category = value.menu;
+                        $scope.tabContent_id = value.id;
+                    }
+                });
+
+            }
+        }
+
+        $scope.message_action        = $routeParams.action_id;
+    }
+
+
 
 })
-.controller('analysisController',function($scope,$stateParams, $window){})
-.controller('cmsTabController',function($scope,$stateParams, $window){
-    $scope.activeClass = [];
-    $scope.$watch($stateParams,function(newState,oldState){
-        $scope.currentSelectedTab = $stateParams.tabs;
-        $scope.activeClass[$stateParams.tabs] = "active";
+.controller('analysisController',function($scope, $window,$routeParams,$location,$filter, cmsService,utilityService){
+
+    $(".listmenu").hover(function(){
+        var origin = $(this).find('a').html()
+        $(this).find('a').html($(this).attr('allstring'))
+        $(this).attr('allstring',origin);
+    },function(){
+        var origin = $(this).find('a').html()
+        $(this).find('a').html($(this).attr('allstring'))
+        $(this).attr('allstring',origin);
     })
-})
-.controller('cmsSubTabController',function($scope,$stateParams, $window){
 
-})
-.controller('newsController',function($scope,$stateParams, $window){})
-.controller('articlesController',function($scope,$stateParams, $window){})
-.controller('homeTabController',function($scope,$stateParams, $window){
-   $scope.currentTab = $stateParams.tabs;
+    var name ="";
+    var first_orgunit =new Array();
+    var first_period = new Array();
+
+    var url1 = '../../../api/reportTables/' + $routeParams.id + '.json?fields=*,dataDimensionItems[dataElement[id,name]]';
+    $('#mainarea').html("");
+
+    //prepare data multselect from data_element.js
+
+    $.getJSON(url1, function (data) {
+        console.log(data);
+        name = data.name;
+        var data_element_select = "";
+        $.each(data.dataDimensionItems, function (key, value) {
+            data_element_select += "<option value='" + value.dataElement.id + "' selected='selected'>" + value.dataElement.name + "</option>";
+        });
+        $.each(data.organisationUnits, function (key, value) {
+            first_orgunit[key] = value.id;
+        });
+
+        $.each(data.periods, function (key, value) {
+            first_period[key] = value.id;
+        });
+        //prepare period Multselect from periods.js
+        $('.data-element').multiselect().multiselectfilter();
+        preparePeriods(first_period);
+        $(".data-element").multiselectfilter("destroy");
+        $(".data-element").multiselect("destroy");
+        $(".data-element").css('width', '180px');
+        $('.data-element').html(data_element_select).multiselect().multiselectfilter();
+
+        //creating organization unit multselect from orgUnit.js
+//                prepareOrganisationUnit(first_orgunit);
+
+        //creating organization unit multselect
+        var district = [];
+        var districtOptions="<optgroup label='Districts'>";
+        var regions = [];
+        var regionsOptions = "<optgroup label='Regions'>";
+        var allunits = [];
+        var allunitsOptions ="";
+        $.getJSON( "scripts/analysis/organisationUnits.json", function( data ) {
+            $.each( data.organisationUnits, function( key, value ) {
+                //populate regions
+                if(value.level == 2){
+                    var temp ={ name: value.name, id: value.id };
+                    regions.push(temp);
+                    if($.inArray(value.id, first_orgunit) == -1){
+                        regionsOptions += '<option value="'+value.id+'">'+value.name+' Region</option>';
+                    }else{
+                        regionsOptions += '<option value="'+value.id+'" selected="selected">'+value.name+' Region</option>';
+                    }
+                }
+                //populate districts
+                if(value.level == 3){
+                    var temp ={ name: value.name, id: value.id };
+                    district.push(temp);
+                    if($.inArray(value.id, first_orgunit) == -1){
+                        districtOptions += '<option value="'+value.id+'">'+value.name+'</option>';
+                    }else{
+                        districtOptions += '<option value="'+value.id+'" selected="selected">'+value.name+'</option>';
+                    }
+                }
+
+
+            });
+            regionsOptions += "<optgroup/>"
+            districtOptions += "<optgroup/>"
+            allunitsOptions = regionsOptions + districtOptions
+            $('.adminUnit').multiselect().multiselectfilter();
+            $('#allunits').click(function(){
+                $('.unitfilter button').removeClass('btn-success').addClass('btn-default');
+                $(this).removeClass('btn-default').addClass('btn-success');
+                $(".adminUnit").multiselectfilter("destroy");
+                $(".adminUnit").multiselect("destroy");
+                $('.adminUnit').html(allunitsOptions);
+                $('.adminUnit').multiselect().multiselectfilter();
+            })
+            $('#district').click(function(){
+                $('.unitfilter button').removeClass('btn-success').addClass('btn-default');
+                $(this).removeClass('btn-default').addClass('btn-success');
+                $(".adminUnit").multiselectfilter("destroy");
+                $(".adminUnit").multiselect("destroy");
+                $('.adminUnit').html(districtOptions);
+                $('.adminUnit').multiselect().multiselectfilter();
+            })
+            $('#regions').click(function(){
+                $('.unitfilter button').removeClass('btn-success').addClass('btn-default');
+                $(this).removeClass('btn-default').addClass('btn-success');
+                $(".adminUnit").multiselectfilter("destroy");
+                $(".adminUnit").multiselect("destroy");
+                $('.adminUnit').html(regionsOptions);
+                $('.adminUnit').multiselect().multiselectfilter();
+            })
+            $('.adminUnit').css('width', '180px');
+            $('#allunits').trigger('click')
+
+            //hiding error alert
+            $('.alert').hide();
+
+            $('.reports button').click(function () {
+                $('#mainarea').html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading...')
+                var orgunit = $(".adminUnit").val();
+                var dataelement = $('.data-element').val();
+                var timeperiod = $(".periods").val();
+                if (!orgunit || !dataelement || !timeperiod) {
+                    $('.alert').fadeIn('slow');
+                    setTimeout(function () {
+                        $('.alert').fadeOut('slow');
+                    }, 3000);
+                } else {
+                    //identifying active report
+                    $('.reports button').removeClass('btn-success').addClass('btn-default');
+                    $(this).removeClass('btn-default').addClass('btn-success');
+
+                    //preparing a link to send to analytics
+                    var data_dimension = 'dimension=dx:';
+                    for (var i = 0; i < dataelement.length; i++) {
+                        data_dimension += (i == dataelement.length - 1) ? dataelement[i] : dataelement[i] + ';';
+                    }
+
+                    //creating column dimension
+                    var column_dimension = 'dimension=' + $('select[name=category]').val() + ':';
+                    //if column will be administrative units
+                    if ($('select[name=category]').val() == 'ou') {
+                        for (var i = 0; i < orgunit.length; i++) {
+                            column_dimension += (i == orgunit.length - 1) ? orgunit[i] : orgunit[i] + ';';
+                        }
+                    }
+                    else { //if column will be periods
+                        for (var i = 0; i < timeperiod.length; i++) {
+                            column_dimension += (i == timeperiod.length - 1) ? timeperiod[i] : timeperiod[i] + ';';
+                        }
+                    }
+
+                    //creating filter dimensions
+                    var filter = ($('select[name=category]').val() != 'ou') ? 'filter=ou:' : 'filter=pe:'
+                    //if filter will be administrative units
+                    if ($('select[name=category]').val() != 'ou') {
+                        for (var i = 0; i < orgunit.length; i++) {
+                            filter += (i == orgunit.length - 1) ? orgunit[i] : orgunit[i] + ';';
+                        }
+                    }
+                    else { //if filter will be periods
+                        for (var i = 0; i < timeperiod.length; i++) {
+                            filter += (i == timeperiod.length - 1) ? timeperiod[i] : timeperiod[i] + ';';
+                        }
+                    }
+
+                    var url = '../../../api/analytics.json?' + data_dimension + '&' + column_dimension + '&' + filter
+
+
+                    //checking types of report needed and react accordingly
+                    //drawing table
+                    if ($(this).attr('id') == 'draw_table') {
+                        drawTable(name, url, $('select[name=category]').val(), $('.data-element').val());
+                    }
+                    //drawing bar chart
+                    if ($(this).attr('id') == 'draw_bar') {
+                        drawBar(name, url, $('select[name=category]').val(), $('.data-element').val());
+                    }
+                    //drawing column chart
+                    if ($(this).attr('id') == 'draw_column') {
+                        drawColumn(name, url, $('select[name=category]').val(), $('.data-element').val());
+                    }
+                    //drawing line chart
+                    if ($(this).attr('id') == 'draw_line') {
+                        drawLine(name, url, $('select[name=category]').val(), $('.data-element').val());
+                    }
+                    //drawing pie chat
+                    if ($(this).attr('id') == 'draw_pie') {
+                        drawPie(name, url, $('select[name=category]').val(), $('.data-element').val());
+                    }
+                    //drawing staked chat
+                    if ($(this).attr('id') == 'draw_staked') {
+                        drawStaked(name, url, $('select[name=category]').val(), $('.data-element').val());
+                    }
+                    //drawing spider chat
+                    if ($(this).attr('id') == 'draw_spider') {
+                        drawSpider(name, url, $('select[name=category]').val(), $('.data-element').val());
+                    }
+                    //drawing combined chat
+                    if ($(this).attr('id') == 'draw_combined') {
+                        drawCombined(name, url, $('select[name=category]').val(), $('.data-element').val());
+                    }
+                    //exporting data to excel
+                    if ($(this).attr('id') == 'export_cvs') {
+                        window.location = '../../../api/analytics.xls?' + data_dimension + '&' + column_dimension + '&' + filter;
+                    }
+                }
+            })
+            $(".category").multiselect({
+                multiple: false,
+                header: "Select an option",
+                noneSelectedText: "Select an Option",
+                selectedList: 1
+            });
+            $(".category").css('width', '180px');
+            $('#content_to_hide').hide();
+            $('.analysis-wraper').fadeIn();
+            $('#draw_table').trigger("click");
+
+        });
+    });
+
 });

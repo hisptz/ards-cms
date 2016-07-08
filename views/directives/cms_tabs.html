@@ -1,15 +1,41 @@
-<div>
-<ul class="nav nav-tabs" role="tablist">
+<div class="row">
+    <style>
+       a{
+           font-family: LiberationSans,
+           arial, sans-serif!important;
+           line-height: 140%!important;
+           cursor: pointer;color:#000000;
+           font-size:14px!important;
+       }
 
+    </style>
+    <div class="pull-right">
+        <div id="page_switcher">
+            <div class="onoffswitch pull-right">
+                <input type="checkbox" class="toggleBtn onoffswitch-checkbox" ng-click="switchPage()"  id="onoffswitch6" >
+                <label for="onoffswitch6" class="onoffswitch-label">
+                    <div class="onoffswitch-inner " style=""></div>
+                    <div class="onoffswitch-switch" style=""></div>
+                </label>
+            </div>
+
+        </div>
+    </div>
+<ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="{{activeClass[tab.id]}}" ng-repeat="tab in tabsLinks">
-        <a style="font-family: LiberationSans, arial, sans-serif!important;line-height: 140%!important;cursor: pointer;color:#000000;" ng-href="#/cms/{{tab.name|lowercase}}" aria-controls="articles" ng-if="tab.name!='Articles'" role="tab" data-toggle="tab" ng-click="clickTab(tab.name)">
+        <a  ng-href="#/{{tab.name|lowercase|trimSpaces}}" aria-controls="articles" ng-if="tab.name!='Articles'&&tab.name!='Messages'" role="tab" data-toggle="tab" ng-click="clickTab(tab.name)">
             <span ng-bind-html="tab.icon"></span>
             &nbsp; {{tab.name}}
         </a>
-        <a style="font-family: LiberationSans, arial, sans-serif!important;line-height: 140%!important;cursor: pointer;color:#000000;" ng-href="#/cms/{{tab.name|lowercase}}/sub/all" aria-controls="articles" ng-if="tab.name=='Articles'" role="tab" data-toggle="tab" ng-click="clickTab(tab.name)">
+        <a  ng-href="#/{{tab.name|lowercase|trimSpaces}}/sub/all" aria-controls="articles" ng-if="tab.name=='Articles'" role="tab" data-toggle="tab" ng-click="clickTab(tab.name)">
+            <span ng-bind-html="tab.icon"></span>
+            &nbsp; {{tab.name}}
+        </a>
+        <a  ng-href="#/{{tab.name|lowercase|trimSpaces}}/action/list" aria-controls="messages" ng-if="tab.name=='Messages'" role="tab" data-toggle="tab" ng-click="clickTab(tab.name)">
             <span ng-bind-html="tab.icon"></span>
             &nbsp; {{tab.name}}
         </a>
     </li>
 </ul>
+
 </div>

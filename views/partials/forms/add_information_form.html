@@ -1,0 +1,13 @@
+<form ng-submit="addInformation(informationtitle,informationContent)">
+    <div class="form-group">
+        <label for="menu_name">Information Title</label>
+        <input type="text" class="form-control" id="menu_name" ng-model="informationtitle"  placeholder="Information Title" required="required">
+    </div>
+    <div class="form-group">
+        <label for="body">Information Body</label>
+        <div ckeditor="options" ng-model="informationContent" ready="onReady()" id="body"></div>
+    </div>
+    <button type="submit" class="btn btn-default" >Add Information</button>
+    <a type="button" class="btn btn-danger" href="#/cms/information-sharing">Cancel</a>
+</form>
+
