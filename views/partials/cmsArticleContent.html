@@ -1,0 +1,51 @@
+<br/>
+<div class="row">
+    <cms-home-tabs
+            sub-tab="currentSubTab"
+            tab-object="tabsLinks"
+    >
+
+    </cms-home-tabs>
+</div>
+<div class="row">
+
+    <div class="tab-content" id="content">
+        <!-- ARTICLE FORM CONTAINER-->
+        <div class="row " >
+            <div class="row " >
+                <div class="col-md-12">
+                <div class="btn-group  pull-left" ng-if="currentSubTab!='all'">
+                    <a class="btn btn-default btn-sm new_article" id="new_article" href="#/articles/sub/{{currentSubTab}}/action/add" title="Add New"><i class="fa fa-plus"></i>&nbsp;Add New</a>
+                </div>
+                </div>
+            </div>
+            <br/>
+            <div class="row " >
+
+                <!-- Add article form -->
+                <div ng-show="subTabAction=='list'">
+                    <ng-include src="'views/partials/list_articles.html'"></ng-include>
+                </div>
+
+            </div>
+            <div class="row " >
+
+                <!-- Edit article form -->
+                <div ng-show="subTabAction=='add'">
+                    <ng-include src="'views/partials/forms/add_article_form.html'"></ng-include>
+                </div>
+
+            </div>
+            <div class="row " >
+
+                <div ng-show="subTabAction=='edit'">
+                    <ng-include src="'views/partials/forms/edit_article_form.html'"></ng-include>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,15 @@
+<div class="col-md-12">
+    <form ng-submit="addArticle(currentSubTabCapitalize,addContent)">
+        <div class="form-group">
+            <div ckeditor="options" ng-model="addContent" ready="onReady()"></div>
+        </div>
+        <!--<select class="btn btn-default" id="add_picked_cat" ng-model="category" required="required">-->
+        <!--<option selected="selected" disabled="disabled" name="origin">Select Category</option>-->
+        <!--<option ng-repeat="tab in tabs">{{tab.value}}</option>-->
+        <!--</select>-->
+        <input class="btn btn-default" ng-model="currentSubTabCapitalize" readonly/>
+        <button type="submit" class="btn btn-default" >Add Item</button>
+        <a type="button" class="btn btn-danger" href="#/cms/articles/sub/all/action/list">Cancel</a>
+    </form>
+</div>
+

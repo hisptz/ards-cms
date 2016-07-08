@@ -1,0 +1,11 @@
+<div class="col-md-12" style="font-size:9pt!important;">
+    <!--Nav tabs -->
+
+    <ul id="tabs">
+        <li id="{{homeTabActiveClass[tab.name].active}}" ng-repeat="tab in tabs track by $index" >
+            <a   style="cursor: pointer;" href="#/articles/sub/{{tab.value|lowercase}}"  id="id_{{tab.value}}" >
+                {{tab.value}}
+            </a>
+        </li>
+    </ul>
+</div>

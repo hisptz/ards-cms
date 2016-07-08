@@ -1,0 +1,17 @@
+<div  class="col-md-12">
+    <br/>
+    <a class="btn btn-default btn-sm " id="new_article" href="#/information-sharing/action/add" title="Add New"><i class="fa fa-plus"></i>&nbsp;Add New</a>
+    <br/>
+    <ng-include src="'views/partials/forms/information_list.html'" ng-show="information_action!='add'&&information_action!='edit'">
+
+    </ng-include>
+
+    <ng-include src="'views/partials/forms/add_information_form.html'" ng-show="information_action=='add'">
+
+    </ng-include>
+
+    <ng-include src="'views/partials/forms/edit_information_form.html'" ng-show="information_action=='edit'">
+
+    </ng-include>
+
+</div>

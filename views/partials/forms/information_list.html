@@ -1,0 +1,24 @@
+<div class="row">
+    <br/>
+
+    <div class="col-md-12">
+        <accordion close-others="oneAtATime" ng-repeat="information in informations track by $index">
+           <accordion-group >
+                <accordion-heading>
+                    {{information.title}}<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                </accordion-heading>
+
+                <div ng-bind-html="information.body" class="conteiner"> </div>
+                <div >
+                        <a class="btn btn-default btn-sm edit_article_button" href="#/information-sharing/action/edit/{{$index}}" id="editArticle_12">
+                            <i class="fa fa-edit"></i>&nbsp;Edit
+                        </a>
+                        <a class="btn btn-danger btn-sm delete_article_button" ng-click="deleteInformation($index)" id="deleteArticle_12">
+                            <i class="fa fa-trash-o"></i>
+                            &nbsp;delete
+                        </a>
+                </div>
+            </accordion-group>
+        </accordion>
+    </div>
+</div>
