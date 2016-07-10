@@ -725,7 +725,7 @@ var cmsControllers = angular.module('cmsControllers', [])
                 $scope.editContent = catchValue;
                 angular.element('.message-content').attr('readonly','readonly');
                 $scope.messageClass = "messageClasses";
-                $scope.maxmumCharactersMessage = "Content will not be saved , Broad cast messages shall not exceed 150 characters ";
+                $scope.maxmumCharactersMessage = "Content will not be saved , Broad cast messages shall not exceed 150 characters , you have "+(editContent.length-150)+" extra characters ";
                 $scope.checkStatus = true;
             } else {
 

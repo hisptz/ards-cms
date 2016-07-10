@@ -18,6 +18,7 @@ var cms = angular.module('cms',
                     'd2Services',
                     'd2Controllers',
                     'ui.select',
+                    'ngFileUpload',
                     'angularLocalStorage',
                     'pascalprecht.translate',
                     'd2HeaderBar'])

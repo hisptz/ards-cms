@@ -40,9 +40,20 @@
                         <label for="document_name">Document Name <em title="Required" class="required">*</em></label>
                         <input type="text" id="document_name" style="width:100% !important;" ng-model="document.name" value="" class="{validate:{required:true,minlength:2,maxlength:160}} form-control" required="required">
                     </div>
+                    <!--<div class="form-group">-->
+                        <!--<label for="inputFile">File <em title="Required" class="required">*</em></label>-->
+                        <!--<input type="file"  id="inputFile" class="form-control" file-model="file" required="required">-->
+                    <!--</div>-->
                     <div class="form-group">
-                        <label for="inputFile">File <em title="Required" class="required">*</em></label>
-                        <input type="file"  id="inputFile" class="form-control" file-model="file" required="required">
+                        <div class="button" ngf-select ng-model="document.file" name="file" >
+
+                            <p ng-if="!document.file" >
+                                <a href="#"><i class="fa fa-file-pdf-o fa-2x"></i> Click to select a readOnly PDF File</a>
+                            </p>
+                            <p ng-if="document.file" >
+                                <a href="#" style="color:forestgreen;"><i class="fa fa-file-pdf-o fa-2x"></i> Click to change PDF File <img src="assets/img/pdf.png" style="width:30px;"></a>
+                            </p>
+                        </div>
                     </div>
                     <input type="submit" value="Upload Document"  class="btn btn-success btn-sm form-control">
 
