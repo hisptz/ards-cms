@@ -1,3 +1,9 @@
+<style>
+    .messageClasses{
+        font-weight: bolder;
+        color: red;
+    }
+</style>
 <div class="row">
     <br/>
     <div class="col-md-12">
@@ -6,8 +12,23 @@
             <label for="message_title">Message Title</label>
             <input id="message_title" type="text" class="form-control" ng-model="messageTitle" name="message_title">
         </div><div class="form-group">
+
             <label for="message_content">Message Content</label>
-            <div id="message_content" ckeditor="options" ng-model="editContent" ready="onReady()"></div>
+            <br/><br/>
+            <span ng-class="messageClass" class="alert alert-danger" ng-if="maxmumCharactersMessage">{{maxmumCharactersMessage}}</span>
+            <br/><br/>
+            <div
+                    class="message-content"
+                    id="message_content"
+                    ckeditor="options"
+                    ng-model="editContent"
+                    ready="onReady()"
+                    ng-change="trackChanges(editContent,'message-content')"
+                    ng-class="messageClass"
+
+            >
+
+            </div>
         </div>
         <button type="submit" class="btn btn-default" >Add Message</button>
         <a type="button" class="btn btn-danger" href="#/messages/action/list">Cancel</a>

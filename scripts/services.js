@@ -373,6 +373,15 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
         return finalUsers;
     }
 
+    cms.uploadFileFromForm = function(file, uploadUrl){
+            var fd = new FormData();
+            fd.append('file', file);
+
+            return $http.post(uploadUrl, fd, {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': 'application/pdf'}
+                });
+    }
 
 
     cms.saveFileResource = function   ( dataElementId, optionComboId, fieldId, fileResource, onSuccessCallback )
@@ -417,8 +426,9 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
      */
     function ValueSaver( de, pe, co, value, fieldId, resultColor )
     {
-        var ou = dhis2.de.getCurrentOrganisationUnit();
-
+        var ou = "m0frOspS7JY";//dhis2.de.getCurrentOrganisationUnit();
+        console.log("LOG VALUE");
+        console.log(value);
         var dataValue = {
             'de' : de,
             'co' : co,

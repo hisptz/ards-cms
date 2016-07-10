@@ -616,6 +616,13 @@ var cmsControllers = angular.module('cmsControllers', [])
         // save message contents
         $scope.sendMessage = function(title,body){
 
+            if ( $scope.checkStatus ) {
+
+                return true;
+            }
+
+
+
                 if($scope.messages.length==1){
                     if($scope.messages[0].id==1){
                         cmsService.addMessage({messageTwo:{id:2,title:title,body:body,expired_date:"",hidden:false}}).then(function(data){
@@ -647,7 +654,15 @@ var cmsControllers = angular.module('cmsControllers', [])
         // update message contents
         $scope.updateMessage = function(editId,title,body){
 
-        if(editId==1){
+
+            if ( $scope.checkStatus ) {
+
+                return true;
+            }
+
+
+
+            if(editId==1){
             cmsService.addMessage({messageOne:{id:1,title:title,body:body,expired_date:"",hidden:false}}).then(function(data){
                 $scope.loadMessages();
                 $location.path("/messages/action/list");
@@ -697,6 +712,31 @@ var cmsControllers = angular.module('cmsControllers', [])
 
 
     }
+
+
+        $scope.messageClass = "";
+        $scope.checkStatus = false;
+        var catchValue  = "";
+        $scope.trackChanges = function( editContent , message_content ){
+
+            if ( editContent.length > 150 ) {
+
+                $scope.editContent = "";
+                $scope.editContent = catchValue;
+                angular.element('.message-content').attr('readonly','readonly');
+                $scope.messageClass = "messageClasses";
+                $scope.maxmumCharactersMessage = "Content will not be saved , Broad cast messages shall not exceed 150 characters ";
+                $scope.checkStatus = true;
+            } else {
+
+                $scope.messageClass = "";
+                $scope.maxmumCharactersMessage = "";
+                catchValue = editContent;
+                $scope.checkStatus = false;
+
+            }
+
+        }
 
 
 
@@ -782,9 +822,11 @@ var cmsControllers = angular.module('cmsControllers', [])
      * Process add article form event
      * */
 
-        // Called when the editor is completely ready.
+
+    // Called when the editor is completely ready.
     $scope.onReady = function () {
 
+    console.log("ajkgewfyWEF");
 
     };
 

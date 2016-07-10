@@ -14,7 +14,7 @@
             <tbody>
             <tr ng-repeat="menu in tabsLinks track by $index">
                 <td>
-                    <span ng-if="editingItem!=$index">{{menu}}</span>
+                    <span ng-if="editingItem!=$index">{{tabsLinks[$index]}}</span>
                     <input ng-if="editingItem==$index" type="text" ng-model="menuItems[$index]" value="{{menu}}"  class="form-control" >
 
                 </td>
@@ -47,7 +47,7 @@
                 <label for="menu_name">Menu Name</label>
                 <input type="text" class="form-control" id="menu_name" ng-model="add_menu_name"  placeholder="Menu Name" required="required">
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="submit" class="btn btn-primary">Add New</button>
             <a type="button" ng-click="cancelEditAdd()" class="btn btn-danger">Cancel</a>
         </form>
     </div>

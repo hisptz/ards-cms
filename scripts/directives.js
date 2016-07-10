@@ -479,6 +479,23 @@ cmsDirectives.directive("cmsRightMenu", ['cmsService',function(cmsService){
         controller:'cmsLeftController'
     };
 }]);
+
+cmsDirectives.directive('fileModel', ['$parse', function ($parse) {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            var model = $parse(attrs.fileModel);
+            var modelSetter = model.assign;
+
+            element.bind('change', function(){
+                scope.$apply(function(){
+                    modelSetter(scope, element[0].files[0]);
+                });
+            });
+        }
+    };
+}]);
+
 cmsDirectives.directive("cmsLeftMenu", ['cmsService',function(cmsService){
     return {
         restrict: "E",
@@ -490,6 +507,7 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService',function(cmsService){
         },
         templateUrl: "views/directives/cms_left_menu.html",
         link: function(scope, element, attrs) {
+            attrs.$set('file-model', attrs['file']);
             scope.externalLinks = [];
             /**
              * Adding ARDS functionality
@@ -589,21 +607,44 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService',function(cmsService){
             }
 
             // documents functions
-            scope.uploadFile = function (fieldId) {
-                var dataElementId = "wRQmDizWc0p";
-                var optionComboId = "IIWxxd6ay6s";
+            scope.uploadFile = function (fieldId,document) {
+                var dataElementId = "e6aOkIU9B1V";
+                var optionComboId = "o3HssvQoSuJ";
                 var fieldId = fieldId;
                 var fileResource = "";
-                cmsService.saveFileResource( dataElementId, optionComboId, fieldId, fileResource,
-                function(successObject){
-                    // success callback
-                    console.log(successObject)
-                });
+                console.log(attrs);
+                //
+                //cmsService.uploadFileFromForm(file, uploadUrl).then(function(data){
+                //
+                //})
+                console.log(scope.file);
+                //cmsService.saveFileResource( dataElementId, optionComboId, fieldId, fileResource,
+                //function(successObject){
+                //    // success callback
+                //    console.log(successObject)
+                //});
 
             }
 
 
             scope.loadExternalLinks();
+
+        }
+    };
+}]);
+
+cmsDirectives.directive('fileModel', ['$parse', function ($parse) {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            var model = $parse(attrs.fileModel);
+            var modelSetter = model.assign;
+
+            element.bind('change', function(){
+                scope.$apply(function(){
+                    modelSetter(scope, element[0].files[0]);
+                });
+            });
 
         }
     };
