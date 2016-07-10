@@ -528,11 +528,13 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService',function(cmsService){
 
             scope.loadExternalLinks = function(){
                 cmsService.listExternalLink().then(function(data){
-                    if(data.success == false){
-
-                    }else{
+                    //if(!data.success){
                         scope.externalLinks = data;
-                    }
+                    //}else{
+                    //    console.log(data);
+                    //    //scope.externalLinks = eval('('+data+')');
+                    //    //console.log(scope.externalLinks);
+                    //}
 
                 },function(error){
 

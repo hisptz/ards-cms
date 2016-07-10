@@ -51,13 +51,14 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
 
 
     cms.updateExternalLink = function(links){
+        console.log(links);
         var externalinks = [];
         angular.forEach(links,function(linkValue,linkIndex){
             externalinks.push({marker:"<i class='fa fa-globe'></i>",name:linkValue.name,url:linkValue.url,hidden:linkValue.hidden});
 
         });
-
-        var url = +"../../../api/dataStore/linksStorage/externalLinks";
+        //
+        var url = "../../../api/dataStore/linksStorage/externalLinks";
         return $http({method:'PUT',data:externalinks,url:url}).then(handleSuccess, handleError("Error  updating external links"));
     }
 

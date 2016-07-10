@@ -1,4 +1,4 @@
-<div class="row" id="leftbarcontents" style="padding-right: 0px;padding-left: 0px">
+<div class="row" id="leftbarcontents" style="padding-right: 0px;padding-left: 0px;padding-bottom: 100px">
     <div id="left-Menu">
         <accordion close-others="oneAtATime">
             <accordion-group heading="Data Analysis" is-open="true" panel-class="panel-success" >
@@ -50,8 +50,8 @@
 
             </accordion-group>
             <accordion-group heading="Links">
-n
-                    <tbody style="font-size:14px!important;">
+                <table>
+                    <tbody style="font-size:12px!important;">
                     <tr ng-repeat="external in externalLinks track by $index" >
                         <td>
 
@@ -59,7 +59,7 @@ n
                                 <span class="fa fa-globe"></span>&nbsp;&nbsp;{{external.name}}
                             </a>
                         </td>
-                        <td style="width:50px;">
+                        <td style="width: 50px;text-align: right;" >
 
                             <a ng-click="hideExternal($index)" ng-if="!external.hidden"><i style="color:orange" title="Hide External link " class="fa fa-minus "></i></a>
                             <a ng-click="showExternal($index)" ng-if="external.hidden"><i style="color:orange" title="Show External link" class="fa fa-plus "></i></a>
@@ -69,11 +69,11 @@ n
                     </tbody>
                 </table>
 
-                <a ng-click="addLinksForm(linksForm)" class="btn btn-warning btn-sm form-control">
+                <a ng-click="addLinksForm(linksForm)" class="btn btn-warning btn-sm form-control" style="font-size: 12px!important;">
                     Add Links <i class="pull-right glyphicon ng-scope glyphicon-chevron-right" ng-hide="linksForm"></i><i class="pull-right glyphicon ng-scope glyphicon-chevron-down" ng-show="linksForm"></i>
                 </a>
 
-                <form id="linkForm" enctype="multipart/form-data" ng-if="linksForm" class="inputForm" ng-submit="addExternalLinks(externalLink)">
+                <form id="linkForm" style="font-size: 12px!important;" enctype="multipart/form-data" ng-if="linksForm" class="inputForm" ng-submit="addExternalLinks(externalLink)">
                     <input type="hidden" id="id" name="id" value="">
 
                     <div class="form-group">
