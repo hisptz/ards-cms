@@ -896,7 +896,10 @@ var cmsControllers = angular.module('cmsControllers', [])
         name = data.name;
         var data_element_select = "";
         $.each(data.dataDimensionItems, function (key, value) {
-            data_element_select += "<option value='" + value.dataElement.id + "' selected='selected'>" + value.dataElement.name + "</option>";
+            if ( value.dataElement ) {
+                data_element_select += "<option value='" + value.dataElement.id + "' selected='selected'>" + value.dataElement.name + "</option>";
+
+            }
         });
         $.each(data.organisationUnits, function (key, value) {
             first_orgunit[key] = value.id;

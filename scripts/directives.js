@@ -496,7 +496,7 @@ cmsDirectives.directive('fileModel', ['$parse', function ($parse) {
     };
 }]);
 
-cmsDirectives.directive("cmsLeftMenu", ['cmsService',function(cmsService){
+cmsDirectives.directive("cmsLeftMenu", ['cmsService','FileService',function(cmsService,FileService){
     return {
         restrict: "E",
         replace: true,

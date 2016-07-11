@@ -508,6 +508,39 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
     return cms;
 }]);
 
+/* Service for uploading/downloading file */
+cmsServices.service('FileService', function ($http) {
+
+        return {
+            get: function (uid) {
+                var promise = $http.get('../../../api/fileResources/' + uid).then(function (response) {
+                    return response.data;
+                });
+                return promise;
+            },
+            delete: function (uid) {
+                var promise = $http.get('../../../api/fileResources/' + uid).then(function (response) {
+                    return response.data;
+                });
+                return promise;
+            },
+            download: function (fileName) {
+                var promise = $http.get(fileName).then(function (response) {
+                    return response.data;
+                });
+                return promise;
+            },
+            upload: function(file){
+                var formData = new FormData();
+                formData.append('file', file);
+                var headers = {transformRequest: angular.identity, headers: {'Content-Type': undefined}};
+                var promise = $http.post('../../../api/fileResources', formData, headers).then(function(response){
+                    return response.data;
+                });
+                return promise;
+            }
+        };
+    })
 cmsServices.service('utilityService',function(){
     var utilityService = this;
     utilityService.prepareEventObject = function(assignedProgram){
