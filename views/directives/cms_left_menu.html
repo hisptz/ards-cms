@@ -1,11 +1,17 @@
 <div class="row" id="leftbarcontents" style="padding-right: 0px;padding-left: 0px;padding-bottom: 100px">
     <div id="left-Menu">
+
         <accordion close-others="oneAtATime">
-            <accordion-group heading="Data Analysis" is-open="true" panel-class="panel-success" >
-                <accordion-group heading="{{tables.name}}" ng-repeat="tables in reportTables" >
+            <accordion-group heading="Data Analysis" is-open="openTab['analysis']" panel-class="panel-success" ng-click="openAccordion('analysis','')">
+                <span ng-if="!reportTables" style="padding-left:10px; ">
+                    <i class="fa fa-spin fa-spinner" ></i>
+                </span>
+                <accordion-group heading="{{tables.name}}" is-open="openChildTab[tables.name]" ng-repeat="tables in reportTables" ng-click="openAccordion('analysis',tables.name)">
+
                     <ul class="nav nav-pills nav-stacked">
-                        <li ng-repeat="tableItem in tables.values" style="padding: 8px 4px" class="menuitem listmenu" allstring="{{tableItem.displayName}}">
-                            <a style="padding-left: 0px; padding-right: 0px" href="#/analysis?id={{tableItem.id}}" id="{{tableItem.id}}" class="text-success">
+
+                        <li ng-repeat="tableItem in tables.values" style="padding: 0px 4px;font-size:12px;" class="menuitem {{statusClass[tableItem.id]}} listmenu" allstring="{{tableItem.displayName}}">
+                            <a style="padding-left: 0px; padding-right: 0px" href="#/{{'analysis'}}/menu/{{tables.name}}/favourite/{{tableItem.id}}/period/{{tableItem.period}}/orgunit/{{tableItem.orgUnit}}/dx/{{tableItem.dx}}" id="{{tableItem.id}}" class="text-success">
                                 {{tableItem.shortName}}
                                 <i class="fa fa-chevron-right pull-right"></i>
                             </a>
@@ -18,7 +24,7 @@
                     <tbody>
                     <tr>
                         <td>
-                            <a title="View Document(Download)" target="_blank" href="http://ards.go.tz/api/documents/DrBQahJ6prB/data" class="text-success">
+                            <a title="View Document(Download)" style="padding: 0px 4px;font-size:12px;" target="_blank" href="http://ards.go.tz/api/documents/DrBQahJ6prB/data" class="text-success">
                                 <span class="fa fa-globe"></span>&nbsp;&nbsp;ASLMs Data Collection Format</a>
                         </td>
                         <td style="width:20px;">
@@ -32,7 +38,7 @@
                     </tr>
                     </tbody>
                     </table>
-                   <a class="btn btn-sm btn-warning form-control" id="hidden_docs">Hidden Documents</a>
+                   <a class="btn btn-sm btn-default form-control" id="hidden_docs">Hidden Documents</a>
 
                 <form id="documentForm" ng-submit="uploadFile('inputFile',document)" method="post" enctype="multipart/form-data"  class="inputForm" style="font-size: 12px;">
 
@@ -48,10 +54,10 @@
                         <div class="button" ngf-select ng-model="document.file" name="file" >
 
                             <p ng-if="!document.file" >
-                                <a href="#"><i class="fa fa-file-pdf-o fa-2x"></i> Click to select a readOnly PDF File</a>
+                                <a href="#" style="color:#000000;"><i class="fa fa-upload "></i> Click to upload a file</a>
                             </p>
                             <p ng-if="document.file" >
-                                <a href="#" style="color:forestgreen;"><i class="fa fa-file-pdf-o fa-2x"></i> Click to change PDF File <img src="assets/img/pdf.png" style="width:30px;"></a>
+                                <a href="#" ><i class="fa fa-file-pdf-o "></i> Click to change  file</a>
                             </p>
                         </div>
                     </div>

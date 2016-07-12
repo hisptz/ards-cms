@@ -8,6 +8,7 @@ var cms = angular.module('cms',
                     'ngCookies',
                     'ngMessages',
                     'ngSanitize',
+                    'highcharts-ng',
                     'ckeditor',
                     'cmsDirectives',
                     'cmsControllers',
@@ -20,6 +21,8 @@ var cms = angular.module('cms',
                     'ui.select',
                     'ngFileUpload',
                     'angularLocalStorage',
+                    'chartServices',
+                    'tableServices',
                     'pascalprecht.translate',
                     'd2HeaderBar'])
 
@@ -59,7 +62,22 @@ var cms = angular.module('cms',
         .when('/:tab/sub/:subtab/edit/:id', {
             templateUrl: "views/cms.html",
             controller: 'cmsController'
-        }).when('/', {
+        })
+        .when('/:tab/menu/:menuId', {
+            templateUrl: "views/cms.html",
+            controller: 'cmsController'
+        })
+        .when('/:tab/menu/:menuId/favourite/:favourite', {
+            templateUrl: "views/analysis.html",
+            controller: 'analysisController'
+        }).when('/:tab/menu/:menuId/favourite/:favourite/period/:period', {
+            templateUrl: "views/analysis.html",
+            controller: 'analysisPeriodController'
+        }).when('/:tab/menu/:menuId/favourite/:favourite/period/:period/orgunit/:orgunit/dx/:dx', {
+            templateUrl: "views/analysis.html",
+            controller: 'analysisDataController'
+        })
+        .when('/', {
             redirectTo: "/articles/sub/all"
         })
 

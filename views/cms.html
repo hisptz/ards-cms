@@ -5,8 +5,7 @@
 <div id="leftBar" style="width:240px!important;">
 
     <div id="leftContainer" style="height:100%;">
-
-        <cms-left-menu report-tables="analysis" style="padding-bottom: 60px"></cms-left-menu>
+        <cms-left-menu report-tables="analysis" tabs="tab" menu="menuId" style="padding-bottom: 60px"></cms-left-menu>
 
     </div>
 
@@ -30,7 +29,6 @@
             <div ng-show="currentTab=='messages' && !showAnalysis" ng-include="'views/partials/cmsMessagesContent.html'"></div>
             <div ng-show="currentTab=='information sharing' && !showAnalysis" ng-include="'views/partials/cmsSharingContent.html'"></div>
 
-            <div ng-if="showAnalysis" ng-include="'views/partials/analysis.html'"></div>
 
         </div>
         <div class="col-md-2">

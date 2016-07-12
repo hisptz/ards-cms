@@ -109,6 +109,11 @@ var cmsControllers = angular.module('cmsControllers', [])
             $scope.currentTab = $routeParams.tab.replace(/-/g," ");
         }
 
+        if($routeParams.menuId){
+            $scope.tab = $routeParams.tab;
+            $scope.menuId = $routeParams.menuId;
+        }
+
 
         String.prototype.Capitalize = function() {
             return this.charAt(0).toUpperCase() + this.slice(1);
@@ -744,22 +749,7 @@ var cmsControllers = angular.module('cmsControllers', [])
         $scope.getReportTable = function () {
 
             cmsService.getReportTables().then(function(reportTables){
-                var mainmenu = new Array();
-                var menuarr = [{'name':"Agriculture",values:[]},{'name':"Livestock",values:[]},{'name':"Fishery",values:[]},{'name':"Trade",values:[]},{'name':"General Information",values:[]}];
-                var arrayCounter = 0;
-
-                $.each( reportTables.reportTables, function( key, value ) {
-                    var arr = value.displayName.split(':');
-                    if(arr.length != 1){
-                        angular.forEach(menuarr,function(menuValue){
-                            if(arr[0] == menuValue.name){
-                                menuValue.values.push({id:value.id,displayName:arr[1],shortName:arr[1].substring(0,20)+"..."});
-                            }
-                        })
-
-                    }
-                });
-                $scope.analysis = menuarr;
+                $scope.analysis = cmsService.prepareLeftMenu(reportTables.reportTables);
         });
 
         }
@@ -872,222 +862,253 @@ var cmsControllers = angular.module('cmsControllers', [])
 })
 .controller('analysisController',function($scope, $window,$routeParams,$location,$filter, cmsService,utilityService){
 
-    $(".listmenu").hover(function(){
-        var origin = $(this).find('a').html()
-        $(this).find('a').html($(this).attr('allstring'))
-        $(this).attr('allstring',origin);
-    },function(){
-        var origin = $(this).find('a').html()
-        $(this).find('a').html($(this).attr('allstring'))
-        $(this).attr('allstring',origin);
-    })
+    if($routeParams.menuId){
+        $scope.tab = $routeParams.tab;
+        $scope.menuId = $routeParams.menuId;
+    }
 
-    var name ="";
-    var first_orgunit =new Array();
-    var first_period = new Array();
 
-    var url1 = '../../../api/reportTables/' + $routeParams.id + '.json?fields=*,dataDimensionItems[dataElement[id,name]]';
-    $('#mainarea').html("");
+    $scope.loadMessages = function(){
+        $scope.messages = [];
+        cmsService.getMessages().then(function(response){
 
-    //prepare data multselect from data_element.js
-
-    $.getJSON(url1, function (data) {
-        console.log(data);
-        name = data.name;
-        var data_element_select = "";
-        $.each(data.dataDimensionItems, function (key, value) {
-            if ( value.dataElement ) {
-                data_element_select += "<option value='" + value.dataElement.id + "' selected='selected'>" + value.dataElement.name + "</option>";
-
+            if(response.messageOne){
+                $scope.messages.push(response.messageOne);
             }
+
+            if(response.messageTwo){
+                $scope.messages.push(response.messageTwo);
+            }
+
+
         });
-        $.each(data.organisationUnits, function (key, value) {
-            first_orgunit[key] = value.id;
+    }
+
+
+    // get report tables
+    $scope.getReportTable = function () {
+
+        cmsService.getReportTables().then(function(reportTables){
+            $scope.analysis = cmsService.prepareLeftMenu(reportTables.reportTables);
         });
 
-        $.each(data.periods, function (key, value) {
-            first_period[key] = value.id;
-        });
-        //prepare period Multselect from periods.js
-        $('.data-element').multiselect().multiselectfilter();
-        preparePeriods(first_period);
-        $(".data-element").multiselectfilter("destroy");
-        $(".data-element").multiselect("destroy");
-        $(".data-element").css('width', '180px');
-        $('.data-element').html(data_element_select).multiselect().multiselectfilter();
+    }
 
-        //creating organization unit multselect from orgUnit.js
-//                prepareOrganisationUnit(first_orgunit);
 
-        //creating organization unit multselect
-        var district = [];
-        var districtOptions="<optgroup label='Districts'>";
-        var regions = [];
-        var regionsOptions = "<optgroup label='Regions'>";
-        var allunits = [];
-        var allunitsOptions ="";
-        $.getJSON( "scripts/analysis/organisationUnits.json", function( data ) {
-            $.each( data.organisationUnits, function( key, value ) {
-                //populate regions
-                if(value.level == 2){
-                    var temp ={ name: value.name, id: value.id };
-                    regions.push(temp);
-                    if($.inArray(value.id, first_orgunit) == -1){
-                        regionsOptions += '<option value="'+value.id+'">'+value.name+' Region</option>';
+
+    $scope.loadRawCharts = function(){
+        cmsService.getCharts().then(function(response){
+            var rowcharts = response.charts;
+            $scope.loadCharts().then(function(response){
+                if(response){
+
+                    if(response.length==rowcharts.length){
+                        $scope.charts = response;//cmsService.getSelectedCharts(response.chartsStorage);
                     }else{
-                        regionsOptions += '<option value="'+value.id+'" selected="selected">'+value.name+' Region</option>';
+                        cmsService.saveCharts(rowcharts);
+                        if(response.length>0){
+                            cmsService.updateCharts(rowcharts);
+                        }
                     }
-                }
-                //populate districts
-                if(value.level == 3){
-                    var temp ={ name: value.name, id: value.id };
-                    district.push(temp);
-                    if($.inArray(value.id, first_orgunit) == -1){
-                        districtOptions += '<option value="'+value.id+'">'+value.name+'</option>';
-                    }else{
-                        districtOptions += '<option value="'+value.id+'" selected="selected">'+value.name+'</option>';
-                    }
+
+                }else{
+                    cmsService.saveCharts(rowcharts);
                 }
 
+
+            },function(error){
+                console.log(error);
+            });
+        },function(error){
+
+        });
+    }
+
+    $scope.loadCharts = function(){
+        return cmsService.loadChartStorage();
+    }
+
+    $scope.getReportTable();
+    $scope.loadMessages();
+    $scope.loadRawCharts();
+    $scope.loadCharts();
+})
+.controller('analysisPeriodController',function($scope, $window,$routeParams,$location,$filter, cmsService,utilityService){
+
+    if($routeParams.menuId){
+        $scope.tab = $routeParams.tab;
+        $scope.menuId = $routeParams.menuId;
+        $scope.favourite = $routeParams.favourite;
+    }
+
+
+    $scope.loadMessages = function(){
+        $scope.messages = [];
+        cmsService.getMessages().then(function(response){
+
+            if(response.messageOne){
+                $scope.messages.push(response.messageOne);
+            }
+
+            if(response.messageTwo){
+                $scope.messages.push(response.messageTwo);
+            }
+
+
+        });
+    }
+
+
+    // get report tables
+    $scope.getReportTable = function () {
+
+        cmsService.getReportTables().then(function(reportTables){
+            $scope.analysis = cmsService.prepareLeftMenu(reportTables.reportTables);
+        });
+
+    }
+
+
+
+    $scope.loadRawCharts = function(){
+        cmsService.getCharts().then(function(response){
+            var rowcharts = response.charts;
+            $scope.loadCharts().then(function(response){
+                if(response){
+
+                    if(response.length==rowcharts.length){
+                        $scope.charts = response;//cmsService.getSelectedCharts(response.chartsStorage);
+                    }else{
+                        cmsService.saveCharts(rowcharts);
+                        if(response.length>0){
+                            cmsService.updateCharts(rowcharts);
+                        }
+                    }
+
+                }else{
+                    cmsService.saveCharts(rowcharts);
+                }
+
+
+            },function(error){
+                console.log(error);
+            });
+        },function(error){
+
+        });
+    }
+
+    $scope.loadCharts = function(){
+        return cmsService.loadChartStorage();
+    }
+
+    $scope.getReportTable();
+    $scope.loadMessages();
+    $scope.loadRawCharts();
+    $scope.loadCharts();
+
+})
+.controller('analysisDataController',function($scope, $window,$routeParams,$location,$filter, cmsService,chartsManager,utilityService){
+$scope.analyticsUrl = "";
+$scope.analyticsObject = "";
+
+    if($routeParams.menuId){
+        $scope.tab = $routeParams.tab;
+        $scope.menuId = $routeParams.menuId;
+        $scope.favourite = $routeParams.favourite;
+    }
+
+
+    $scope.loadMessages = function(){
+        $scope.messages = [];
+        cmsService.getMessages().then(function(response){
+
+            if(response.messageOne){
+                $scope.messages.push(response.messageOne);
+            }
+
+            if(response.messageTwo){
+                $scope.messages.push(response.messageTwo);
+            }
+
+
+        });
+    }
+
+
+    // get report tables
+    $scope.getReportTable = function () {
+
+        cmsService.getReportTables().then(function(reportTables){
+            $scope.analysis = cmsService.prepareLeftMenu(reportTables.reportTables);
+            $scope.analyticsUrl = "../../../api/analytics.json?dimension=dx:"+$routeParams.dx+"&dimension=pe:"+$routeParams.period+"&filter=ou:"+$routeParams.orgunit;
+
+            angular.forEach (reportTables.reportTables, function(value){
+
+                if (value.id == $scope.favourite ) {
+                    $scope.favouriteObject = value;
+                }
 
             });
-            regionsOptions += "<optgroup/>"
-            districtOptions += "<optgroup/>"
-            allunitsOptions = regionsOptions + districtOptions
-            $('.adminUnit').multiselect().multiselectfilter();
-            $('#allunits').click(function(){
-                $('.unitfilter button').removeClass('btn-success').addClass('btn-default');
-                $(this).removeClass('btn-default').addClass('btn-success');
-                $(".adminUnit").multiselectfilter("destroy");
-                $(".adminUnit").multiselect("destroy");
-                $('.adminUnit').html(allunitsOptions);
-                $('.adminUnit').multiselect().multiselectfilter();
-            })
-            $('#district').click(function(){
-                $('.unitfilter button').removeClass('btn-success').addClass('btn-default');
-                $(this).removeClass('btn-default').addClass('btn-success');
-                $(".adminUnit").multiselectfilter("destroy");
-                $(".adminUnit").multiselect("destroy");
-                $('.adminUnit').html(districtOptions);
-                $('.adminUnit').multiselect().multiselectfilter();
-            })
-            $('#regions').click(function(){
-                $('.unitfilter button').removeClass('btn-success').addClass('btn-default');
-                $(this).removeClass('btn-default').addClass('btn-success');
-                $(".adminUnit").multiselectfilter("destroy");
-                $(".adminUnit").multiselect("destroy");
-                $('.adminUnit').html(regionsOptions);
-                $('.adminUnit').multiselect().multiselectfilter();
-            })
-            $('.adminUnit').css('width', '180px');
-            $('#allunits').trigger('click')
+            $scope.loadAnalytics($scope.analyticsUrl);
+        });
 
-            //hiding error alert
-            $('.alert').hide();
+    }
 
-            $('.reports button').click(function () {
-                $('#mainarea').html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading...')
-                var orgunit = $(".adminUnit").val();
-                var dataelement = $('.data-element').val();
-                var timeperiod = $(".periods").val();
-                if (!orgunit || !dataelement || !timeperiod) {
-                    $('.alert').fadeIn('slow');
-                    setTimeout(function () {
-                        $('.alert').fadeOut('slow');
-                    }, 3000);
-                } else {
-                    //identifying active report
-                    $('.reports button').removeClass('btn-success').addClass('btn-default');
-                    $(this).removeClass('btn-default').addClass('btn-success');
 
-                    //preparing a link to send to analytics
-                    var data_dimension = 'dimension=dx:';
-                    for (var i = 0; i < dataelement.length; i++) {
-                        data_dimension += (i == dataelement.length - 1) ? dataelement[i] : dataelement[i] + ';';
-                    }
+    $scope.loadAnalytics = function (url) {
+        cmsService.getAnalytics(url).then(function(analytics){
+            $scope.analyticsObject = analytics;
+            $scope.chartObject = chartsManager.drawChart($scope.analyticsObject,
+                'ou',
+                [],
+                'de',
+                [],
+                'pe',
+                $routeParams.period,
+                $scope.favouriteObject.name,
+                'chart.bar');
+        });
+    }
 
-                    //creating column dimension
-                    var column_dimension = 'dimension=' + $('select[name=category]').val() + ':';
-                    //if column will be administrative units
-                    if ($('select[name=category]').val() == 'ou') {
-                        for (var i = 0; i < orgunit.length; i++) {
-                            column_dimension += (i == orgunit.length - 1) ? orgunit[i] : orgunit[i] + ';';
-                        }
-                    }
-                    else { //if column will be periods
-                        for (var i = 0; i < timeperiod.length; i++) {
-                            column_dimension += (i == timeperiod.length - 1) ? timeperiod[i] : timeperiod[i] + ';';
+
+
+
+    $scope.loadRawCharts = function(){
+        cmsService.getCharts().then(function(response){
+            var rowcharts = response.charts;
+            $scope.loadCharts().then(function(response){
+                if(response){
+
+                    if(response.length==rowcharts.length){
+                        $scope.charts = response;//cmsService.getSelectedCharts(response.chartsStorage);
+                    }else{
+                        cmsService.saveCharts(rowcharts);
+                        if(response.length>0){
+                            cmsService.updateCharts(rowcharts);
                         }
                     }
 
-                    //creating filter dimensions
-                    var filter = ($('select[name=category]').val() != 'ou') ? 'filter=ou:' : 'filter=pe:'
-                    //if filter will be administrative units
-                    if ($('select[name=category]').val() != 'ou') {
-                        for (var i = 0; i < orgunit.length; i++) {
-                            filter += (i == orgunit.length - 1) ? orgunit[i] : orgunit[i] + ';';
-                        }
-                    }
-                    else { //if filter will be periods
-                        for (var i = 0; i < timeperiod.length; i++) {
-                            filter += (i == timeperiod.length - 1) ? timeperiod[i] : timeperiod[i] + ';';
-                        }
-                    }
-
-                    var url = '../../../api/analytics.json?' + data_dimension + '&' + column_dimension + '&' + filter
-
-
-                    //checking types of report needed and react accordingly
-                    //drawing table
-                    if ($(this).attr('id') == 'draw_table') {
-                        drawTable(name, url, $('select[name=category]').val(), $('.data-element').val());
-                    }
-                    //drawing bar chart
-                    if ($(this).attr('id') == 'draw_bar') {
-                        drawBar(name, url, $('select[name=category]').val(), $('.data-element').val());
-                    }
-                    //drawing column chart
-                    if ($(this).attr('id') == 'draw_column') {
-                        drawColumn(name, url, $('select[name=category]').val(), $('.data-element').val());
-                    }
-                    //drawing line chart
-                    if ($(this).attr('id') == 'draw_line') {
-                        drawLine(name, url, $('select[name=category]').val(), $('.data-element').val());
-                    }
-                    //drawing pie chat
-                    if ($(this).attr('id') == 'draw_pie') {
-                        drawPie(name, url, $('select[name=category]').val(), $('.data-element').val());
-                    }
-                    //drawing staked chat
-                    if ($(this).attr('id') == 'draw_staked') {
-                        drawStaked(name, url, $('select[name=category]').val(), $('.data-element').val());
-                    }
-                    //drawing spider chat
-                    if ($(this).attr('id') == 'draw_spider') {
-                        drawSpider(name, url, $('select[name=category]').val(), $('.data-element').val());
-                    }
-                    //drawing combined chat
-                    if ($(this).attr('id') == 'draw_combined') {
-                        drawCombined(name, url, $('select[name=category]').val(), $('.data-element').val());
-                    }
-                    //exporting data to excel
-                    if ($(this).attr('id') == 'export_cvs') {
-                        window.location = '../../../api/analytics.xls?' + data_dimension + '&' + column_dimension + '&' + filter;
-                    }
+                }else{
+                    cmsService.saveCharts(rowcharts);
                 }
-            })
-            $(".category").multiselect({
-                multiple: false,
-                header: "Select an option",
-                noneSelectedText: "Select an Option",
-                selectedList: 1
+
+
+            },function(error){
+                console.log(error);
             });
-            $(".category").css('width', '180px');
-            $('#content_to_hide').hide();
-            $('.analysis-wraper').fadeIn();
-            $('#draw_table').trigger("click");
+        },function(error){
 
         });
-    });
+    }
+
+    $scope.loadCharts = function(){
+        return cmsService.loadChartStorage();
+    }
+
+    $scope.getReportTable();
+    $scope.loadMessages();
+    $scope.loadRawCharts();
+    $scope.loadCharts();
 
 });

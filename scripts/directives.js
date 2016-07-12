@@ -496,7 +496,7 @@ cmsDirectives.directive('fileModel', ['$parse', function ($parse) {
     };
 }]);
 
-cmsDirectives.directive("cmsLeftMenu", ['cmsService','FileService',function(cmsService,FileService){
+cmsDirectives.directive("cmsLeftMenu", ['cmsService','FileService','$location',function(cmsService,FileService,$location){
     return {
         restrict: "E",
         replace: true,
@@ -504,6 +504,9 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FileService',function(cmsS
             reportTables: "=reportTables",
             otherLinksObject: "=otherLinksObject",
             documentObject: "=documentObject",
+            tab: "=tabs",
+            menu: "=menu",
+            favourite: "=favourite"
         },
         templateUrl: "views/directives/cms_left_menu.html",
         link: function(scope, element, attrs) {
@@ -525,6 +528,37 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FileService',function(cmsS
             scope.addLink = function (link_name,url) {
             }
 
+            scope.openTab = {};
+            scope.openChildTab = {};
+            scope.statusClass = {};
+            scope.openTab['analysis'] = true;
+            scope.openAccordion = function(parentElement,childElement){
+
+                //angular.forEach({{openChildTab[tables.name]}})
+
+                if ( !scope.openTab[parentElement] ) {
+                    scope.openTab = {};
+                    scope.statusClass = {};
+                    scope.openTab[parentElement] = true;
+                    scope.statusClass[scope.favourite] = "alert-success";
+                }
+
+                if ( !scope.openChildTab[childElement] && childElement != "" ) {
+                    scope.openChildTab = {};
+                    scope.statusClass = {};
+                    scope.openChildTab[childElement] = true;
+                    scope.statusClass[scope.favourite] = "alert-success";
+                }
+
+                $location.path('/'+parentElement+'/menu/'+childElement);
+            }
+
+            scope.$watch(scope.tab,function(newTab,oldTab){
+                scope.openTab[scope.tab] = true;
+                scope.openChildTab[scope.menu] = true;
+                scope.statusClass[scope.favourite] = "alert-success";
+                //$location.path('/'+scope.tab+'/menu/'+scope.menu);
+            });
 
             scope.loadExternalLinks = function(){
                 cmsService.listExternalLink().then(function(data){
@@ -614,7 +648,12 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FileService',function(cmsS
                 var optionComboId = "o3HssvQoSuJ";
                 var fieldId = fieldId;
                 var fileResource = "";
-                console.log(attrs);
+
+                FileService.upload(document.file).then(function(data){
+                    console.log(data);
+                });
+
+
                 //
                 //cmsService.uploadFileFromForm(file, uploadUrl).then(function(data){
                 //

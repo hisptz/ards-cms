@@ -348,7 +348,7 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
     }
 
     cms.getReportTables = function(){
-        var url = "../../../api/reportTables.json?paging=false";
+        var url = "../../../api/reportTables.json?fields=:all&paging=false";
         return $http.get(url).then(handleSuccess, handleError("Error Loading favourites"));
     }
 
@@ -380,6 +380,92 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
                     transformRequest: angular.identity,
                     headers: {'Content-Type': 'application/pdf'}
                 });
+    }
+    cms.prepareLeftMenu = function(reportTables){
+
+        var mainmenu = new Array();
+        var menuarr = [{'name':"Agriculture",values:[]},{'name':"Livestock",values:[]},{'name':"Fishery",values:[]},{'name':"Trade",values:[]},{'name':"General Information",values:[]}];
+        var arrayCounter = 0;
+
+
+        angular.forEach( reportTables , function( value ){
+            var arr = value.displayName.split(':');
+            if(arr.length != 1){
+                angular.forEach(menuarr,function(menuValue){
+                    if(arr[0] == menuValue.name){
+                        menuValue.values.push({id:value.id,displayName:arr[1],shortName:arr[1].substring(0,20)+"...",period:cms.preparePeriodFromReportTables(value),orgUnit:cms.prepareOrgUnitFromReportTables(value),dx:cms.prepareDxFromReportTables(value)});
+                    }
+                })
+
+            }
+        });
+
+        return menuarr;
+
+    }
+    cms.getAnalytics = function(url){
+
+        return $http.get(url).then(handleSuccess, handleError('Error getting analytics'));
+
+        }
+
+    cms.preparePeriodFromReportTables = function(reportTable){
+
+        var periodLength = reportTable.periods.length;
+        var period = "";
+
+        angular.forEach(reportTable.periods, function(value){
+
+            if ( periodLength >1 ) {
+                period+=";"
+            }
+
+            period+=value.id;
+        });
+
+        return period;
+
+    }
+
+    cms.prepareOrgUnitFromReportTables = function(reportTable){
+
+        var organisationUnitsLength = reportTable.organisationUnits.length;
+        var organisationUnits = "";
+
+        angular.forEach(reportTable.organisationUnits, function(value){
+
+            if ( organisationUnitsLength >1 ) {
+                organisationUnits+=";"
+            }
+
+            organisationUnits+=value.id;
+        });
+
+        return organisationUnits;
+    }
+
+
+    cms.prepareDxFromReportTables = function(reportTable){
+
+        var dataDimensionItemsLength = reportTable.dataDimensionItems.length;
+        var dataDimensionItems = "";
+
+        angular.forEach(reportTable.dataDimensionItems, function(value){
+
+                if ( value.dataDimensionItemType == "AGGREGATE_DATA_ELEMENT" ) {
+
+                    dataDimensionItems+=value.dataElement.id+";"
+                }
+
+
+                if ( value.dataDimensionItemType == "INDICATOR" ) {
+
+                    dataDimensionItems+=value.indicator.id+";"
+                }
+        });
+        dataDimensionItems = dataDimensionItems.substring(0, dataDimensionItems.length-1);
+
+        return dataDimensionItems;
     }
 
 
