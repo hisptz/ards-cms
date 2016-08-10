@@ -1,23 +1,88 @@
-<div class="col-sm-12">
-    <!--<h3>Analytics Url</h3>-->
-    <!--<p>{{analyticsUrl}}</p>-->
-    <!--<br/>-->
-
-    <!--<h3>Favourite Object</h3>-->
-    <!--<p>{{favouriteObject.name}}</p>sg-->
-    <!--<br/>-->
-    <!--<p>{{favouriteObject}}</p>-->
-
-    <!--<br/>-->
-
-    <!--<h3>Analytics Object</h3>-->
-    <!--<p>{{analyticsObject}}</p>-->
-
-    <!--<br/>-->
-
-    <!--<h3>Chart Object</h3>-->
-    <!--<p>{{chartObject}}</p>-->
-
+<div class="row" ng-if="showDataCriteria">
+    <div class="col-sm-3">
+        <label >Administrative Units </label>
+        <multi-select-tree
+                data-input-model="organisationUnits"
+                multi-select="true"
+                data-output-model="organisationUnitOutPut"
+                data-default-label="Select Administrative Units"
+                data-callback="orgunitCallBack(item, selectedItems,'orgUnit')"
+        >
+        </multi-select-tree>
     </div>
+<div class="col-sm-3">
+    <label >Periods </label>
+    <select id="periods" class="form-control"
+            ng-model="periodType"
+            ng-change="changePeriodType(periodType)">
+
+        <option value="">[ Select period type ]</option>
+
+        <option
+                ng-repeat="type in data.periodTypes"
+                value="{{type.value}}"
+                ng-selected="{{type.value==periodType}}"
+        >
+                {{type.name}}
+        </option>
+
+    </select>
+    <br/>
+    <multi-select-tree
+            ng-if="data.periodTypes[periodType].list"
+            data-input-model="data.periodTypes[periodType].list"
+            multi-select="true"
+            data-output-model="outputPeriods"
+            data-default-label="Select Period"
+            data-callback="periodCallBack(item, selectedItems,'period')"
+    >
+    </multi-select-tree>
+    <br/>
+</div>
+    <div class="col-sm-3">
+    <label >Data</label>
+
+    <multi-select-tree
+            data-input-model="dataDimension"
+            multi-select="true"
+            data-output-model="outputData"
+            data-default-label="Select Data"
+            data-callback="dataCallBack(item, selectedItems,'data')"
+    >
+    </multi-select-tree>
+</div>
+    <div class="col-sm-3">
+        <label >Category</label>
+    <multi-select-tree
+            data-input-model="categoryDimension"
+            multi-select="false"
+            data-output-model="outputCategory"
+            data-default-label="Select Category"
+            data-callback="categoryCallBack(item, selectedItems,'category')"
+    >
+    </multi-select-tree>
+</div>
+
+</div>
 <br/>
-<highchart config="chartObject"></highchart>
+<div class="row">
+    <div class="col-sm-12">
+        <a class="btn {{btnClass['table'] ? 'btn-success' : 'btn-default'}}" title="Table" href="" ng-click="chartSwitcher('table','')"><img src="img/table.jpg" style="width: 20px;height: 20px;"></a>
+        <a class="btn {{btnClass['bar'] ? 'btn-success' : 'btn-default'}}" title="Bar Chart" ng-click="chartSwitcher('bar','')"><img src="img/bar.png" style="width: 15px"></a>
+        <a class="btn {{btnClass['column'] ? 'btn-success' : 'btn-default'}}" title="Column Chart" ng-click="chartSwitcher('column','')"><img src="img/column.png" style="width: 15px"></a>
+        <a class="btn {{btnClass['line'] ? 'btn-success' : 'btn-default'}}" title="Line Chart" ng-click="chartSwitcher('line','')"><img src="img/line.png" style="width: 15px"></a>
+        <a class="btn {{btnClass['pie'] ? 'btn-success' : 'btn-default'}}" title="Pie Chart" ng-click="chartSwitcher('pie','')"><img src="img/pie.png" style="width: 15px"></a>
+        <a class="btn {{btnClass['stacked_column'] ? 'btn-success' : 'btn-default'}}" title="Stacked Chart" ng-click="chartSwitcher('stacked_column','')"><img src="img/bar-stacked.png" style="width: 15px"></a>
+        <a class="btn {{btnClass['radar'] ? 'btn-success' : 'btn-default'}}" title="Spider Chart" ng-click="chartSwitcher('radar','')"><img src="img/radar.png" style="width: 15px"></a>
+        <a class="btn {{btnClass['csv'] ? 'btn-success' : 'btn-default'}}" title="Excel File" ng-click="chartSwitcher('csv','')"><img src="img/cvs.jpg" style="width: 15px"></a>
+    </div>
+
+</div>
+<br/>
+<div ng-if="!chartObject">
+    <i class="fa fa-spinner fa-spin fa-2x"></i> Loading {{chartType}}
+</div>
+<highchart ng-if="chartType!='table'&&chartObject" config="chartObject" style="height: 400px;"></highchart>
+<div ng-if="chartType=='table'&&chartObject" >
+    <table ng-bind-html="tableObject" class="table table-bordered table-responsive table-condensed"></table>
+</div>

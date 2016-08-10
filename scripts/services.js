@@ -29,6 +29,39 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
         return $http.get(url).then(handleSuccess, handleError('Error loading favourite charts'));
     }
 
+    cms.getOrgUnitTree = function(userOrgUnit){
+        var orgUnitIds = [];
+        userOrgUnit.forEach(function (orgUnit) {
+            orgUnitIds.push(orgUnit.id);
+        });
+        return $http.get("../../../api/organisationUnits.json?filter=id:in:[" + orgUnitIds + "]&fields=id,name,level,children[id,name,level,children[id,name,level,children[id,name,level,children[id,name,level,children]]]]");
+
+    }
+
+    cms.sortOrganisationUnits = function (orgUnit,orgUnitArray) {
+
+        angular.forEach(orgUnitArray,function (unitData) {
+
+            if ( unitData == orgUnit.id ) {
+                orgUnit.isExpanded = false;
+                orgUnit.isActive = false
+                orgUnit.selected = true;
+
+            }
+
+        })
+
+        var that = this;
+        if (orgUnit.children) {
+            orgUnit.children.sort(function (child1, child2) {
+                return orgUnitFunction(child1).localeCompare(orgUnitFunction(child2));
+            });
+            orgUnit.children.forEach(function (child) {
+                that.sortOrganisationUnits(child,orgUnitArray);
+            })
+        }
+    }
+
     cms.uploadDocument = function(file){
 
         var url = "../../../api/fileResources";
@@ -387,13 +420,13 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
         var menuarr = [{'name':"Agriculture",values:[]},{'name':"Livestock",values:[]},{'name':"Fishery",values:[]},{'name':"Trade",values:[]},{'name':"General Information",values:[]}];
         var arrayCounter = 0;
 
-
+        console.log(reportTables);
         angular.forEach( reportTables , function( value ){
             var arr = value.displayName.split(':');
             if(arr.length != 1){
                 angular.forEach(menuarr,function(menuValue){
                     if(arr[0] == menuValue.name){
-                        menuValue.values.push({id:value.id,displayName:arr[1],shortName:arr[1].substring(0,20)+"...",period:cms.preparePeriodFromReportTables(value),orgUnit:cms.prepareOrgUnitFromReportTables(value),dx:cms.prepareDxFromReportTables(value)});
+                        menuValue.values.push({id:value.id,displayName:arr[1],shortName:arr[1].substring(0,20)+"...",period:cms.preparePeriodFromReportTables(value),orgUnit:cms.prepareOrgUnitFromReportTables(value),dx:cms.prepareDxFromReportTables(value),filter:value.filterDimensions[0]});
                     }
                 })
 
@@ -477,6 +510,124 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
 
         var valueSaver = new FileResourceValueSaver( dataElementId, periodId, optionComboId, fileResource, fieldId, dhis2.de.cst.colorGreen, onSuccessCallback );
         valueSaver.save();
+    }
+
+    cms.getDataDimension = function (analytics,dataArray) {
+        var dx = analytics.metaData.dx;
+        var names = analytics.metaData.names;
+        var datadimensions = [];
+
+        angular.forEach(dx, function(value){
+            if(names[value]){
+                datadimensions.push({name:names[value],id:value});
+            }
+        });
+
+        angular.forEach(datadimensions, function(dimensionValue,index){
+
+            angular.forEach(dataArray, function(dataValue){
+                if ( dataValue == dimensionValue.id ) {
+
+                    datadimensions[index].isExpanded = false;
+                    datadimensions[index].isActive = false;
+                    datadimensions[index].selected = true;
+                }
+            });
+        });
+
+        return datadimensions;
+    }
+
+    cms.getSelectionCriterias = function(item, selectedItems,selectedType,newUrl){
+
+        var organisationUnit = "";
+        var period = "";
+        var data = "";
+        var category = "";
+        var type = "";
+
+        if ( selectedType == "orgUnit" && selectedItems.length > 0 ) {
+            angular.forEach(selectedItems , function(item){
+                organisationUnit+=item.id+";";
+            })
+
+        }
+
+        if ( selectedType == "period" && selectedItems.length > 0 ) {
+            angular.forEach(selectedItems , function(item){
+                period+=item.value+";";
+            })
+        }
+
+        if ( selectedType == "data" && selectedItems.length > 0 ) {
+            angular.forEach(selectedItems , function(item){
+                data+=item.id+";";
+            })
+        }
+
+
+        if ( selectedType == "category" && selectedItems.length > 0 ) {
+            console.log(selectedItems)
+            angular.forEach(selectedItems , function(item){
+                category = item.id;
+            })
+        }
+
+
+        var extractingCategory = newUrl.split('/category/');
+        var extractingType = extractingCategory[0].split('/type/');
+        var extractingDx = extractingType[0].split('/dx/');
+        var extractingOrgUnit = extractingDx[0].split('/orgunit/');
+        var extractingPeriod = extractingOrgUnit[0].split('/period/');
+
+        if (organisationUnit==""){
+            organisationUnit = extractingOrgUnit[1];
+        }
+        if (data==""){
+            data = extractingDx[1];
+        }
+        if (period==""){
+            period = extractingPeriod[1];
+        }
+
+        if (category==""){
+            category = extractingCategory[1];
+        }
+        if (type==""){
+            type = extractingType[1];
+        }
+
+        return {newUrl:extractingPeriod[0]+'/period/'+period+'/orgunit/'+organisationUnit+'/dx/'+data+'/type/'+type+'/category/'+category,category:category}
+
+    }
+
+    cms.prepareUrlForChange = function (url,param,paramValue) {
+
+        var extractingType = url.split('/type/');
+        var extractingDx = extractingType[0].split('/dx/');
+        var extractingOrgUnit = extractingDx[0].split('/orgunit/');
+        var extractingPeriod = extractingOrgUnit[0].split('/period/');
+
+            var organisationUnit = extractingOrgUnit[1];
+
+            var data = extractingDx[1];
+
+            var period = extractingPeriod[1];
+
+
+        return {newUrl:extractingPeriod[0]+'/period/'+period+'/orgunit/'+organisationUnit+'/dx/'+data+'/type/'+paramValue};
+    }
+
+    cms.setSelectedCategory = function(dataArray,category) {
+        angular.forEach(dataArray,function(value,index){
+            if ( value.id == category ) {
+                dataArray[index].isExpanded = false;
+                dataArray[index].isActive = false;
+                dataArray[index].selected = true;
+            }
+        });
+
+        return dataArray;
     }
 
     /**
@@ -588,7 +739,9 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
 
         return valueSaver;
     }
-
+    function orgUnitFunction(child) {
+        return child.name;
+    }
 
 
     return cms;
@@ -745,6 +898,26 @@ cmsServices.service('utilityService',function(){
     }
 
     return utilityService;
+});
+
+cmsServices.factory('LoginHttpInterceptor', function ($q, $window) {
+    return {
+        response: function (response) {
+            // do something on success
+            if (response.headers()['content-type'] === "text/html;charset=UTF-8") {
+
+                if (response.data.indexOf("loginPage") != -1) {
+                    $window.location.href = "../../../"
+                    return $q.reject(response);
+                }
+            }
+            return response;
+        },
+        responseError: function (response) {
+            // do something on error
+            return $q.reject(response);
+        }
+    };
 });
 
 function handleSuccess(res){

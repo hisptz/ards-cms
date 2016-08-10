@@ -576,7 +576,6 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FileService','$location',f
             }
 
 
-
             // add external links
             scope.externalLink = {name:"",url:""};
             scope.addExternalLinks = function (externalLink) {
@@ -730,3 +729,5 @@ cmsDirectives.directive("cmsTabs", function(){
 
     };
 });
+
+cms

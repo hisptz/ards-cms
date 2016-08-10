@@ -19,6 +19,7 @@ var cms = angular.module('cms',
                     'd2Services',
                     'd2Controllers',
                     'ui.select',
+                    'multi-select-tree',
                     'ngFileUpload',
                     'angularLocalStorage',
                     'chartServices',
@@ -28,7 +29,8 @@ var cms = angular.module('cms',
 
 .value('DHIS2URL', '..')
 
-.config(function ($routeProvider, $translateProvider) {
+.config(function ($routeProvider, $translateProvider,$httpProvider) {
+    $httpProvider.interceptors.push('LoginHttpInterceptor');
 
     $routeProvider
         .when('/', {
@@ -70,10 +72,8 @@ var cms = angular.module('cms',
         .when('/:tab/menu/:menuId/favourite/:favourite', {
             templateUrl: "views/analysis.html",
             controller: 'analysisController'
-        }).when('/:tab/menu/:menuId/favourite/:favourite/period/:period', {
-            templateUrl: "views/analysis.html",
-            controller: 'analysisPeriodController'
-        }).when('/:tab/menu/:menuId/favourite/:favourite/period/:period/orgunit/:orgunit/dx/:dx', {
+        })
+        .when('/:tab/menu/:menuId/favourite/:favourite/period/:period/orgunit/:orgunit/dx/:dx/type/:type/category/:category', {
             templateUrl: "views/analysis.html",
             controller: 'analysisDataController'
         })
