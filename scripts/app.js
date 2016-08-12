@@ -27,7 +27,7 @@ var cms = angular.module('cms',
                     'pascalprecht.translate',
                     'd2HeaderBar'])
 
-.value('DHIS2URL', '..')
+.value('DHIS2URL', '../../..')
 
 .config(function ($routeProvider, $translateProvider,$httpProvider) {
     $httpProvider.interceptors.push('LoginHttpInterceptor');
