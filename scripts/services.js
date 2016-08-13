@@ -445,18 +445,18 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
     cms.preparePeriodFromReportTables = function(reportTable){
 
         var periodLength = reportTable.periods.length;
-        var period = "";
+        var period = [];
 
         angular.forEach(reportTable.periods, function(value){
 
             if ( periodLength >1 ) {
-                period+=";"
+
             }
 
-            period+=value.id;
+            period.push(value.id);
         });
 
-        return period;
+        return period.join(";");
 
     }
 

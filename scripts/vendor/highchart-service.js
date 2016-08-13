@@ -337,50 +337,35 @@ chartServices.factory('chartsManager',function($timeout){
       return num;
     },
 
-    /**drawing some charts
-     *
-     * @param analyticsObject - dhis2 standard analytics
-     * @param xAxisType - ou,de,pe,co ....
-     * @param xAxisItems - array i you do not want to use all items from analytics by default pass  []
-     * @param yAxisType
-     * @param yAxisItems
-     * @param filterType - default none, if applying ou,de....
-     * @param filterUid - if type == 'none' uid == '' else
-     * @param title -
-     * @param type
-     * @returns {*}
-     */
+    //drawing some charts
     drawChart : function(analyticsObject,xAxisType,xAxisItems,yAxisType,yAxisItems,filterType,filterUid,title,type) {
-      if(type.indexOf('chart.')==-1) {
-        type='chart.'+type;
-      }
       var currentService = this;
       switch (type){
-        case 'chart.bar':
+        case 'bar':
           return currentService.drawOtherCharts(analyticsObject, xAxisType,xAxisItems,yAxisType,yAxisItems, filterType, filterUid, title, 'bar');
           break;
-        case 'chart.column':
+        case 'column':
           return currentService.drawOtherCharts(analyticsObject, xAxisType,xAxisItems,yAxisType,yAxisItems, filterType, filterUid, title, 'column');
           break;
-        case 'chart.radar':
+        case 'radar':
           return currentService.drawSpiderChart(analyticsObject,  xAxisType,xAxisItems,yAxisType,yAxisItems, filterType, filterUid, title, type);
           break;
-        case 'chart.stacked_column':
+        case 'stacked_column':
           return currentService.drawStackedChart(analyticsObject, xAxisType,xAxisItems,yAxisType,yAxisItems, filterType, filterUid, title, 'column');
           break;
-        case 'chart.stacked_bar':
+        case 'stacked_bar':
           return currentService.drawStackedChart(analyticsObject, xAxisType,xAxisItems,yAxisType,yAxisItems, filterType, filterUid, title, 'bar');
           break;
-        case 'chart.gauge':
+        case 'gauge':
           return currentService.drawGaugeChart(analyticsObject, xAxisType,xAxisItems,yAxisType,yAxisItems, filterType, filterUid, title, 'bar');
           break;
-        case 'chart.combined':
+        case 'combined':
           return currentService.drawCombinedChart(analyticsObject,  xAxisType,xAxisItems,yAxisType,yAxisItems, filterType, filterUid, title);
           break;
-        case 'chart.line':
+        case 'line':
           return currentService.drawOtherCharts(analyticsObject,  xAxisType,xAxisItems,yAxisType,yAxisItems, filterType, filterUid, title, type);
           break;
-        case 'chart.pie':
+        case 'pie':
           return currentService.drawPieChart(analyticsObject,  xAxisType,xAxisItems,yAxisType,yAxisItems, filterType, filterUid, title);
           break;
         case 'table':
@@ -393,7 +378,6 @@ chartServices.factory('chartsManager',function($timeout){
     },
 
     drawTable : function(analyticsObject, yAxisType,yAxisItems,xAxisType,xAxisItems,filterType,filterUid,title){
-      console.log('table drawing attempts is done!');
       var chartService = this;
       var table="<thead><tr><th></th>";
       angular.forEach(chartService.prepareSingleCategories(analyticsObject,xAxisType,xAxisItems),function(column){
@@ -465,8 +449,8 @@ chartServices.factory('chartsManager',function($timeout){
     //draw all other types of chart[bar,line,area]
     drawOtherCharts : function(analyticsObject, xAxisType,xAxisItems,yAxisType,yAxisItems,filterType,filterUid,title,chartType){
       var chartObject = angular.copy(this.defaultChartObject);
-      if(chartType == 'chart.bar'){
-        chartObject.options.chart.type = chartType.replace('chart.','');
+      if(chartType == 'bar'){
+        chartObject.options.chart.type = chartType;
         chartObject.options.xAxis.labels.rotation = 0;
       }
       chartObject.options.title.text = title;
@@ -481,7 +465,7 @@ chartServices.factory('chartsManager',function($timeout){
           var number = currentService.getDataValue(analyticsObject,xAxisType,xAxis.uid,yAxisType,yAxis.uid,filterType,filterUid);
           chartSeries.push(parseFloat(number));
         });
-        chartObject.series.push({type: chartType.replace('chart.',''), name: yAxis.name, data: chartSeries});
+        chartObject.series.push({type: chartType, name: yAxis.name, data: chartSeries});
       });
       return chartObject;
     },
@@ -675,8 +659,7 @@ chartServices.factory('chartsManager',function($timeout){
             valueSuffix: '%'
           }
         },
-        series: [
-          {
+        series: [{
           name: '',
           data: baseData,
           size: '60%',
@@ -687,8 +670,7 @@ chartServices.factory('chartsManager',function($timeout){
             color: '#ffffff',
             distance: -30
           }
-        },
-          {
+        }, {
           name: '',
           data: versionsData,
           size: '80%',
@@ -699,8 +681,7 @@ chartServices.factory('chartsManager',function($timeout){
               return this.y > 1 ? '<b>' + this.point.name + ':</b> ' + this.y + '%' : null;
             }
           }
-        }
-        ]
+        }]
       };
 
 

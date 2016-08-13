@@ -75,7 +75,6 @@ scripts/vendor/ckeditor.js
 scripts/app.js
 scripts/directives.js
 scripts/services.js
-scripts/controllers.js
 scripts/filters.js
 
 ../../../dhis-web-commons/javascripts/dhis2/dhis2.translate.js
@@ -118,15 +117,6 @@ styles/style.css
 ../../../dhis-web-commons/angular-forms/error-messages.html
 
 
-views/cms.html
-views/left-bar.html
-views/partials/analysis.html
-views/partials/cmsArticleContent.html
-views/partials/cmsMenuContent.html
-views/partials/cmsMessagesContent.html
-views/partials/cmsSharingContent.html
-views/partials/homeArticleContent.html
-views/partials/list_articles.html
 
 ../../../dhis-web-commons/fonts/LiberationSans-Regular-webfont.eot
 ../../../dhis-web-commons/fonts/LiberationSans-Regular-webfont.woff
