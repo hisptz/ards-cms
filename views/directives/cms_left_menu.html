@@ -2,12 +2,12 @@
     <div id="left-Menu">
 
         <accordion close-others="oneAtATime">
-            <accordion-group heading="Data Analysis" is-open="openTab['analysis']" is-disabled="status.isFirstDisabled">
+            <accordion-group class = "bold-accordion-group-header" heading="Data Analysis" is-open="openTab['analysis']" is-disabled="status.isFirstDisabled">
                 <span ng-if="!reportTables" style="padding-left:10px; ">
                     <i class="fa fa-spin fa-spinner" ></i>
                 </span>
                 <accordion close-others="oneAtATime">
-                    <accordion-group heading="{{tables.name}}" is-open="$root.openChildTab[tables.name]" ng-repeat="tables in reportTables">
+                    <accordion-group class = "normal-accordion-group-header" heading="{{tables.name}}" is-open="$root.openChildTab[tables.name]" ng-repeat="tables in reportTables">
                         <ul class="nav nav-pills nav-stacked">
 
                             <li ng-repeat="tableItem in tables.values" style="padding: 0px;font-size:13px;" class="menuitem {{statusClass[tableItem.id]}} listmenu" allstring="{{tableItem.displayName}}">
@@ -21,7 +21,7 @@
 
                 </accordion>
             </accordion-group>
-            <accordion-group heading="Documents" >
+            <accordion-group class = "bold-accordion-group-header" heading="Documents" >
                 <table class="table cms_document">
                     <tbody>
                     <tr>
@@ -68,7 +68,7 @@
                 </form>
 
             </accordion-group>
-            <accordion-group heading="Links">
+            <accordion-group class = "bold-accordion-group-header" heading="Links">
                 <table>
                     <tbody style="font-size:12px!important;">
                     <tr ng-repeat="external in externalLinks track by $index" >
