@@ -847,7 +847,6 @@ var cmsControllers = angular.module('cmsControllers', [])
 
         $rootScope.openChildTab = [];
         $rootScope.openChildTab[$routeParams.menuId] = true;
-        console.log($rootScope.openChildTab)
 
 
     $scope.loadMessages = function(){
@@ -998,11 +997,8 @@ var cmsControllers = angular.module('cmsControllers', [])
     $scope.dataArray         = $routeParams.dx.split(';');
     $scope.categoryArray     = $routeParams.category.split(';');
     $scope.periodType        = getPeriodType($routeParams.period);
-        console.log("Period type:",$scope.periodType)
-
         $rootScope.openChildTab = [];
         $rootScope.openChildTab[$routeParams.menuId] = true;
-        console.log($rootScope.openChildTab);
     $scope.showDataCriteria = true;
 
     if($routeParams.menuId){
@@ -1221,8 +1217,13 @@ var cmsControllers = angular.module('cmsControllers', [])
             angular.forEach($routeParams.period.split(";"),function(period){
                 periodsArray.push(period)
             });
-            var year = periodsArray[0].substring(0,4);
-            $scope.yearValue = year;
+            var year = null;
+            for(var i =0;i<periodsArray.length;i++){
+                if(periodsArray[i] !=""){
+                    year = periodsArray[i].substring(0,4);
+                    break;
+                }
+            }$scope.yearValue = year;
 
             $scope.data.dataperiods = $scope.periodArray(type,year);
             angular.forEach($scope.data.dataperiods,function(data){
@@ -1230,14 +1231,12 @@ var cmsControllers = angular.module('cmsControllers', [])
                     data.selected = true;
                 }
             });
-            console.log($scope.data.dataperiods)
         };
 
         //loading period settings
         $scope.getnextPrevPeriodArray = function(type){
             var year = $scope.yearValue;
             $scope.data.dataperiods = $scope.periodArray(type,year);
-            console.log($scope.data.dataperiods)
         };
 
         //add year by one
@@ -1269,11 +1268,7 @@ var cmsControllers = angular.module('cmsControllers', [])
 
     $scope.periodCallBack = function(item, selectedItems,selectedType) {
 
-        //var criteriaArray = cmsService.getSelectionCriterias(selectedOrgUnit, selectedOrgUnits,selectedType,$location.path());
-        //console.log(criteriaArray);
-        //console.log(selectedOrgUnit);
-        //console.log(selectedOrgUnits);
-        //console.log(criteriaArray);
+
     }
 
     $scope.dataCallBack = function(item, selectedItems,selectedType) {
@@ -1297,7 +1292,6 @@ var cmsControllers = angular.module('cmsControllers', [])
             });
 
              var path = '/analysis/menu/'+$routeParams.menuId+'/favourite/'+$routeParams.favourite+'/period/'+$scope.periodsArray.join(";")+'/orgunit/'+$scope.orgunitsArray.join(";")+'/dx/'+$scope.dataArray.join(";")+'/type/'+$scope.chartType+'/category/'+$scope.data.outputCategory[0].id;
-            console.log(path)
             $location.path(path);
         };
 
