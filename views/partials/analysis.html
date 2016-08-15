@@ -1,5 +1,5 @@
 <div class="row" ng-if="showDataCriteria">
-    <div class="col-sm-2">
+    <div class="col-sm-3">
         <label >Data</label>
 
         <multi-select-tree
@@ -10,7 +10,7 @@
                 >
         </multi-select-tree>
     </div>
-    <div class="col-sm-3">
+    <div class="col-sm-2">
         <label >Administrative Units </label>
         <multi-select-tree
                 data-input-model="organisationUnits"
@@ -63,6 +63,7 @@
     </multi-select-tree>
 </div>
     <div class="col-sm-1">
+        <label >&nbsp;</label>
         <button class="btn btn-sm btn-xs" ng-click="updateData()">Update</button>
     </div>
 

@@ -838,12 +838,16 @@ var cmsControllers = angular.module('cmsControllers', [])
 
 
 })
-.controller('analysisController',function($scope, $window,$routeParams,$location,$filter, cmsService,utilityService){
+.controller('analysisController',function($scope, $window,$routeParams,$location,$filter, cmsService,utilityService,$rootScope){
 
     if($routeParams.menuId){
         $scope.tab = $routeParams.tab;
         $scope.menuId = $routeParams.menuId;
     }
+
+        $rootScope.openChildTab = [];
+        $rootScope.openChildTab[$routeParams.menuId] = true;
+        console.log($rootScope.openChildTab)
 
 
     $scope.loadMessages = function(){
@@ -985,7 +989,7 @@ var cmsControllers = angular.module('cmsControllers', [])
     $scope.loadCharts();
 
 })
-.controller('analysisDataController',function($scope, $window,$routeParams,$location,$filter, cmsService,chartsManager,utilityService){
+.controller('analysisDataController',function($scope, $window,$routeParams,$location,$filter, cmsService,chartsManager,utilityService,$rootScope){
 
     $scope.analyticsUrl      = "";
     $scope.analyticsObject   = "";
@@ -996,7 +1000,9 @@ var cmsControllers = angular.module('cmsControllers', [])
     $scope.periodType        = getPeriodType($routeParams.period);
         console.log("Period type:",$scope.periodType)
 
-
+        $rootScope.openChildTab = [];
+        $rootScope.openChildTab[$routeParams.menuId] = true;
+        console.log($rootScope.openChildTab);
     $scope.showDataCriteria = true;
 
     if($routeParams.menuId){
@@ -1211,12 +1217,12 @@ var cmsControllers = angular.module('cmsControllers', [])
 
         //loading period settings
         $scope.getPeriodArray = function(type){
-            var year = $scope.yearValue;
             var periodsArray = [];
             angular.forEach($routeParams.period.split(";"),function(period){
                 periodsArray.push(period)
             });
             var year = periodsArray[0].substring(0,4);
+            $scope.yearValue = year;
 
             $scope.data.dataperiods = $scope.periodArray(type,year);
             angular.forEach($scope.data.dataperiods,function(data){
@@ -1227,15 +1233,22 @@ var cmsControllers = angular.module('cmsControllers', [])
             console.log($scope.data.dataperiods)
         };
 
+        //loading period settings
+        $scope.getnextPrevPeriodArray = function(type){
+            var year = $scope.yearValue;
+            $scope.data.dataperiods = $scope.periodArray(type,year);
+            console.log($scope.data.dataperiods)
+        };
+
         //add year by one
         $scope.nextYear = function () {
             $scope.yearValue = parseInt($scope.yearValue) + 1;
-            $scope.getPeriodArray($scope.periodType);
+            $scope.getnextPrevPeriodArray($scope.periodType);
         };
         //reduce year by one
         $scope.previousYear = function () {
             $scope.yearValue = parseInt($scope.yearValue) - 1;
-            $scope.getPeriodArray($scope.periodType);
+            $scope.getnextPrevPeriodArray($scope.periodType);
         };
 
         $scope.changePeriodType = function(type){
