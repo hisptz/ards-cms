@@ -784,7 +784,7 @@ cmsServices.service('FileService', function ($http) {
                 var formData = new FormData();
                 formData.append('file', file);
                 var headers = {transformRequest: angular.identity, headers: {'Content-Type': undefined}};
-                var promise = $http.post('../../../api/fileResources', formData, headers).then(function(response){
+                var promise = $http.post('/'+dhis2.settings.baseUrl+'/api/fileResources', formData, headers).then(function(response){
                     return response.data;
                 });
                 return promise;
