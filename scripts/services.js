@@ -515,8 +515,9 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
     cms.saveFileResource = function   ( dataElementId, optionComboId, fieldId, fileResource, onSuccessCallback )
     {
         fieldId = '#' + fieldId;
+        var currentPeriod = new Date();
 
-        var periodId = "2016";
+        var periodId = currentPeriod.getFullYear();
 
         var valueSaver = new FileResourceValueSaver( dataElementId, periodId, optionComboId, fileResource, fieldId, dhis2.de.cst.colorGreen, onSuccessCallback );
         valueSaver.save();

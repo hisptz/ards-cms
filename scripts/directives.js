@@ -658,11 +658,11 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FileService','$location',f
                 //
                 //})
                 console.log(scope.file);
-                //cmsService.saveFileResource( dataElementId, optionComboId, fieldId, fileResource,
-                //function(successObject){
-                //    // success callback
-                //    console.log(successObject)
-                //});
+                cmsService.saveFileResource( dataElementId, optionComboId, fieldId, fileResource,
+                function(successObject){
+                   // success callback
+                   console.log(successObject)
+                });
 
             }
 
