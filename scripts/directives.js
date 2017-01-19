@@ -643,8 +643,8 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FileService','$location',f
 
             // documents functions
             scope.uploadFile = function (fieldId,document) {
-                var dataElementId = "e6aOkIU9B1V";
-                var optionComboId = "o3HssvQoSuJ";
+                var dataElementId = "cbfeUEwQm9I";
+                var optionComboId = "WgIlmdIhlpD";
                 var fieldId = fieldId;
                 var fileResource = "";
 
