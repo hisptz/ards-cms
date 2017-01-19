@@ -1,13 +1,14 @@
 <div class="row" ng-if="showDataCriteria">
     <div class="col-sm-3">
-        <label >Data</label>
+        <label >Data </label>
 
         <multi-select-tree
                 data-input-model="dataDimension"
                 multi-select="true"
                 data-output-model="data.outputData"
+                data-maximum-label="{{data.outputData.length}} data selected"
                 data-default-label="Select Data"
-                >
+        >
         </multi-select-tree>
     </div>
     <div class="col-sm-2">
@@ -16,52 +17,55 @@
                 data-input-model="organisationUnits"
                 multi-select="true"
                 data-output-model="data.organisationUnitOutPut"
+                data-maximum-label="{{data.organisationUnitOutPut.length}} administrative units selected"
                 data-default-label="Select Administrative Units"
         >
         </multi-select-tree>
     </div>
-<div class="col-sm-2">
-    <label >Periods </label>
-    <select id="periods" class="form-control"
-            ng-model="periodType"
-            ng-change="changePeriodType(periodType)">
+    <div class="col-sm-2">
+        <label >Periods </label>
+        <select id="periods" class="form-control"
+                ng-model="periodType"
+                ng-change="changePeriodType(periodType)">
 
-        <option value="">[ Select period type ]</option>
+            <option value="">[ Select period type ]</option>
 
-        <option
-                ng-repeat="type in data.periodTypes"
-                value="{{type.value}}"
-                ng-selected="{{type.value==periodType}}"
-        >
+            <option
+                    ng-repeat="type in data.periodTypes"
+                    value="{{type.value}}"
+                    ng-selected="{{type.value==periodType}}"
+            >
                 {{type.name}}
-        </option>
+            </option>
 
-    </select>
-    <button type="button" class="btn btn-default btn-sm sans-pro" style="width: 50%" ng-click="previousYear(periodType)"><< Prev</button>
-    <button type="button" class="pull-right btn btn-default btn-sm sans-pro" style="width: 50%" ng-click="nextYear(periodType)">Next >></button> 
-</div>
+        </select>
+        <button type="button" class="btn btn-default btn-sm sans-pro" style="width: 50%" ng-click="previousYear(periodType)"><< Prev</button>
+        <button type="button" class="pull-right btn btn-default btn-sm sans-pro" style="width: 50%" ng-click="nextYear(periodType)">Next >></button>
+    </div>
     <div class="col-sm-2">
         <label >&nbsp </label>
         <multi-select-tree
                 data-input-model="data.dataperiods"
                 multi-select="true"
                 data-output-model="data.outputPeriods"
+                data-maximum-label="{{data.outputPeriods.length}} periods selected"
                 data-default-label="Select Period"
-                >
+        >
         </multi-select-tree>
         <br/>
     </div>
 
     <div class="col-sm-2">
         <label >Category</label>
-    <multi-select-tree
-            data-input-model="categoryDimension"
-            multi-select="false"
-            data-output-model="data.outputCategory"
-            data-default-label="Select Category"
-    >
-    </multi-select-tree>
-</div>
+        <multi-select-tree
+                data-input-model="categoryDimension"
+                multi-select="false"
+                data-output-model="data.outputCategory"
+                data-maximum-label="{{data.outputCategory.length}} categories selected"
+                data-default-label="Select Category"
+        >
+        </multi-select-tree>
+    </div>
     <div class="col-sm-1">
         <label >&nbsp;</label>
         <button class="btn btn-sm btn-xs" ng-click="updateData()">Update</button>
@@ -71,14 +75,14 @@
 <br/>
 <div class="row">
     <div class="col-sm-12">
-        <a class="btn {{btnClass['table'] ? 'btn-success' : 'btn-default'}}" title="Table" href="" ng-click="chartSwitcher('table','')"><img src="img/table.jpg" style="width: 20px;height: 20px;"></a>
-        <a class="btn {{btnClass['column'] ? 'btn-success' : 'btn-default'}}" title="Column Chart" ng-click="chartSwitcher('column','')"><img src="img/column.png" style="width: 15px"></a>
-        <a class="btn {{btnClass['bar'] ? 'btn-success' : 'btn-default'}}" title="Bar Chart" ng-click="chartSwitcher('bar','')"><img src="img/bar.png" style="width: 15px"></a>
-        <a class="btn {{btnClass['line'] ? 'btn-success' : 'btn-default'}}" title="Line Chart" ng-click="chartSwitcher('line','')"><img src="img/line.png" style="width: 15px"></a>
-        <a class="btn {{btnClass['pie'] ? 'btn-success' : 'btn-default'}}" title="Pie Chart" ng-click="chartSwitcher('pie','')"><img src="img/pie.png" style="width: 15px"></a>
-        <a class="btn {{btnClass['stacked_column'] ? 'btn-success' : 'btn-default'}}" title="Stacked Chart" ng-click="chartSwitcher('stacked_column','')"><img src="img/bar-stacked.png" style="width: 15px"></a>
-        <a class="btn {{btnClass['radar'] ? 'btn-success' : 'btn-default'}}" title="Spider Chart" ng-click="chartSwitcher('radar','')"><img src="img/radar.png" style="width: 15px"></a>
-        <a class="btn {{btnClass['csv'] ? 'btn-success' : 'btn-default'}}" title="Excel File" ng-click="chartSwitcher('csv','')"><img src="img/cvs.jpg" style="width: 15px"></a>
+        <a class="btn {{btnClass['table'] ? 'btn-success' : 'btn-default'}}" title="Table" href="" ng-click="chartSwitcher('table','')"><img src="images/table.jpg" style="width: 20px;height: 20px;"></a>
+        <a class="btn {{btnClass['column'] ? 'btn-success' : 'btn-default'}}" title="Column Chart" ng-click="chartSwitcher('column','')"><img src="images/column.png" style="width: 15px"></a>
+        <a class="btn {{btnClass['bar'] ? 'btn-success' : 'btn-default'}}" title="Bar Chart" ng-click="chartSwitcher('bar','')"><img src="images/bar.png" style="width: 15px"></a>
+        <a class="btn {{btnClass['line'] ? 'btn-success' : 'btn-default'}}" title="Line Chart" ng-click="chartSwitcher('line','')"><img src="images/line.png" style="width: 15px"></a>
+        <a class="btn {{btnClass['pie'] ? 'btn-success' : 'btn-default'}}" title="Pie Chart" ng-click="chartSwitcher('pie','')"><img src="images/pie.png" style="width: 15px"></a>
+        <a class="btn {{btnClass['stacked_column'] ? 'btn-success' : 'btn-default'}}" title="Stacked Chart" ng-click="chartSwitcher('stacked_column','')"><img src="images/bar-stacked.png" style="width: 15px"></a>
+        <a class="btn {{btnClass['radar'] ? 'btn-success' : 'btn-default'}}" title="Spider Chart" ng-click="chartSwitcher('radar','')"><img src="images/radar.png" style="width: 15px"></a>
+        <a class="btn {{btnClass['csv'] ? 'btn-success' : 'btn-default'}}" title="Excel File"  lazy-load="true"  ng-csv="csvObject.rows" csv-header="csvObject.headers" field-separator="," filename="ards_data_analysis_{{current_date}}.csv"><img src="images/cvs.jpg" style="width: 15px"></a>
     </div>
 
 </div>

@@ -113,26 +113,28 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
         // save document to storage
         var documents = [];
 
-        var url = "../../../api/dataStore/chartsStorage/availableCharts";
-        return $http({method:'POST',data:documents,url:url}).then(handleSuccess, handleError("Error hiding documents"));
+        return "";
+
+        // var url = "../../../api/dataStore/chartsStorage/availableCharts";
+        // return $http({method:'POST',data:documents,url:url}).then(handleSuccess, handleError("Error hiding documents"));
     }
 
 
     cms.showDocument = function(documentId){
         // save document to storage
         var documents = [];
-
-        var url = "../../../api/dataStore/chartsStorage/availableCharts";
-        return $http({method:'POST',data:documents,url:url}).then(handleSuccess, handleError("Error sho documents"));
+        return "";
+        // var url = "../../../api/dataStore/chartsStorage/availableCharts";
+        // return $http({method:'POST',data:documents,url:url}).then(handleSuccess, handleError("Error sho documents"));
     }
 
 
     cms.removeDocument = function(charts){
         // save charts to storage
         var documents = [];
-
-        var url = "../../../api/dataStore/chartsStorage/availableCharts";
-        return $http({method:'POST',data:documents,url:url}).then(handleSuccess, handleError("Error remove documents"));
+        return "";
+        // var url = "../../../api/dataStore/chartsStorage/availableCharts";
+        // return $http({method:'POST',data:documents,url:url}).then(handleSuccess, handleError("Error remove documents"));
     }
 
 
@@ -167,7 +169,7 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
             modifiedCharts.push({id:chartValue.id,name:chartValue.displayName});
         });
         var url = "../../../api/dataStore/chartsStorage/selectedCharts";
-        return $http({method:'POST',data:modifiedCharts,url:url}).then(handleSuccess, handleError("Error storing adding charts"));
+        return $http({method:'PUT',data:modifiedCharts,url:url}).then(handleSuccess, handleError("Error storing adding charts"));
     }
 
     cms.refineCharts = function(charts){
@@ -420,13 +422,17 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
         var menuarr = [{'name':"Agriculture",values:[]},{'name':"Livestock",values:[]},{'name':"Fishery",values:[]},{'name':"Trade",values:[]},{'name':"General Information",values:[]}];
         var arrayCounter = 0;
 
-        console.log(reportTables);
+
         angular.forEach( reportTables , function( value ){
             var arr = value.displayName.split(':');
             if(arr.length != 1){
                 angular.forEach(menuarr,function(menuValue){
                     if(arr[0] == menuValue.name){
-                        menuValue.values.push({id:value.id,displayName:arr[1],shortName:arr[1].substring(0,20)+"...",period:cms.preparePeriodFromReportTables(value),orgUnit:cms.prepareOrgUnitFromReportTables(value),dx:cms.prepareDxFromReportTables(value),filter:value.filterDimensions[0]});
+                        var filterDimension = "pe";
+                        if (value.filterDimensions.length > 0){
+                            filterDimension = value.filterDimensions[0];
+                        }
+                        menuValue.values.push({id:value.id,displayName:arr[1],shortName:arr[1].substring(0,20)+"...",period:cms.preparePeriodFromReportTables(value),orgUnit:cms.prepareOrgUnitFromReportTables(value),dx:cms.prepareDxFromReportTables(value),filter:filterDimension});
                     }
                 })
 

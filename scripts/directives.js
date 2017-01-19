@@ -720,7 +720,7 @@ cmsDirectives.directive("cmsTabs", function(){
             }
 
             $scope.switchPage = function(){
-                window.location.href = '/demo/api/apps/home/index.html';
+                window.location.href = "/"+dhis2.settings.baseUrl+'/api/apps/home/index.html';
             }
 
 

@@ -10,6 +10,18 @@ html, body {
     display: none;
 }
 
+
+nav .caret {
+    border-top-color: #fff !important;
+    border-bottom-color: #fff !important;
+}
+.navbar-inverse .navbar-brand {
+    color: #ffffff!important;;
+}
+.navbar-inverse .navbar-nav > li > a {
+    color: #ffffff!important;
+}
+
 @media print {
     .not-for-screen {
         display: block;

@@ -997,7 +997,9 @@ var cmsControllers = angular.module('cmsControllers', [])
     $scope.dataArray         = $routeParams.dx.split(';');
     $scope.categoryArray     = $routeParams.category.split(';');
     $scope.periodType        = getPeriodType($routeParams.period);
-        $rootScope.openChildTab = [];
+    $scope.selectedPeriod    = $routeParams.period;
+
+    $rootScope.openChildTab = [];
         $rootScope.openChildTab[$routeParams.menuId] = true;
     $scope.showDataCriteria = true;
 
@@ -1007,183 +1009,102 @@ var cmsControllers = angular.module('cmsControllers', [])
         $scope.favourite = $routeParams.favourite;
     }
 
-        $scope.periodArray = function(type,year){
-            var periods = [];
-            if(type == "Weekly"){
-                periods.push({id:'',name:''})
-            }else if(type == "Monthly"){
-                periods.push({id:year+'01',name:'January '+year,selected:true},{id:year+'02',name:'February '+year},{id:year+'03',name:'March '+year},{id:year+'04',name:'April '+year},{id:year+'05',name:'May '+year},{id:year+'06',name:'June '+year},{id:year+'07',name:'July '+year},{id:year+'08',name:'August '+year},{id:year+'09',name:'September '+year},{id:year+'10',name:'October '+year},{id:year+'11',name:'November '+year},{id:year+'12',name:'December '+year})
-            }else if(type == "BiMonthly"){
-                periods.push({id:year+'01B',name:'January - February '+year,selected:true},{id:year+'02B',name:'March - April '+year},{id:year+'03B',name:'May - June '+year},{id:year+'04B',name:'July - August '+year},{id:year+'05B',name:'September - October '+year},{id:year+'06B',name:'November - December '+year})
-            }else if(type == "Quarterly"){
-                periods.push({id:year+'Q1',name:'January - March '+year,selected:true},{id:year+'Q2',name:'April - June '+year},{id:year+'Q3',name:'July - September '+year},{id:year+'Q4',name:'October - December '+year})
-            }else if(type == "SixMonthly"){
-                periods.push({id:year+'S1',name:'January - June '+year,selected:true},{id:year+'S2',name:'July - December '+year})
-            }else if(type == "SixMonthlyApril"){
-                periods.push({id:year+'AprilS2',name:'October 2011 - March 2012',selected:true},{id:year+'AprilS1',name:'April - September '+year})
-            }else if(type == "FinancialOct"){
-                for (var i = 0; i <= 10; i++) {
-                    var useYear = parseInt(year) - i;
-                    if(i == 1){
-                        periods.push({id:useYear+'Oct',name:'October '+useYear+' - September '+useYear,selected:true})
-                    }else{
-                        periods.push({id:useYear+'Oct',name:'October '+useYear+' - September '+useYear})
-                    }
-                }
-            }else if(type == "Yearly"){
-                for (var i = 0; i <= 10; i++) {
-                    var useYear = parseInt(year) - i;
-                    if(i == 1){
-                        periods.push({id:useYear,name:useYear,selected:true})
-                    }else{
-                        periods.push({id:useYear,name:useYear})
-                    }
+    $scope.periodArray = function(type,year){
 
-                }
-            }else if(type == "FinancialJuly"){
-                year = new Date().getFullYear();
-                for (var i = 0; i <= 10; i++) {
-                    var yearr = useYear;
-                    var useYear = parseInt(year) - i;
-                    if(i == 1){
-                        periods.push({id:useYear+'July',name:'July '+useYear+' - June '+yearr,selected:true})
-                    }else{
-                        periods.push({id:useYear+'July',name:'July '+useYear+' - June '+yearr})
-                    }
-                }
-            }else if(type == "FinancialApril"){
-                for (var i = 0; i <= 10; i++) {
-                    var useYear = parseInt(year) - i;
-                    if(i == 1){
-                        periods.push({id:useYear+'April',name:'April '+useYear+' - March '+useYear,selected:true})
-                    }else{
-                        periods.push({id:useYear+'April',name:'April '+useYear+' - March '+useYear})
-                    }
-                }
-            }else if(type == "Relative Weeks"){
-                periods.push({id:'THIS_WEEK',name:'This Week'},{id:'LAST_WEEK',name:'Last Week'},{id:'LAST_4_WEEK',name:'Last 4 Weeks',selected:true},{id:'LAST_12_WEEK',name:'last 12 Weeks'},{id:'LAST_52_WEEK',name:'Last 52 weeks'});
-            }else if(type == "Relative Month"){
-                periods.push({id:'THIS_MONTH',name:'This Month'},{id:'LAST_MONTH',name:'Last Month'},{id:'LAST_3_MONTHS',name:'Last 3 Month'},{id:'LAST_6_MONTHS',name:'Last 6 Month'},{id:'LAST_12_MONTHS',name:'Last 12 Month',selected:true});
-            }else if(type == "Relative Bi-Month"){
-                periods.push({id:'THIS_BIMONTH',name:'This Bi-month'},{id:'LAST_BIMONTH',name:'Last Bi-month'},{id:'LAST_6_BIMONTHS',name:'Last 6 bi-month',selected:true});
-            }else if(type == "Relative Quarter"){
-                periods.push({id:'THIS_QUARTER',name:'This Quarter'},{id:'LAST_QUARTER',name:'Last Quarter'},{id:'LAST_4_QUARTERS',name:'Last 4 Quarters',selected:true});
-            }else if(type == "Relative Six Monthly"){
-                periods.push({id:'THIS_SIX_MONTH',name:'This Six-month'},{id:'LAST_SIX_MONTH',name:'Last Six-month'},{id:'LAST_2_SIXMONTHS',name:'Last 2 Six-month',selected:true});
-            }else if(type == "Relative Year"){
-                periods.push({id:'THIS_FINANCIAL_YEAR',name:'This Year'},{id:'LAST_FINANCIAL_YEAR',name:'Last Year',selected:true},{id:'LAST_5_FINANCIAL_YEARS',name:'Last 5 Years'});
-            }else if(type == "Relative Financial Year"){
-                periods.push({id:'THIS_YEAR',name:'This Financial Year'},{id:'LAST_YEAR',name:'Last Financial Year',selected:true},{id:'LAST_5_YEARS',name:'Last 5 Five financial years'});
+        function inArray(needle,haystack)
+        {
+            var count=haystack.length;
+            for(var i=0;i<count;i++)
+            {
+                if(haystack[i]===needle){return true;}
             }
-            return periods;
-        };
+            return false;
+        }
+
+        var periods = [];
+        if(type == "Weekly"){
+            periods.push({id:'',name:''})
+        }else if(type == "Monthly"){
+            periods.push({id:year+'01',name:'January '+year,selected:true},{id:year+'02',name:'February '+year},{id:year+'03',name:'March '+year},{id:year+'04',name:'April '+year},{id:year+'05',name:'May '+year},{id:year+'06',name:'June '+year},{id:year+'07',name:'July '+year},{id:year+'08',name:'August '+year},{id:year+'09',name:'September '+year},{id:year+'10',name:'October '+year},{id:year+'11',name:'November '+year},{id:year+'12',name:'December '+year})
+        }else if(type == "BiMonthly"){
+            periods.push({id:year+'01B',name:'January - February '+year,selected:true},{id:year+'02B',name:'March - April '+year},{id:year+'03B',name:'May - June '+year},{id:year+'04B',name:'July - August '+year},{id:year+'05B',name:'September - October '+year},{id:year+'06B',name:'November - December '+year})
+        }else if(type == "Quarterly"){
+            periods.push({id:year+'Q1',name:'January - March '+year,selected:true},{id:year+'Q2',name:'April - June '+year},{id:year+'Q3',name:'July - September '+year},{id:year+'Q4',name:'October - December '+year})
+        }else if(type == "SixMonthly"){
+            periods.push({id:year+'S1',name:'January - June '+year,selected:true},{id:year+'S2',name:'July - December '+year})
+        }else if(type == "SixMonthlyApril"){
+            periods.push({id:year+'AprilS2',name:'October 2011 - March 2012',selected:true},{id:year+'AprilS1',name:'April - September '+year})
+        }else if(type == "FinancialOct"){
+            for (var i = 0; i <= 10; i++) {
+                var useYear = parseInt(year) - i;
+                if(inArray(useYear+'Oct',$routeParams.period.split(';'))){
+                    periods.push({id:useYear+'Oct',name:'October '+useYear+' - September '+useYear,selected:true})
+                }else{
+                    periods.push({id:useYear+'Oct',name:'October '+useYear+' - September '+useYear})
+                }
+            }
+        }else if(type == "Yearly"){
+            for (var i = 0; i <= 10; i++) {
+                var useYear = parseInt(year) - i;
+                if(inArray(useYear,$routeParams.period.split(';'))){
+                    periods.push({id:useYear,name:useYear,selected:true})
+                }else{
+                    periods.push({id:useYear,name:useYear})
+                }
+
+            }
+        }else if(type == "FinancialJuly"){
+
+            year = new Date().getFullYear();
+            for (var i = 0; i <= 10; i++) {
+                var yearr = year;
+                var useYear = parseInt(year) - i;
+                var comparingValue = useYear+'July';
+                if(inArray(comparingValue,$routeParams.period.split(';'))){
+                    periods.push({id:useYear+'July',name:'July '+useYear+' - June '+yearr,selected:true})
+                }else{
+                    periods.push({id:useYear+'July',name:'July '+useYear+' - June '+yearr})
+                }
+            }
+        }else if(type == "FinancialApril"){
+            for (var i = 0; i <= 10; i++) {
+                var useYear = parseInt(year) - i;
+                if(inArray(useYear+'April',$routeParams.period.split(';'))){
+                    periods.push({id:useYear+'April',name:'April '+useYear+' - March '+useYear,selected:true})
+                }else{
+                    periods.push({id:useYear+'April',name:'April '+useYear+' - March '+useYear})
+                }
+            }
+        }else if(type == "Relative Weeks"){
+            periods.push({id:'THIS_WEEK',name:'This Week'},{id:'LAST_WEEK',name:'Last Week'},{id:'LAST_4_WEEK',name:'Last 4 Weeks',selected:true},{id:'LAST_12_WEEK',name:'last 12 Weeks'},{id:'LAST_52_WEEK',name:'Last 52 weeks'});
+        }else if(type == "Relative Month"){
+            periods.push({id:'THIS_MONTH',name:'This Month'},{id:'LAST_MONTH',name:'Last Month'},{id:'LAST_3_MONTHS',name:'Last 3 Month'},{id:'LAST_6_MONTHS',name:'Last 6 Month'},{id:'LAST_12_MONTHS',name:'Last 12 Month',selected:true});
+        }else if(type == "Relative Bi-Month"){
+            periods.push({id:'THIS_BIMONTH',name:'This Bi-month'},{id:'LAST_BIMONTH',name:'Last Bi-month'},{id:'LAST_6_BIMONTHS',name:'Last 6 bi-month',selected:true});
+        }else if(type == "Relative Quarter"){
+            periods.push({id:'THIS_QUARTER',name:'This Quarter'},{id:'LAST_QUARTER',name:'Last Quarter'},{id:'LAST_4_QUARTERS',name:'Last 4 Quarters',selected:true});
+        }else if(type == "Relative Six Monthly"){
+            periods.push({id:'THIS_SIX_MONTH',name:'This Six-month'},{id:'LAST_SIX_MONTH',name:'Last Six-month'},{id:'LAST_2_SIXMONTHS',name:'Last 2 Six-month',selected:true});
+        }else if(type == "Relative Year"){
+            periods.push({id:'THIS_FINANCIAL_YEAR',name:'This Year'},{id:'LAST_FINANCIAL_YEAR',name:'Last Year',selected:true},{id:'LAST_5_FINANCIAL_YEARS',name:'Last 5 Years'});
+        }else if(type == "Relative Financial Year"){
+            periods.push({id:'THIS_YEAR',name:'This Financial Year'},{id:'LAST_YEAR',name:'Last Financial Year',selected:true},{id:'LAST_5_YEARS',name:'Last 5 Five financial years'});
+        }
+        console.log(periods);
+
+        return periods;
+    };
+
     $scope.data = {};
-        $scope.data.periodTypes = [
+    $scope.data.periodTypes = [
             {name:"Monthly", value:"Monthly"},
             {name:"Quarterly", value:"Quarterly"},
             {name:"Yearly", value:"Yearly"},
             {name:"Financial-July", value:"FinancialJuly"}
-        ]
+    ]
 
 
-    //    "Monthly": {
-    //        name: "Monthly", value: "Monthly", list: [],
-    //            populateList: function (date) {
-    //            var monthNames = ["July", "August", "September", "October", "November", "December", "January", "February", "March", "April", "May", "June"];
-    //            if (!date) {
-    //                date = new Date();
-    //            }
-    //            this.list = [];
-    //            var that = this;
-    //            var year = date.getFullYear();
-    //            monthNames.forEach(function (monthName, index) {
-    //
-    //                var monthVal = index + 7;
-    //
-    //                if (monthVal > 12) {
-    //                    monthVal = monthVal % 12;
-    //                }
-    //                if (monthVal == 1) {
-    //                    year++;
-    //                }
-    //                var testDate = new Date();
-    //                if ((year == testDate.getFullYear() && monthVal > (testDate.getMonth() + 1)) || year > testDate.getFullYear()) {
-    //                    return;
-    //                }
-    //                if (monthVal < 10) {
-    //                    monthVal = "0" + monthVal;
-    //                }
-    //                that.list.push({
-    //                    name: monthName + " " + year,
-    //                    value: year + "" + monthVal
-    //                })
-    //            });
-    //            if (this.list.length == 0) {
-    //                this.populateList(new Date(date.getFullYear() - 2, date.getMonth() + 1, date.getDate()))
-    //            }
-    //        }
-    //    },
-    //    "Quarterly": {
-    //        name: "Quarterly", value: "Quarterly", list: [],
-    //            populateList: function (date) {
-    //            var quarters = ["July - September", "October - December", "January - March", "April - June"];
-    //            if (!date) {
-    //                date = new Date();
-    //            }
-    //            //this.list = [];
-    //            var that = this;
-    //            var year = date.getFullYear();
-    //            quarters.forEach(function (quarter, index) {
-    //                var quarterVal = index + 3;
-    //                if (quarterVal == 5) {
-    //                    quarterVal = 1;
-    //                }
-    //                if (quarterVal == 6) {
-    //                    quarterVal = 2;
-    //                }
-    //                if (quarterVal == 1) {
-    //                    year++;
-    //                }
-    //                var testDate = new Date();
-    //                if ((year == testDate.getFullYear() && quarterVal > ((testDate.getMonth() + 1) % 4)) || year > testDate.getFullYear()) {
-    //                    return;
-    //                }
-    //                that.list.push({
-    //                    name: quarter + " " + year,
-    //                    value: year + "Q" + quarterVal
-    //                })
-    //            });
-    //            if (this.list.length == 0) {
-    //                this.populateList(new Date(date.getFullYear() - 2, date.getMonth() + 1, date.getDate()))
-    //            }
-    //        }
-    //    },
-    //    "Yearly": {
-    //        name: "Yearly", value: "Yearly", list: [],
-    //            populateList: function () {
-    //            var date = new Date();
-    //            this.list = [];
-    //            for (var i = date.getFullYear() - 5; i < date.getFullYear() + 5; i++) {
-    //                this.list.push({name: "" + i,value: "" + i});
-    //            }
-    //        }
-    //    },
-    //    "FinancialJuly": {
-    //        name: "Financial-July", value: "FinancialJuly", list: [],
-    //            populateList: function () {
-    //            var date = new Date();
-    //            this.list = [];
-    //            var testDate = new Date();
-    //
-    //            for (var i = date.getFullYear() - 5; i < date.getFullYear() + 5; i++) {
-    //                if ((i == testDate.getFullYear() && (testDate.getMonth() + 1) < 7) || (i == (testDate.getFullYear() - 1) && (testDate.getMonth() + 1) < 7) || i > testDate.getFullYear()) {
-    //                    continue;
-    //                }
-    //                this.list.push({name: "July " + i + " - June " + (i + 1), value: i + "July"});
-    //            }
-    //        }
-    //    }
-    //}}
+
 
     $scope.changePeriodType = function(periodType) {
         if ( periodType!=null && periodType != "" ) {
@@ -1193,11 +1114,8 @@ var cmsControllers = angular.module('cmsControllers', [])
             var thisYear = date.getFullYear();
             for( var i=0 ; i<limit ; i++ ) {
                 var date = new Date((thisYear-i)+"-01"+"-01");
-                //console.log(thisYear-i);
-                //console.log(date);
-                //$scope.data.periodTypes[periodType].populateList(date);
             }
-            console.log("periods:",$scope.data.periodTypes[periodType]);
+
             angular.forEach($routeParams.period.split(';'),function(value,index){
                 if(valueList.value == value) {
                     $scope.data.periodTypes[periodType].list[indexList].selected = true;
@@ -1474,6 +1392,5 @@ var cmsControllers = angular.module('cmsControllers', [])
     $scope.getReportTable();
     $scope.loadMessages();
     $scope.loadRawCharts();
-    $scope.loadCharts();
 
 });
