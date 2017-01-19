@@ -24,16 +24,16 @@
             <accordion-group class = "bold-accordion-group-header" heading="Documents" >
                 <table class="table cms_document">
                     <tbody>
-                    <tr>
+                    <tr ng-repeat="document in shownDocuments">
                         <td>
-                            <a title="View Document(Download)" style="padding: 0px 4px;font-size:12px;" target="_blank" href="http://ards.go.tz/api/documents/DrBQahJ6prB/data" class="text-success">
-                                <span class="fa fa-globe"></span>&nbsp;&nbsp;ASLMs Data Collection Format</a>
+                            <a title="View Document(Download)" style="padding: 0px 4px;font-size:12px;" target="_blank" href="/api/documents/{{document.id}}/data" class="text-success">
+                                <span class="fa fa-globe">{{document.displayName}}</span>&nbsp;&nbsp;</a>
                         </td>
                         <td style="width:20px;">
-                            <a href="#" class="hide_document" id="document_hides,64">
+                            <a href="#" class="hide_document" id="hide_{{document.id}}">
                                 <i style="color:orange" title="Hide Document " class="fa fa-minus pull-right"></i>
                             </a>
-                            <a class="delete_document" href="#" id="deleteDocument_64">
+                            <a class="delete_document" href="#" id="delete_{{document.id}}">
                                 <i style="color:red;" title="Delete Document" class="fa fa-trash-o pull-right"></i>
                             </a>
                         </td>

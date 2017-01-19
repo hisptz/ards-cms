@@ -666,6 +666,17 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FileService','$location',f
 
             }
 
+            scope.documents = null;
+
+            scope.listDocuments = function(){
+               cmsService.loadDocuments().then(function(data){
+
+                   scope.shownDocuments = data.documents;
+               })
+            }
+
+            scope.listDocuments();
+
 
             scope.loadExternalLinks();
 
