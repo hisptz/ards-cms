@@ -47,6 +47,13 @@
             });
           });
 
+
+            // Destroy editor when the scope is destroyed.
+            element.bind('$destroy', function () {
+                // ckeditor.instance.destroy(false );
+                controller.instance.destroy(false);
+            });
+
           controller.instance.setReadOnly(!! attrs.readonly);
           attrs.$observe('readonly', function (readonly) {
             controller.instance.setReadOnly(!! readonly);
@@ -142,12 +149,5 @@
       return readyDeferred.promise;
     };
 
-    // Destroy editor when the scope is destroyed.
-    $scope.$on('$destroy', function onDestroy() {
-      // do not delete too fast or pending events will throw errors
-      readyDeferred.promise.then(function() {
-        instance.destroy(false);
-      });
-    });
   }
 }));

@@ -64,7 +64,7 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
 
     cms.uploadDocument = function(file){
 
-        var url = "../../../api/fileResources";
+        var url = "/"+dhis2.settings.baseUrl+"/api/fileResources";
         return $http({method:'POST',headers: {  'Content-Type'  : 'multipart/form-data'},data:file,url:url}).then(handleSuccess, handleError("Error storing file"));
     }
 
@@ -285,16 +285,21 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
     }
 
     cms.getMessages = function(){
-        return cms.retrieveSetting();
+        return cms.retrieveMessages();
     }
 
     cms.addMessage = function(settingObject){
-
-        return cms.postSettings(settingObject);
+        return cms.postMessages(settingObject);
     }
 
-    cms.deleteMessage = function(messageId){
-        cms.deleteSetting(messageId);
+    cms.deleteMessage = function(messageObject,messageId){
+        messageObject[messageId] = "";
+
+        cms.updateMessages(messageObject);
+    }
+
+    cms.updateMessage = function(messageObject){
+        cms.updateMessages(messageObject);
     }
 
     cms.loadEvent = function(eventObject){
@@ -331,22 +336,24 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
 
 
 
-    cms.retrieveSetting = function(){
-
-        var url = "../../../api/systemSettings";
+    cms.retrieveMessages = function(){
+        var url = "../../../api/dataStore/messages/textMessages";
         return $http.get(url).then(handleSuccess, handleError("Error loading Messages"));
     }
 
 
-    cms.postSettings = function(dataObject){
-        var url = "../../../api/systemSettings";
-        return $http({method:'POST',data:dataObject,url:url}).then(handleSuccess, handleError(""));
+    cms.postMessages = function(dataObject){
+        var messageUrl = "../../../api/dataStore/messages/textMessages";
+        return $http({method:'POST',data:dataObject,url:messageUrl}).then(handleSuccess, handleError(""));
     }
 
-    cms.deleteSetting = function(data){
-        var url = "../../../api/systemSettings/"+data;
-        return $http({method:'DELETE',url:url}).then(handleSuccess, handleError(""));
+    cms.updateMessages = function(dataObject){
+        var messageObject = {messageOne:dataObject.messageOne,messageTwo:dataObject.messageTwo};
+        var messageUrl = "../../../api/dataStore/messages/textMessages";
+        return $http({method:'PUT',data:messageObject,url:messageUrl}).then(handleSuccess, handleError(""));
     }
+
+
 
     cms.saveEvent = function(eventPayload,errorMessage){
         var url = "../../../api/events";
@@ -781,13 +788,7 @@ cmsServices.service('FileService', function ($http) {
                 return promise;
             },
             upload: function(file){
-                var formData = new FormData();
-                formData.append('file', file);
-                var headers = {transformRequest: angular.identity, headers: {'Content-Type': undefined}};
-                var promise = $http.post('/'+dhis2.settings.baseUrl+'/api/fileResources', formData, headers).then(function(response){
-                    return response.data;
-                });
-                return promise;
+
             }
         };
     })

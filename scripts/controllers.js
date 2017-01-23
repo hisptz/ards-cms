@@ -78,10 +78,30 @@ var cmsControllers = angular.module('cmsControllers', [])
 
             };
 
+            $scope.loadMessages = function(){
+                $scope.messages = [];
+                cmsService.getMessages().then(function(response){
+
+                    if (response['messageOne']){
+                        $scope.messages[0] = response.messageOne;
+                    }
+
+                    if (response['messageTwo']){
+                        $scope.messages[1] = response.messageTwo;
+                    }
+
+
+
+                },function(error){
+
+                });
+            }
+
+            $scope.loadMessages();
             $scope.getReportTable();
-   String.prototype.Capitalize = function() {
-        return this.charAt(0).toUpperCase() + this.slice(1);
-   }
+            String.prototype.Capitalize = function() {
+                return this.charAt(0).toUpperCase() + this.slice(1);
+            }
 })
 
 .controller('cmsController',function($scope, $window,$routeParams,$location,$filter,cmsService,utilityService){
@@ -506,99 +526,101 @@ var cmsControllers = angular.module('cmsControllers', [])
 
         $scope.loadMessages = function(){
         $scope.messages = [];
-        cmsService.getMessages().then(function(response){
+            cmsService.getMessages().then(function(response){
 
-            if(response.messageOne){
-                $scope.messages.push(response.messageOne);
-            }
+                if (response['messageOne']){
+                    $scope.messages[0] = response.messageOne;
+                }
+                if (response['messageTwo']){
+                    $scope.messages[1] = response.messageTwo;
+                }
 
-            if(response.messageTwo){
-                $scope.messages.push(response.messageTwo);
-            }
 
 
-        });
+            },function(error){
+
+            });
         }
 
         // checking for current selected item by id
-        if($routeParams.edit_id){
-        /**
-         * Edit messages
-         * */
-        $scope.message_action = "edit";
-        $scope.editId = $routeParams.edit_id;
-        $scope.edited_message = null;
-
-            cmsService.getMessages().then(function(response){
-                $scope.messagesEdit = [];
-                if(response.messageOne){
-                    $scope.messagesEdit.push(response.messageOne);
-                }
-
-                if(response.messageTwo){
-                    $scope.messagesEdit.push(response.messageTwo);
-                }
-
-                angular.forEach($scope.messagesEdit,function(messageValue,messageIndex){
-                    if(messageValue.id==$scope.editId){
-                        $scope.edited_message = messageValue;
-                        $scope.messageTitle = $scope.edited_message.title;
-                        $scope.editContent = $scope.edited_message.body;
-                    }
-                });
-
-            });
-
-
-
-
-    }
+        //         if($routeParams.edit_id){
+        //         /**
+        //          * Edit messages
+        //          * */
+        //         $scope.message_action = "edit";
+        //         $scope.editId = $routeParams.edit_id;
+        //         $scope.edited_message = null;
+        //
+        //             cmsService.getMessages().then(function(response){
+        //                 $scope.messagesEdit = [];
+        //                 if(response.messageOne){
+        //                     $scope.messagesEdit[0] = response.messageOne;
+        //                 }
+        //
+        //                 if(response.messageTwo){
+        //                     $scope.messagesEdit[1] = response.messageTwo;
+        //                 }
+        //
+        //                 angular.forEach($scope.messagesEdit,function(messageValue,messageIndex){
+        //                     if(messageValue.id==$scope.editId){
+        //                         $scope.edited_message = messageValue;
+        //                         $scope.messageTitle = $scope.edited_message.title;
+        //                         $scope.editContent = $scope.edited_message.body;
+        //                     }
+        //                 });
+        //
+        //             });
+        //
+        //
+        //
+        //
+        //         }
 
 
         // hide message contents
-        $scope.hideMessage = function(message){
-        message.hidden = !message.hidden;
-
-
-        if(message.id==1){
-            cmsService.addMessage({messageOne:{id:message.id,title:message.title,body:message.body,expired_date:"",hidden:message.hidden}}).then(function(data){
-                $scope.loadMessages();
-            });
-        }
-
-        if(message.id==2){
-
-            cmsService.addMessage({messageTwo:{id:message.id,title:message.title,body:message.body,expired_date:"",hidden:message.hidden}}).then(function(data){
-                $scope.loadMessages();
-            });
-        }
-
-
-    }
-
-        // show  message contents
-        $scope.unHideMessage = function(messageToHideUnhide){
-
-        if(victim=="first"){
-            if($scope.hideFirstMessage){
-                $scope.hideFirstMessage = false;
-            }
-
-        }
-        if(victim=="second"){
-            if($scope.hideSecondMessage){
-                $scope.hideSecondMessage = false;
-            }
-
-        }
-
-        cmsService.saveSetting($scope.first_message,$scope.second_message,$scope.hideFirstMessage,$scope.hideSecondMessage).then(function(response){
-            $scope.loadMessages();
-        },function(error){
-
-        })
-
-    }
+    //     $scope.hideMessage = function(message){
+    //     message.hidden = !message.hidden;
+    //
+    //
+    //     if(message.id==1){
+    //         cmsService.addMessage({messageOne:{id:message.id,title:message.title,body:message.body,expired_date:"",hidden:message.hidden}}).then(function(data){
+    //             $scope.loadMessages();
+    //         });
+    //     }
+    //
+    //     if(message.id==2){
+    //
+    //         cmsService.addMessage({messageTwo:{id:message.id,title:message.title,body:message.body,expired_date:"",hidden:message.hidden}}).then(function(data){
+    //             $scope.loadMessages();
+    //         });
+    //     }
+    //
+    //
+    // }
+    //
+    //     // show  message contents
+    //     $scope.unHideMessage = function(messageToHideUnhide){
+    //
+    //     if(victim=="first"){
+    //         if($scope.hideFirstMessage){
+    //             $scope.hideFirstMessage = false;
+    //         }
+    //
+    //     }
+    //     if(victim=="second"){
+    //         if($scope.hideSecondMessage){
+    //             $scope.hideSecondMessage = false;
+    //         }
+    //
+    //     }
+    //
+    //     cmsService.saveSetting($scope.first_message,$scope.second_message,$scope.hideFirstMessage,$scope.hideSecondMessage).then(function(response){
+    //         $scope.loadMessages();
+    //     },function(error){
+    //
+    //     })
+    //
+    // }
 
         // save message contents
         $scope.sendMessage = function(title,body){
@@ -611,28 +633,31 @@ var cmsControllers = angular.module('cmsControllers', [])
 
 
                 if($scope.messages.length==1){
-                    if($scope.messages[0].id==1){
-                        cmsService.addMessage({messageTwo:{id:2,title:title,body:body,expired_date:"",hidden:false}}).then(function(data){
+
+                    var messageObject = {
+                        messageOne:{id:$scope.messages[0].id,title:$scope.messages[0].title,body:$scope.messages[0].body,expired_date:"",hidden:$scope.messages[0].hidden},
+                        messageTwo:{id:2,title:title,body:body,expired_date:"",hidden:false}
+                    };
+
+                            cmsService.updateMessage(messageObject);
                             $scope.loadMessages();
                             $location.path("/messages/action/list");
-                        });
-                    }
-
-                    if($scope.messages[0].id==2){
-                        cmsService.addMessage({messageOne:{id:1,title:title,body:body,expired_date:"",hidden:false}}).then(function(data){
-                            $scope.loadMessages();
-                            $location.path("/messages/action/list");
-                        });
-                    }
 
 
 
 
-            }else{
-                cmsService.addMessage({messageOne:{id:1,title:title,body:body,expired_date:"",hidden:false}}).then(function(data){
+
+
+            } else if ($scope.messages.length==0) {
+
+                    cmsService.updateMessage({messageOne:{id:1,title:title,body:body,expired_date:"",hidden:false}});
                     $scope.loadMessages();
                     $location.path("/messages/action/list");
-                });
+
+                // cmsService.addMessage({messageOne:{id:1,title:title,body:body,expired_date:"",hidden:false}}).then(function(data){
+                //     $scope.loadMessages();
+                //     $location.path("/messages/action/list");
+                // });
             }
 
 
@@ -853,14 +878,16 @@ var cmsControllers = angular.module('cmsControllers', [])
         $scope.messages = [];
         cmsService.getMessages().then(function(response){
 
-            if(response.messageOne){
-                $scope.messages.push(response.messageOne);
+            if (response['messageOne']){
+                $scope.messages[0] = response.messageOne;
+            }
+            if (response['messageTwo']){
+                $scope.messages[1] = response.messageTwo;
             }
 
-            if(response.messageTwo){
-                $scope.messages.push(response.messageTwo);
-            }
 
+
+        },function(error){
 
         });
     };
@@ -926,14 +953,16 @@ var cmsControllers = angular.module('cmsControllers', [])
         $scope.messages = [];
         cmsService.getMessages().then(function(response){
 
-            if(response.messageOne){
-                $scope.messages.push(response.messageOne);
+            if (response['messageOne']){
+                $scope.messages[0] = response.messageOne;
+            }
+            if (response['messageTwo']){
+                $scope.messages[1] = response.messageTwo;
             }
 
-            if(response.messageTwo){
-                $scope.messages.push(response.messageTwo);
-            }
 
+
+        },function(error){
 
         });
     }
@@ -1252,14 +1281,16 @@ var cmsControllers = angular.module('cmsControllers', [])
         $scope.messages = [];
         cmsService.getMessages().then(function(response){
 
-            if(response.messageOne){
-                $scope.messages.push(response.messageOne);
+            if (response['messageOne']){
+                $scope.messages[0] = response.messageOne;
+            }
+            if (response['messageTwo']){
+                $scope.messages[1] = response.messageTwo;
             }
 
-            if(response.messageTwo){
-                $scope.messages.push(response.messageTwo);
-            }
 
+
+        },function(error){
 
         });
     }
