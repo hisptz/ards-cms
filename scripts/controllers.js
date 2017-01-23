@@ -695,15 +695,15 @@ var cmsControllers = angular.module('cmsControllers', [])
                 var r = confirm('"Are you sure you want to delete message  "'+message.title+'"');
                 if (r == true) {
 
-                    if ($scope.messages.length==1){
+                    if ( $scope.messages.length==1 ){
                         messageObject = {};
                     }
 
-                    if(message.id==1){
+                    if( message.id==1 ){
                         object = "messageOne";
                     }
 
-                    if(message.id==2){
+                    if( message.id==2 ){
                         object = "messageOne";
                     }
 

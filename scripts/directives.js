@@ -654,6 +654,10 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
 
             }
 
+            scope.deleteDocument = function(){
+
+            }
+
             scope.documents = null;
 
             scope.listDocuments = function(){
