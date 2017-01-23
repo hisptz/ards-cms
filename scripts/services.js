@@ -294,8 +294,7 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
 
     cms.deleteMessage = function(messageObject,messageId){
         delete messageObject[messageId];
-
-        cms.updateMessages(messageObject);
+        return cms.updateMessages(messageObject);
     }
 
     cms.updateMessage = function(messageObject){

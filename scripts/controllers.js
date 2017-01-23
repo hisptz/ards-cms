@@ -528,16 +528,11 @@ var cmsControllers = angular.module('cmsControllers', [])
         $scope.messages = [];
             cmsService.getMessages().then(function(response){
 
-                    console.log("MESSAGE IS LOADED HERE IS ANALYSIS");
-                    console.log("RESPOSNE ",response);
-                    console.log("RESPOSNE ",response);
-                    console.log("response.messageOne ",response.messageOne);
-                    console.log("response.messageTwo ",response.messageTwo);
-
                 if (response.messageOne){
                     $scope.messages[0] = response.messageOne;
                 }
-                if (response['messageTwo']){
+
+                if (response.messageTwo){
 
                     if ($scope.messages.length>0){
                         $scope.messages[1] = response.messageTwo;
@@ -557,7 +552,7 @@ var cmsControllers = angular.module('cmsControllers', [])
 
         // checking for current selected item by id
                 if($routeParams.tab=="messages" && $routeParams.edit_id){
-                    console.log($routeParams);
+
                 /**
                  * Edit messages
                  * */
@@ -669,18 +664,22 @@ var cmsControllers = angular.module('cmsControllers', [])
     }
 
         $scope.hideMessage = function(message){
-            console.log($scope.messages);
+
             $scope.messages[message.id-1].hidden = !$scope.messages[message.id-1].hidden;
-            console.log($scope.messages);
 
             var messageObject = {messageOne:$scope.messages[0],messageTwo:$scope.messages[1]};
 
 
 
 
-            cmsService.updateMessage(messageObject);
-            $scope.loadMessages();
-            $location.path("/messages/action/list");
+            cmsService.updateMessages(messageObject).then(function(data){
+                $scope.loadMessages();
+                $location.path("/messages/action/list");
+            },function(error){
+
+            });
+
+
 
         }
 
@@ -696,17 +695,25 @@ var cmsControllers = angular.module('cmsControllers', [])
                 var r = confirm('"Are you sure you want to delete message  "'+message.title+'"');
                 if (r == true) {
 
+                    if ($scope.messages.length==1){
+                        messageObject = {};
+                    }
+
                     if(message.id==1){
                         object = "messageOne";
                     }
 
                     if(message.id==2){
-                        object = "messageTwo";
+                        object = "messageOne";
                     }
 
-                    cmsService.deleteMessage(messageObject,object);
-                    $scope.loadMessages();
-                    $location.path("/messages/action/list");
+                    cmsService.deleteMessage(messageObject,object).then(function(data){
+                        $scope.loadMessages();
+                        $location.path("/messages/action/list");
+                    },function(error){
+
+                    });
+
                 } else {
 
                 }
@@ -871,13 +878,13 @@ var cmsControllers = angular.module('cmsControllers', [])
         cmsService.getMessages().then(function(response){
 
             if (response['messageOne']){
-                $scope.messages[0] = response.messageOne;
+                    $scope.messages[0] = response.messageOne;
+
             }
+
             if (response['messageTwo']){
                 $scope.messages[1] = response.messageTwo;
             }
-
-
 
         },function(error){
 
