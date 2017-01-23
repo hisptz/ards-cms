@@ -22,50 +22,53 @@
                 </accordion>
             </accordion-group>
             <accordion-group class = "bold-accordion-group-header" heading="Documents" >
-                <table class="table cms_document">
-                    <tbody>
-                    <tr ng-repeat="document in shownDocuments">
-                        <td>
-                            <a title="View Document(Download)" style="padding: 0px 4px;font-size:12px;" target="_blank" href="/api/documents/{{document.id}}/data" class="text-success">
-                                <span class="fa fa-globe">{{document.displayName}}</span>&nbsp;&nbsp;</a>
-                        </td>
-                        <td style="width:20px;">
-                            <a href="#" class="hide_document" id="hide_{{document.id}}">
-                                <i style="color:orange" title="Hide Document " class="fa fa-minus pull-right"></i>
-                            </a>
-                            <a class="delete_document" href="#" id="delete_{{document.id}}">
-                                <i style="color:red;" title="Delete Document" class="fa fa-trash-o pull-right"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    </tbody>
+
+                <div style="padding:20px!important;">
+                    <table class="table cms_document">
+                        <tbody>
+                        <tr ng-repeat="document in shownDocuments">
+                            <td>
+                                <a title="View Document(Download)" style="padding: 0px 4px;font-size:12px;" target="_blank" href="/api/documents/{{document.id}}/data" class="text-success">
+                                    <span class="fa fa-globe">{{document.displayName}}</span>&nbsp;&nbsp;</a>
+                            </td>
+                            <td style="width:20px;">
+                                <a href="#" class="hide_document" id="hide_{{document.id}}">
+                                    <i style="color:orange" title="Hide Document " class="fa fa-minus pull-right"></i>
+                                </a>
+                                <a class="delete_document" href="#" id="delete_{{document.id}}">
+                                    <i style="color:red;" title="Delete Document" class="fa fa-trash-o pull-right"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
                     </table>
-                   <a class="btn btn-sm btn-default form-control" id="hidden_docs">Hidden Documents</a>
+                    <a class="btn btn-sm btn-default form-control" id="hidden_docs">Hidden Documents</a>
 
-                <form id="documentForm" ng-submit="uploadFile('inputFile',document)" method="post" enctype="multipart/form-data"  class="inputForm" style="font-size: 12px;">
+                    <form id="documentForm" ng-submit="uploadFile('inputFile',document)" method="post" enctype="multipart/form-data"  class="inputForm" style="font-size: 12px;">
 
-                    <div class="form-group">
-                        <label for="document_name">Document Name <em title="Required" class="required">*</em></label>
-                        <input type="text" id="document_name" style="width:100% !important;" ng-model="document.name" value="" class="{validate:{required:true,minlength:2,maxlength:160}} form-control" required="required">
-                    </div>
-                    <!--<div class="form-group">-->
+                        <div class="form-group">
+                            <label for="document_name">Document Name <em title="Required" class="required">*</em></label>
+                            <input type="text" id="document_name" style="width:100% !important;" ng-model="document.name" value="" class="{validate:{required:true,minlength:2,maxlength:160}} form-control" required="required">
+                        </div>
+                        <!--<div class="form-group">-->
                         <!--<label for="inputFile">File <em title="Required" class="required">*</em></label>-->
                         <!--<input type="file"  id="inputFile" class="form-control" file-model="file" required="required">-->
-                    <!--</div>-->
-                    <div class="form-group">
-                        <div class="button" ngf-select ng-model="document.file" name="file" >
+                        <!--</div>-->
+                        <div class="form-group">
+                            <div class="button" ngf-select ng-model="document.file" name="file" >
 
-                            <p ng-if="!document.file" >
-                                <a href="#" style="color:#000000;"><i class="fa fa-upload "></i> Click to upload a file</a>
-                            </p>
-                            <p ng-if="document.file" >
-                                <a href="#" ><i class="fa fa-file-pdf-o "></i> Click to change  file</a>
-                            </p>
+                                <p ng-if="!document.file" >
+                                    <a href="#" style="color:#000000;"><i class="fa fa-upload "></i> Click to upload a file</a>
+                                </p>
+                                <p ng-if="document.file" >
+                                    <a href="#" ><i class="fa fa-file-pdf-o "></i> Click to change  file</a>
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    <input type="submit" value="Upload Document"  class="btn btn-success btn-sm form-control">
+                        <input type="submit" value="Upload Document"  class="btn btn-success btn-sm form-control">
 
-                </form>
+                    </form>
+                </div>
 
             </accordion-group>
             <accordion-group class = "bold-accordion-group-header" heading="Links">

@@ -359,24 +359,7 @@ cmsDirectives.directive("cmsRightMenu", ['cmsService',function(cmsService){
             }
 
             $scope.$watch('selectedCharts', function(ch1, ch2){
-                //if(typeof ch1 !="undefined"){
-                //
-                //    if(ch1.length<4){
-                //        $scope.chartErrorMessage  = null;
-                //        $scope.selectedCharts = cmsService.refineCharts($scope.selectedCharts);
-                //        cmsService.updateSelectedCharts($scope.selectedCharts).then(function(respose){
-                //            if(!respose.success){
-                //                cmsService.saveSelectedCharts($scope.selectedCharts);
-                //            }
-                //        },function(error){
-                //
-                //        });
-                //
-                //    }else{
-                //        $scope.chartErrorMessage  = "select only three charts";
-                //    }
-                //
-                //}
+
             }, true);
 
             $scope.$watch('chartObject', function(ch1, ch2){
@@ -496,7 +479,7 @@ cmsDirectives.directive('fileModel', ['$parse', function ($parse) {
     };
 }]);
 
-cmsDirectives.directive("cmsLeftMenu", ['cmsService','FileService','$location',function(cmsService,FileService,$location){
+cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',function(cmsService,FilesService,$location){
     return {
         restrict: "E",
         replace: true,
@@ -648,8 +631,13 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FileService','$location',f
                 var fieldId = fieldId;
                 var fileResource = "";
 
-                FileService.upload(document.file).then(function(data){
-                    console.log(data);
+                FilesService.uploading(document.file).then(function(data){
+
+                    cmsService.saveFileResource( dataElementId, optionComboId, fieldId, data.response.fileResource,
+                    function(successObject){
+                       // success callback
+                       console.log(successObject)
+                    });
                 });
 
 

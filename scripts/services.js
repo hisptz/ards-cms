@@ -62,11 +62,7 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
         }
     }
 
-    cms.uploadDocument = function(file){
 
-        var url = "/"+dhis2.settings.baseUrl+"/api/fileResources";
-        return $http({method:'POST',headers: {  'Content-Type'  : 'multipart/form-data'},data:file,url:url}).then(handleSuccess, handleError("Error storing file"));
-    }
 
     cms.addExternalLink = function(links,newLink){
         // save document to storage
@@ -679,9 +675,8 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
      */
     function ValueSaver( de, pe, co, value, fieldId, resultColor )
     {
-        var ou = "m0frOspS7JY";//dhis2.de.getCurrentOrganisationUnit();
-        console.log("LOG VALUE");
-        console.log(value);
+        var ou = "zs9X8YYBOnK";//dhis2.de.getCurrentOrganisationUnit();
+
         var dataValue = {
             'de' : de,
             'co' : co,
@@ -765,32 +760,39 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
 }]);
 
 /* Service for uploading/downloading file */
-cmsServices.service('FileService', function ($http) {
+/* Service for uploading/downloading file */
+cmsServices.service('FilesService', function ($http, DHIS2URL) {
 
-        return {
-            get: function (uid) {
-                var promise = $http.get('../../../api/fileResources/' + uid).then(function (response) {
-                    return response.data;
-                });
-                return promise;
-            },
-            delete: function (uid) {
-                var promise = $http.get('../../../api/fileResources/' + uid).then(function (response) {
-                    return response.data;
-                });
-                return promise;
-            },
-            download: function (fileName) {
-                var promise = $http.get(fileName).then(function (response) {
-                    return response.data;
-                });
-                return promise;
-            },
-            upload: function(file){
-
-            }
-        };
-    })
+    return {
+        get: function (uid) {
+            var promise = $http.get('../../fileResources/' + uid).then(function (response) {
+                return response.data;
+            } ,function(error) {
+                return null;
+            });
+            return promise;
+        },
+        download: function (fileName) {
+            var promise = $http.get(fileName).then(function (response) {
+                return response.data;
+            }, function(error) {
+                return null;
+            });
+            return promise;
+        },
+        uploading: function(file){
+            var formData = new FormData();
+            formData.append('file', file);
+            var headers = {transformRequest: angular.identity, headers: {'Content-Type': undefined}};
+            var promise = $http.post('../../fileResources', formData, headers).then(function(response){
+                return response.data;
+            },function(error) {
+                return null;
+            });
+            return promise;
+        }
+    };
+})
 cmsServices.service('utilityService',function(){
     var utilityService = this;
     utilityService.prepareEventObject = function(assignedProgram){
