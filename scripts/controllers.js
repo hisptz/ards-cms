@@ -528,11 +528,23 @@ var cmsControllers = angular.module('cmsControllers', [])
         $scope.messages = [];
             cmsService.getMessages().then(function(response){
 
-                if (response['messageOne']){
+                    console.log("MESSAGE IS LOADED HERE IS ANALYSIS");
+                    console.log("RESPOSNE ",response);
+                    console.log("RESPOSNE ",response);
+                    console.log("response.messageOne ",response.messageOne);
+                    console.log("response.messageTwo ",response.messageTwo);
+
+                if (response.messageOne){
                     $scope.messages[0] = response.messageOne;
                 }
                 if (response['messageTwo']){
-                    $scope.messages[1] = response.messageTwo;
+
+                    if ($scope.messages.length>0){
+                        $scope.messages[1] = response.messageTwo;
+                    }else{
+                        $scope.messages.push(response.messageTwo);
+                    }
+
                 }
 
 
@@ -667,13 +679,16 @@ var cmsControllers = angular.module('cmsControllers', [])
 
 
             cmsService.updateMessage(messageObject);
-            // $scope.loadMessages();
+            $scope.loadMessages();
             $location.path("/messages/action/list");
 
         }
 
         // delete message contents
         $scope.deleteMessage = function(message){
+
+            var messageObject = {messageOne:$scope.messages[0],messageTwo:$scope.messages[1]};
+
             if($scope.messages){
                 var object = "";
 
@@ -689,11 +704,9 @@ var cmsControllers = angular.module('cmsControllers', [])
                         object = "messageTwo";
                     }
 
-                    cmsService.deleteMessage(object).then(function(response){
-                        $scope.loadMessages();
-                    },function(error){
-
-                    });
+                    cmsService.deleteMessage(messageObject,object);
+                    $scope.loadMessages();
+                    $location.path("/messages/action/list");
                 } else {
 
                 }
