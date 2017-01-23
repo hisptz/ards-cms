@@ -656,6 +656,22 @@ var cmsControllers = angular.module('cmsControllers', [])
 
     }
 
+        $scope.hideMessage = function(message){
+            console.log($scope.messages);
+            $scope.messages[message.id-1].hidden = !$scope.messages[message.id-1].hidden;
+            console.log($scope.messages);
+
+            var messageObject = {messageOne:$scope.messages[0],messageTwo:$scope.messages[1]};
+
+
+
+
+            cmsService.updateMessage(messageObject);
+            // $scope.loadMessages();
+            $location.path("/messages/action/list");
+
+        }
+
         // delete message contents
         $scope.deleteMessage = function(message){
             if($scope.messages){
