@@ -542,85 +542,47 @@ var cmsControllers = angular.module('cmsControllers', [])
             });
         }
 
+
         // checking for current selected item by id
-        //         if($routeParams.edit_id){
-        //         /**
-        //          * Edit messages
-        //          * */
-        //         $scope.message_action = "edit";
-        //         $scope.editId = $routeParams.edit_id;
-        //         $scope.edited_message = null;
-        //
-        //             cmsService.getMessages().then(function(response){
-        //                 $scope.messagesEdit = [];
-        //                 if(response.messageOne){
-        //                     $scope.messagesEdit[0] = response.messageOne;
-        //                 }
-        //
-        //                 if(response.messageTwo){
-        //                     $scope.messagesEdit[1] = response.messageTwo;
-        //                 }
-        //
-        //                 angular.forEach($scope.messagesEdit,function(messageValue,messageIndex){
-        //                     if(messageValue.id==$scope.editId){
-        //                         $scope.edited_message = messageValue;
-        //                         $scope.messageTitle = $scope.edited_message.title;
-        //                         $scope.editContent = $scope.edited_message.body;
-        //                     }
-        //                 });
-        //
-        //             });
-        //
-        //
-        //
-        //
-        //         }
+                if($routeParams.tab=="messages" && $routeParams.edit_id){
+                    console.log($routeParams);
+                /**
+                 * Edit messages
+                 * */
+                $scope.message_action = "edit";
+                $scope.editId = $routeParams.edit_id;
+                $scope.edited_message = null;
+
+                    cmsService.getMessages().then(function(response){
+
+                        $scope.messagesEdit = [];
+                        var messageToEdit = {};
+                        if($scope.editId == 1 ){
+                            messageToEdit = response.messageOne;
+                        }
+
+                        if($scope.editId == 2 ){
+                            messageToEdit = response.messageTwo;
+                        }
+
+                        $scope.edited_message = messageToEdit;
+                        $scope.messageTitle   = messageToEdit.title;
+                        $scope.editContent    = messageToEdit.body;
 
 
-        // hide message contents
-    //     $scope.hideMessage = function(message){
-    //     message.hidden = !message.hidden;
-    //
-    //
-    //     if(message.id==1){
-    //         cmsService.addMessage({messageOne:{id:message.id,title:message.title,body:message.body,expired_date:"",hidden:message.hidden}}).then(function(data){
-    //             $scope.loadMessages();
-    //         });
-    //     }
-    //
-    //     if(message.id==2){
-    //
-    //         cmsService.addMessage({messageTwo:{id:message.id,title:message.title,body:message.body,expired_date:"",hidden:message.hidden}}).then(function(data){
-    //             $scope.loadMessages();
-    //         });
-    //     }
-    //
-    //
-    // }
-    //
-    //     // show  message contents
-    //     $scope.unHideMessage = function(messageToHideUnhide){
-    //
-    //     if(victim=="first"){
-    //         if($scope.hideFirstMessage){
-    //             $scope.hideFirstMessage = false;
-    //         }
-    //
-    //     }
-    //     if(victim=="second"){
-    //         if($scope.hideSecondMessage){
-    //             $scope.hideSecondMessage = false;
-    //         }
-    //
-    //     }
-    //
-    //     cmsService.saveSetting($scope.first_message,$scope.second_message,$scope.hideFirstMessage,$scope.hideSecondMessage).then(function(response){
-    //         $scope.loadMessages();
-    //     },function(error){
-    //
-    //     })
-    //
-    // }
+
+                        // cmsService.updateMessage($scope.editId,$scope.messageTitle,$scope.editContent);
+
+
+                    });
+
+
+
+
+                }
+
+
+
 
         // save message contents
         $scope.sendMessage = function(title,body){
@@ -654,10 +616,6 @@ var cmsControllers = angular.module('cmsControllers', [])
                     $scope.loadMessages();
                     $location.path("/messages/action/list");
 
-                // cmsService.addMessage({messageOne:{id:1,title:title,body:body,expired_date:"",hidden:false}}).then(function(data){
-                //     $scope.loadMessages();
-                //     $location.path("/messages/action/list");
-                // });
             }
 
 
@@ -666,28 +624,33 @@ var cmsControllers = angular.module('cmsControllers', [])
         // update message contents
         $scope.updateMessage = function(editId,title,body){
 
+            var updatedMessage = $scope.messages[editId-1];
+
+            var messageObject = {messageOne:$scope.messages[0],messageTwo:$scope.messages[1]};
+
 
             if ( $scope.checkStatus ) {
 
                 return true;
             }
 
+            if( updatedMessage.id == 1 ){
+                messageObject.messageOne = updatedMessage;
+                messageObject.messageOne.title = title;
+                messageObject.messageOne.body = body;
+            }
 
 
-            if(editId==1){
-            cmsService.addMessage({messageOne:{id:1,title:title,body:body,expired_date:"",hidden:false}}).then(function(data){
+            if( updatedMessage.id == 2 ){
+                messageObject.messageTwo = updatedMessage;
+                messageObject.messageTwo.title = title;
+                messageObject.messageTwo.body = body;
+            }
+
+
+            cmsService.updateMessage(messageObject);
                 $scope.loadMessages();
                 $location.path("/messages/action/list");
-            });
-        }
-
-        if(editId==2){
-            cmsService.addMessage({messageTwo:{id:2,title:title,body:body,expired_date:"",hidden:false}}).then(function(data){
-                $scope.loadMessages();
-                $location.path("/messages/action/list");
-            });
-        }
-
 
 
 
@@ -710,7 +673,7 @@ var cmsControllers = angular.module('cmsControllers', [])
                         object = "messageTwo";
                     }
 
-                    cmsService.deleteSetting(object).then(function(response){
+                    cmsService.deleteMessage(object).then(function(response){
                         $scope.loadMessages();
                     },function(error){
 
