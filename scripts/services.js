@@ -294,7 +294,7 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
     }
 
     cms.updateMessage = function(messageObject){
-        cms.updateMessages(messageObject);
+        return cms.updateMessages(messageObject);
     }
 
     cms.loadEvent = function(eventObject){
@@ -339,14 +339,20 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
 
     cms.postMessages = function(dataObject){
         var messageUrl = "../../../api/dataStore/messages/textMessages";
-        return $http({method:'POST',data:dataObject,url:messageUrl}).then(handleSuccess, handleError(""));
+        return $http({method:'POST',data:dataObject,url:messageUrl})//.then(handleSuccess, handleError(""));
     }
 
     cms.updateMessages = function(dataObject){
-        var messageObject = {messageOne:dataObject.messageOne,messageTwo:dataObject.messageTwo};
+        var messageObject = {};
+        if(dataObject.messageOne){
+            messageObject["messageOne"] = dataObject.messageOne;
+        }
+        if(dataObject.messageTwo){
+            messageObject["messageTwo"] = dataObject.messageTwo;
+        }
         var messageUrl = "../../../api/dataStore/messages/textMessages";
-        return $http({method:'PUT',data:messageObject,url:messageUrl}).then(handleSuccess, handleError(""));
-    }
+        return $http({method:'PUT',data:messageObject,url:messageUrl})//.then(handleSuccess, handleError(""));
+    };
 
 
 
