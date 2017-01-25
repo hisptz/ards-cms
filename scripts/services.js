@@ -307,40 +307,40 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
 
         var url = "../../../api/dataStore/chartsStorage/availableCharts";
         return $http.get(url).then(handleSuccess, handleError("Error loading Messages"));
-    }
+    };
 
     cms.loadInformations = function(){
 
         var url = "../../../api/dataStore/informationSharing/sharing";
         return $http.get(url).then(handleSuccess, handleError("Error loading Information sharing"));
-    }
+    };
 
     cms.addInformations = function(dataArray){
 
         var url = "../../../api/dataStore/informationSharing/sharing";
         return $http({method:'POST',data:dataArray,url:url}).then(handleSuccess, handleError("Error storing adding information sharing"));
 
-    }
+    };
 
     cms.updateInformations = function(dataArray){
 
         var url = "../../../api/dataStore/informationSharing/sharing";
         return $http({method:'PUT',data:dataArray,url:url}).then(handleSuccess, handleError("Error storing adding information sharing"));
 
-    }
+    };
 
 
 
     cms.retrieveMessages = function(){
         var url = "../../../api/dataStore/messages/textMessages";
         return $http.get(url).then(handleSuccess, handleError("Error loading Messages"));
-    }
+    };
 
 
     cms.postMessages = function(dataObject){
         var messageUrl = "../../../api/dataStore/messages/textMessages";
         return $http({method:'POST',data:dataObject,url:messageUrl})//.then(handleSuccess, handleError(""));
-    }
+    };
 
     cms.updateMessages = function(dataObject){
         var messageObject = {};
