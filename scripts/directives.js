@@ -733,4 +733,3 @@ cmsDirectives.directive("cmsTabs", function(){
     };
 });
 
-cms

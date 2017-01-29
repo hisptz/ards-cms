@@ -956,7 +956,7 @@ var cmsControllers = angular.module('cmsControllers', [])
                     if (response) {
 
                         if (response.length == rowcharts.length) {
-                            $scope.charts = response;//cmsService.getSelectedCharts(response.chartsStorage);
+                            $scope.charts = cmsService.getSelectedCharts(response.chartsStorage);
                         } else {
                             cmsService.saveCharts(rowcharts);
                             if (response.length > 0) {
@@ -1439,7 +1439,7 @@ var cmsControllers = angular.module('cmsControllers', [])
                     if (response) {
 
                         if (response.length == rowcharts.length) {
-                            $scope.charts = response;//cmsService.getSelectedCharts(response.chartsStorage);
+                            $scope.charts = cmsService.getSelectedCharts(response.chartsStorage);
                         } else {
                             cmsService.saveCharts(rowcharts);
                             if (response.length > 0) {
