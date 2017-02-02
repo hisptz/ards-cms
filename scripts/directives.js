@@ -641,16 +641,6 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
                 });
 
 
-                //
-                //cmsService.uploadFileFromForm(file, uploadUrl).then(function(data){
-                //
-                //})
-                // console.log(scope.file);
-                // cmsService.saveFileResource( dataElementId, optionComboId, fieldId, fileResource,
-                // function(successObject){
-                //    // success callback
-                //    console.log(successObject)
-                // });
 
             }
 
@@ -663,8 +653,21 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
             scope.listDocuments = function(){
                cmsService.loadDocuments().then(function(data){
 
-                   scope.shownDocuments = data.documents;
+                   scope.shownDocuments = filterDocuments(data.documents);
                })
+            }
+
+            function filterDocuments(documents){
+                var documentArray = [];
+                angular.forEach(documents, function (document) {
+                    if (document.contentType.indexOf('image')>=0){
+
+                    }else{
+                        documentArray.push(document);
+                    }
+                })
+
+                return documentArray;
             }
 
             scope.listDocuments();

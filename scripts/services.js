@@ -89,7 +89,7 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
         return $http({method:'PUT',data:externalinks,url:url}).then(handleSuccess, handleError("Error  updating external links"));
     }
     cms.loadDocuments = function(){
-        var url = "/api/documents.json?paging=false";
+        var url = "/api/documents.json?paging=false&fileds=*";
         return $http({method:'GET',url:url}).then(handleSuccess, handleError("Error  updating external links"));
 
     }
