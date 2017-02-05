@@ -582,17 +582,35 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
                 });
 
             }
+            scope.selectedLinkIndex = null;
+            scope.editExternalLinks = function(index) {
+                scope.selectedLink = null;
+                scope.editLinksForm = true;
+                scope.selectedLink = scope.externalLinks[index];
+                scope.selectedLinkIndex = index;
+
+            }
+
+            scope.cancelUpdate = function(){
+                scope.selectedLink = null;
+                scope.editLinksForm = false;
+                scope.selectedLinkIndex = null;
+            }
 
             // update external links
-            scope.updateExternalLinks = function (updateExternalLinks) {
-
-                cmsService.updateExternalLink(updateExternalLinks).then(function(data){
-
+            scope.updateExternalLinks = function (selectedLink) {
+                scope.externalLinks[scope.selectedLinkIndex] = selectedLink;
+                cmsService.updateExternalLink(scope.externalLinks).then(function(data){
+                    scope.editLinksForm = false;
+                    scope.selectedLink = null;
+                    scope.loadExternalLinks();
                 },function(error){
 
                 });
 
             }
+
+
 
 
             // external links functions
@@ -660,10 +678,13 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
             function filterDocuments(documents){
                 var documentArray = [];
                 angular.forEach(documents, function (document) {
-                    if (document.contentType.indexOf('image')>=0){
 
-                    }else{
-                        documentArray.push(document);
+                    if (document.contentType){
+                        if (document.contentType.indexOf('image')>=0){
+
+                        }else{
+                            documentArray.push(document);
+                        }
                     }
                 })
 
