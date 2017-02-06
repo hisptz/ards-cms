@@ -495,6 +495,7 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
         link: function(scope, element, attrs) {
             attrs.$set('file-model', attrs['file']);
             scope.externalLinks = [];
+            scope.documentDataElement = null;
             /**
              * Adding ARDS functionality
              * */
@@ -610,9 +611,6 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
 
             }
 
-
-
-
             // external links functions
 
             scope.showExternal = function(link) {
@@ -644,8 +642,8 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
 
             // documents functions
             scope.uploadFile = function (fieldId,document) {
-                var dataElementId = "cbfeUEwQm9I";
-                var optionComboId = "WgIlmdIhlpD";
+                var dataElementId = scope.documentDataElement.id;
+                var optionComboId = scope.documentDataElement.categoryCombo.categoryOptionCombos[0].id;
                 var fieldId = fieldId;
                 var fileResource = "";
 
@@ -662,8 +660,34 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
 
             }
 
-            scope.deleteDocument = function(){
+            scope.deleteDocument = function(uid){
+                // get document id url = /api/sqlViews/bSQAiABlDXN/data.json?var=uid:xQvxcgrBTqI
+                // delete url = /dhis-web-reporting/removeDocument.action?id=5341134
 
+                cmsService.getDocumentId(uid).then(function(data){
+                    var documentId = filterDocumentId(data);
+                    cmsService.deleteDocumentById(documentId).then(function(success){
+                        scope.listDocuments();
+                    },function(error){
+
+                    })
+                })
+
+            }
+
+            function filterDocumentId(data){
+                var documentArray = data.rows;
+                if (data.rows)
+                {
+                    if (documentArray.length>0)
+                    {
+                        return documentArray[0][0];
+                    }
+
+                    return null;
+                }
+
+                return null;
             }
 
             scope.documents = null;
@@ -691,7 +715,30 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
                 return documentArray;
             }
 
+
+            function getDocumentDataElementUid(){
+
+                cmsService.getDadaElement().then(function(data){
+                    if (data.dataElements){
+                        angular.forEach(data.dataElements,function(results){
+
+                            if ( results.displayName == "Document dataElement" )
+                            {
+                                scope.documentDataElement = results;
+                            }
+
+                        })
+                    }else{
+                        scope.documentDataElement = null;
+                    }
+
+                },function(error){
+
+                })
+            }
+
             scope.listDocuments();
+            getDocumentDataElementUid();
 
 
             scope.loadExternalLinks();

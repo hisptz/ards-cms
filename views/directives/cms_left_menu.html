@@ -35,7 +35,7 @@
                                 <a style="cursor: pointer" class="hide_document" id="hide_{{document.id}}">
                                     <i style="color:orange" title="Hide Document " class="fa fa-minus pull-right"></i>
                                 </a>
-                                <a class="delete_document" style="cursor: pointer" id="delete_{{document.id}}">
+                                <a class="delete_document" style="cursor: pointer" ng-click="deleteDocument(document.id)" id="delete_{{document.id}}">
                                     <i style="color:red;" title="Delete Document" class="fa fa-trash-o pull-right"></i>
                                 </a>
                             </td>
@@ -94,6 +94,7 @@
                     </tbody>
                 </table>
                 <div class="col-md-12">
+                    <hr/>
                     <form id="editLinkForm" style="font-size: 12px!important;" enctype="multipart/form-data" ng-if="editLinksForm" class="inputForm" ng-submit="updateExternalLinks(selectedLink)">
                         <div class="form-group">
                             <label for="link_name">Link Name <em title="Required" class="required">*</em></label>

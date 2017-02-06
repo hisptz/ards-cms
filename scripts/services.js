@@ -89,8 +89,25 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
         return $http({method:'PUT',data:externalinks,url:url}).then(handleSuccess, handleError("Error  updating external links"));
     }
     cms.loadDocuments = function(){
-        var url = "/api/documents.json?paging=false&fields=*";
+        var url = "../../../api/documents.json?paging=false&fields=*";
         return $http({method:'GET',url:url}).then(handleSuccess, handleError("Error  updating external links"));
+
+    }
+
+    cms.getDocumentId = function(uid){
+        var url = "/api/sqlViews/bSQAiABlDXN/data.json?var=uid:"+uid;
+        return $http({method:'GET',url:url}).then(handleSuccess, handleError("Error  getting document uid"));
+
+    }
+    cms.deleteDocumentById = function(id){
+        var url = "/dhis-web-reporting/removeDocument.action?id="+id;
+        return $http({method:'GET',url:url}).then(handleSuccess, handleError("Error  deleting"));
+
+    }
+
+    cms.getDadaElement = function(){
+        var url = "../../../api/dataElements.json?&fields=id,name,displayName,categoryCombo[categoryOptionCombos]&paging=false&filter=name:like:Document";
+        return $http({method:'GET',url:url}).then(handleSuccess, handleError("Error  getting dataElement"));
 
     }
 
