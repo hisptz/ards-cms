@@ -661,10 +661,7 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
             }
 
             scope.deleteDocument = function(uid){
-                // get document id url = /api/sqlViews/bSQAiABlDXN/data.json?var=uid:xQvxcgrBTqI
-                // delete url = /dhis-web-reporting/removeDocument.action?id=5341134
-
-                cmsService.getDocumentId(uid).then(function(data){
+                    cmsService.getDocumentId(uid).then(function(data){
                     var documentId = filterDocumentId(data);
                     cmsService.deleteDocumentById(documentId).then(function(success){
                         scope.listDocuments();
