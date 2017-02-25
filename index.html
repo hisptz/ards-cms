@@ -7,6 +7,7 @@
     <meta name="keywords" content="ARDS">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
+    <link type="text/css" rel="stylesheet" href="../../../dhis-web-commons/bootstrap/css/bootstrap.min.css">
 
     <style>
         .ui-state-default {
@@ -39,10 +40,10 @@
             padding-left: 40px;
         }
 
-        .navbar-inverse .navbar-brand {
-            color: #fff;
+        nav .caret {
+            border-top-color: #fff !important;
+            border-bottom-color: #fff !important;
         }
-
         ::-webkit-scrollbar {
             width: 6px!important;
         }
@@ -55,6 +56,13 @@
         ::-webkit-scrollbar-thumb {
             border-radius: 10px;
             -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar-inverse .navbar-brand {
+            color: #ffffff!important;
+        }
+        .navbar-inverse .navbar-nav > li > a {
+            color: #ffffff!important;
         }
 
     </style>
@@ -158,7 +166,6 @@
 
 
     <script type="text/javascript" src="../../../dhis-web-commons/bootstrap/js/bootstrap.min.js"></script>
-    <link type="text/css" rel="stylesheet" href="../../../dhis-web-commons/bootstrap/css/bootstrap.min.css">
 
     <!-- vendor js-->
     <script type="text/javascript" src="scripts/vendor/bootstrap-select/bootstrap-select.min.js"></script>
@@ -229,8 +236,7 @@
     <script src="scripts/vendor/tree/angular-multi-select-tree-0.1.0.tpl.js"></script>
 
     <script type="text/javascript" src="scripts/analysis/jquery-ui-multiselect/src/jquery.multiselect.min.js"></script>
-    <script type="text/javascript"
-            src="scripts/analysis/jquery-ui-multiselect/src/jquery.multiselect.filter.js"></script>
+    <script type="text/javascript" src="scripts/analysis/jquery-ui-multiselect/src/jquery.multiselect.filter.js"></script>
     <script type="text/javascript" src="scripts/analysis/jquery-ui-multiselect/demos/assets/prettify.js"></script>
     <script type="text/javascript" src="scripts/vendor/ng-file-upload/ng-file-upload.min.js"></script>
     <script type="text/javascript" src="scripts/vendor/ng-file-upload/ng-file-upload-shim.min.js"></script>
@@ -238,7 +244,6 @@
     <script type="text/javascript" src="scripts/vendor/table-service.js"></script>
     <script type="text/javascript" src="scripts/vendor/ng-csv.js"></script>
     <script type="text/javascript" src="scripts/vendor/monitorLoad.js"></script>
-
 
     <script type="text/javascript" src="scripts/app.js"></script>
     <script type="text/javascript" src="scripts/services.js"></script>

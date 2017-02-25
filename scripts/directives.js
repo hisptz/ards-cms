@@ -6,159 +6,6 @@
 
 var cmsDirectives = angular.module('cmsDirectives', []);
 
-cmsDirectives.directive("homeRightMenu", function(){
-    return {
-        restrict: "E",
-        replace: true,
-        scope: {
-            messageObject: "=messageObject",
-            chartObject: "=chartObject"
-        },
-        templateUrl: "views/directives/home_right_menu.html",
-        link: function($scope, element, attrs) {
-            $scope.errors  = false;
-            $scope.errorSms  = false;
-            $scope.errorMessage  = "no chart found";
-
-            $scope.$watch('chartObject', function(newchartObject, oldchartObject){
-                $scope.charts = newchartObject;
-                if(!$scope.charts&&newchartObject!=null){
-                    $scope.errors = true;
-                }
-            }, true);
-
-            $scope.$watch('messageObject', function(newmessageObject, oldmessageObject){
-                $scope.messages = newmessageObject;
-                if(!$scope.messages){
-                    $scope.errorSms = true;
-                }
-            }, true);
-
-        }
-    };
-});
-cmsDirectives.directive("homeLeftMenu", function(){
-    return {
-        restrict: "E",
-        replace: true,
-        scope: {
-            analysisObject: "=analysisObject",
-            otherLinksObject: "=otherLinksObject",
-            documentObject: "=documentObject",
-        },
-        templateUrl: "views/directives/home_left_menu.html",
-        link: function($scope, element, attrs) {
-            $scope.error  = false;
-            $scope.errorMessage  = "no document found";
-
-            $scope.$watch('documentObject', function(newdocumentObject, olddocumentObject){
-                $scope.documents = newdocumentObject;
-                if(newdocumentObject==false){
-                    $scope.error = true;
-                }
-            }, true);
-
-
-            $scope.$watch('otherLinksObject', function(newotherLinksObject, oldotherLinksObject){
-                $scope.externalLinks = newotherLinksObject;
-            }, true);
-
-
-
-            $scope.$watch('analysisObject', function(newanalysisObject, oldanalysisObject){
-                $scope.analysis = newanalysisObject;
-            }, true);
-
-        }
-    };
-});
-
-cmsDirectives.directive("homeTabs", function(){
-    return {
-        restrict: "E",
-        replace: true,
-        scope: {
-            currentTab: "=currentTab",
-            tabObject: "=tabObject",
-            tabContentObject: "=tabContentObject",
-        },
-        templateUrl: "views/directives/home_tabs.html",
-        link: function($scope, element, attrs) {
-            $scope.error  = false;
-            $scope.errorMessage  = "no chart found";
-            $scope.homeTabActiveClass = {};
-
-
-            $scope.$watch('tabContentObject', function(newtabContentObject, oldtabContentObject){
-                $scope.tabContents = newtabContentObject;
-            }, true);
-
-
-            $scope.tabs =[ "Agriculture","LIvestock","Fisheries","Trade","Hidden"];
-            $scope.tabs = orderTabs($scope.tabs);
-
-
-
-                    $scope.tabs = orderTabs(newtabObject);
-                    angular.forEach($scope.tabs,function(tab){
-                        var name = tab.value.toLowerCase();
-                        tab.name = name;
-                        $scope.homeTabActiveClass[name] = {active:""};
-                        if(name==$scope.currentTab){
-                            $scope.homeTabActiveClass[name].active = "current";
-                        }
-                    })
-
-
-
-            $scope.toggleableTab = function(tabIndex,tab){
-                angular.forEach($scope.tabs,function(tab){
-                    $scope.activeClass[tab.value].active = "";
-
-                })
-                $scope.activeClass[tab.value].active = "current";
-            }
-
-            function orderTabs(tabArray){
-                var tabs = []
-                angular.forEach(tabArray,function(value){
-
-                    if(value.value=="All"){
-                        tabs[0]=value;
-                    }
-
-                    if(value.value=="Agriculture"){
-                        tabs[1]=value;
-                        if(tabs[0]==null){
-                            tabs[0] = {value: "All",active:"current"}
-                        }
-                    }
-                    if(value.value=="Livestock"){
-                        tabs[2]=value;
-                        if(tabs[1]==null){
-                            tabs[1] = {value: "Agriculture",active:""}
-                        }
-                    }
-                    if(value.value=="Fisheries"){
-                        tabs[3]=value;
-                        if(tabs[2]==null){
-                            tabs[2] = {value: "Livestock",active:""}
-                        }
-                    }if(value.value=="Trade"){
-                        tabs[4]=value;
-                        if(tabs[3]==null){
-                            tabs[3] = {value: "Fisheries",active:""}
-                        }
-                    }
-
-                })
-
-                return tabs;
-            }
-
-        }
-    };
-});
 cmsDirectives.directive("cmsHomeTabs", function(){
     return {
         restrict: "E",
@@ -263,8 +110,8 @@ cmsDirectives.directive("cmsRightMenu", ['cmsService',function(cmsService){
             $scope.selectedCharts = [];
             $scope.selectedOptions = [];
 
-            $scope.saveSelectedCharts = function(){
-            }
+            $scope.appBaserUrl = dhis2.settings.baseUrl;
+
 
 
             $scope.$watch('chartObject', function(newchartObject, oldchartObject){
@@ -279,12 +126,7 @@ cmsDirectives.directive("cmsRightMenu", ['cmsService',function(cmsService){
 
             }, true);
 
-            cmsService.getSelectedCharts().then(function(data){
-                    $scope.selectedCharts = data;
-                },
-                function(response){
 
-                });
 
             $scope.$watch('messageObject', function(newmessageObject, oldmessageObject){
                 $scope.messages = newmessageObject;
@@ -315,18 +157,23 @@ cmsDirectives.directive("cmsRightMenu", ['cmsService',function(cmsService){
                 cmsService.saveSelectedCharts(selectedCharts).then(function (respose) {
                     if (respose.success == false) {
                         cmsService.updateSelectedCharts(selectedCharts);
-                    }
-                }, function (error) {
 
+                    }
+                    $scope.getSelectedCharts();
+                }, function (error) {
+                    $scope.getSelectedCharts();
                 });
                 }else{
                     $scope.chartErrorMessage  = "select only three charts";
+
                 }
             }
 
-            $scope.$watch('selectedCharts', function(ch1, ch2){
-
-            }, true);
+            $scope.getSelectedCharts = function(){
+                cmsService.getSelectedCharts().then(function(selected){
+                    $scope.selectedCharts = selected;
+                })
+            }
 
             $scope.$watch('chartObject', function(ch1, ch2){
                 if(typeof ch1 !="undefined"){
@@ -422,7 +269,7 @@ cmsDirectives.directive("cmsRightMenu", ['cmsService',function(cmsService){
 
             }
 
-
+            $scope.getSelectedCharts();
 
         },
         controller:'cmsLeftController'
