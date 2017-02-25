@@ -7,7 +7,7 @@
                     <i class="fa fa-spin fa-spinner" ></i>
                 </span>
                 <accordion close-others="oneAtATime">
-                    <accordion-group class = "normal-accordion-group-header" heading="{{tables.name}}" is-open="$root.openChildTab[tables.name]" ng-repeat="tables in reportTables">
+                    <accordion-group class = "normal-accordion-group-header" heading="{{tables.name}}" is-open="openChildTab[tables.name]" ng-repeat="tables in reportTables">
                         <ul class="nav nav-pills nav-stacked">
 
                             <li ng-repeat="tableItem in tables.values" style="padding: 0px;font-size:13px;" class="menuitem {{statusClass[tableItem.id]}} listmenu" allstring="{{tableItem.displayName}}">
@@ -44,16 +44,32 @@
                     </table>
                     <a class="btn btn-sm btn-default form-control" id="hidden_docs">Hidden Documents</a>
 
+                    <div style="padding:20px;">
+                        <div ng-if="document.file&uploadingFile">No Document Selected</div>
+                        <div ng-if="!requestSuccess&!doneLoading"><img src="../../../images/ajax-loader-bar.gif"  alt="Please wait..."> Please wait..</div>
+
+                        <div class="alert alert-danger alert-dismissible fade in" role="alert" ng-if="!requestSuccess&doneLoading" style="font-weight: bolder">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                    aria-hidden="true">×</span></button>
+                            Upload failure
+
+                        </div>
+
+                        <div class="alert alert-success alert-dismissible fade in" role="alert" ng-if="requestSuccess&doneLoading" style="font-weight: bolder">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                    aria-hidden="true">×</span></button>
+                            Upload successful
+
+                        </div>
+
+                    </div>
+
                     <form id="documentForm" ng-submit="uploadFile('inputFile',document)" method="post" enctype="multipart/form-data"  class="inputForm" style="font-size: 12px;">
 
                         <div class="form-group">
                             <label for="document_name">Document Name <em title="Required" class="required">*</em></label>
                             <input type="text" id="document_name" style="width:100% !important;" ng-model="document.name" value="" class="{validate:{required:true,minlength:2,maxlength:160}} form-control" required="required">
                         </div>
-                        <!--<div class="form-group">-->
-                        <!--<label for="inputFile">File <em title="Required" class="required">*</em></label>-->
-                        <!--<input type="file"  id="inputFile" class="form-control" file-model="file" required="required">-->
-                        <!--</div>-->
                         <div class="form-group">
                             <div class="button" ngf-select ng-model="document.file" name="file" >
 
@@ -117,7 +133,6 @@
 
 
                     </form>
-
                 </div>
                 <a ng-click="addLinksForm(linksForm)" class="btn btn-default btn-sm form-control" style="font-size: 12px!important;">
                     New Link Form <i class="pull-right glyphicon ng-scope glyphicon-chevron-right" ng-hide="linksForm"></i><i class="pull-right glyphicon ng-scope glyphicon-chevron-down" ng-show="linksForm"></i>
@@ -139,8 +154,6 @@
                     </form>
 
                 </div>
-
-
             </accordion-group>
         </accordion>
 

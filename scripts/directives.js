@@ -87,33 +87,18 @@ cmsDirectives.directive("homeTabs", function(){
             $scope.error  = false;
             $scope.errorMessage  = "no chart found";
             $scope.homeTabActiveClass = {};
-            //
-            //$scope.$watch('tabObject', function(newtabObject, oldtabObject){
-            //
-            //    if(newtabObject!=null){
-            //        $scope.tabs = orderTabs(newtabObject);
-            //        angular.forEach($scope.tabs,function(tab){
-            //            tab.active = "";
-            //            tab.content = "hide";
-            //            if($scope.currentTab==tab.value){
-            //                tab.active = "current";
-            //            }
-            //        })
-            //    }
-            //
-            //}, true);
+
 
             $scope.$watch('tabContentObject', function(newtabContentObject, oldtabContentObject){
                 $scope.tabContents = newtabContentObject;
             }, true);
 
 
+            $scope.tabs =[ "Agriculture","LIvestock","Fisheries","Trade","Hidden"];
+            $scope.tabs = orderTabs($scope.tabs);
 
 
 
-            $scope.$watch('tabObject', function(newtabObject, oldtabObject){
-
-                if(newtabObject!=null){
                     $scope.tabs = orderTabs(newtabObject);
                     angular.forEach($scope.tabs,function(tab){
                         var name = tab.value.toLowerCase();
@@ -123,25 +108,8 @@ cmsDirectives.directive("homeTabs", function(){
                             $scope.homeTabActiveClass[name].active = "current";
                         }
                     })
-                }
-
-            }, true);
 
 
-            //$scope.$watch('tabObject',function(newTabs,oldTabs){
-            //    $scope.activeClass = [];
-            //    $scope.activeClass['All'] = {active:"current"};
-            //    if(typeof newTabs!='undefined'){
-            //        angular.forEach(newTabs,function(tab){
-            //            $scope.activeClass[tab.value] = {active:""};
-            //            if(tab.value=="All"){
-            //                $scope.activeClass[tab.value].active = "current";
-            //            }
-            //        });
-            //    }
-            //
-            //});
-            //
 
             $scope.toggleableTab = function(tabIndex,tab){
                 angular.forEach($scope.tabs,function(tab){
@@ -207,10 +175,10 @@ cmsDirectives.directive("cmsHomeTabs", function(){
             $scope.clickedHomeTab  = "All";
             $scope.homeTabActiveClass = {};
 
+            $scope.tabs =[ "Agriculture","LIvestock","Fisheries","Trade","Hidden"];
+            $scope.tabs = orderTabs($scope.tabs);
 
-            $scope.$watch('tabObject', function(newtabObject, oldtabObject){
-                if(newtabObject!=null){
-                    $scope.tabs = orderTabs(newtabObject);
+
                     angular.forEach($scope.tabs,function(tab){
                         tab.name = tab.value.toLowerCase();
                         $scope.homeTabActiveClass[tab.value.toLowerCase()] = {active:""};
@@ -218,9 +186,7 @@ cmsDirectives.directive("cmsHomeTabs", function(){
                             $scope.homeTabActiveClass[tab.value.toLowerCase()].active = "current";
                         }
                     })
-                }
 
-            }, true);
 
             $scope.$watch('tabContentObject', function(newtabContentObject, oldtabContentObject){
                 $scope.tabContents = newtabContentObject;
@@ -427,14 +393,14 @@ cmsDirectives.directive("cmsRightMenu", ['cmsService',function(cmsService){
 
                                 if($.inArray( value.id, $scope.selectedOptions )<0){
                                     $scope.selectedOptions.push(value.id);
-                                    option+="<option value='"+value.id+"' selected='selected' style='width:100px!important;'>"+value.name+"</option>";
+                                    option+="<option value='"+value.id+"' selected='selected' style='width:100px!important;'>"+value.displayName+"</option>";
                                 }
 
                             }else{
 
                                 if($.inArray( value.id, $scope.pushedOptions )<0){
                                     $scope.pushedOptions.push(value.id);
-                                    option+="<option value='"+value.id+"'  style='width:100px!important;'>"+value.name+"</option>";
+                                    option+="<option value='"+value.id+"'  style='width:100px!important;'>"+value.displayName+"</option>";
                                 }
 
                             }
@@ -443,7 +409,7 @@ cmsDirectives.directive("cmsRightMenu", ['cmsService',function(cmsService){
 
                     }else{
 
-                        option+="<option value='"+value.id+"' style='width:100px!important;'>"+value.name+"</option>";
+                        option+="<option value='"+value.id+"' style='width:100px!important;'>"+value.displayName+"</option>";
 
                     }
 
@@ -495,7 +461,12 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
         link: function(scope, element, attrs) {
             attrs.$set('file-model', attrs['file']);
             scope.externalLinks = [];
+
+            scope.requestSuccess = false;
+            scope.doneLoading = true;
+            scope.uploadingFile = false;
             scope.documentDataElement = null;
+
             /**
              * Adding ARDS functionality
              * */
@@ -516,9 +487,9 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
             scope.openChildTab = {};
             scope.statusClass = {};
             scope.openTab['analysis'] = true;
+            scope.openChildTab['Agriculture'] = true;
             scope.openAccordion = function(parentElement,childElement){
 
-                //angular.forEach({{openChildTab[tables.name]}})
 
                 if ( !scope.openTab[parentElement] ) {
                     scope.openTab = {};
@@ -643,6 +614,9 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
             // documents functions
             scope.uploadFile = function (fieldId,document) {
                 var dataElementId = scope.documentDataElement.id;
+                scope.uploadingFile = true;
+
+                scope.doneLoading = false;
                 var optionComboId = scope.documentDataElement.categoryCombo.categoryOptionCombos[0].id;
                 var fieldId = fieldId;
                 var fileResource = "";
@@ -651,9 +625,17 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
 
                     cmsService.saveFileResource( dataElementId, optionComboId, fieldId, data.response.fileResource,
                     function(successObject){
+                        scope.doneLoading = true;
+                        scope.requestSuccess = true;
                        // success callback
                        console.log(successObject)
-                    });
+                    },function(){
+                            scope.doneLoading = true;
+                            scope.requestSuccess = false;
+                        });
+                },function(error){
+                    scope.doneLoading = true;
+                    scope.requestSuccess = false;
                 });
 
 
@@ -736,7 +718,6 @@ cmsDirectives.directive("cmsLeftMenu", ['cmsService','FilesService','$location',
 
             scope.listDocuments();
             getDocumentDataElementUid();
-
 
             scope.loadExternalLinks();
 

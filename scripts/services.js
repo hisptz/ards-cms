@@ -445,23 +445,37 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
                     headers: {'Content-Type': 'application/pdf'}
                 });
     }
-    cms.prepareLeftMenu = function(reportTables){
+
+
+
+    cms.prepareLeftMenu = function (reportTables) {
 
         var mainmenu = new Array();
-        var menuarr = [{'name':"Agriculture",values:[]},{'name':"Livestock",values:[]},{'name':"Fishery",values:[]},{'name':"Trade",values:[]},{'name':"General Information",values:[]}];
+        var menuarr = [{'name': "Agriculture", values: []}, {'name': "Livestock", values: []}, {
+            'name': "Fishery",
+            values: []
+        }, {'name': "Trade", values: []}, {'name': "General Information", values: []}];
         var arrayCounter = 0;
 
 
-        angular.forEach( reportTables , function( value ){
+        angular.forEach(reportTables, function (value) {
             var arr = value.displayName.split(':');
-            if(arr.length != 1){
-                angular.forEach(menuarr,function(menuValue){
-                    if(arr[0] == menuValue.name){
+            if (arr.length != 1) {
+                angular.forEach(menuarr, function (menuValue) {
+                    if (arr[0] == menuValue.name) {
                         var filterDimension = "pe";
-                        if (value.filterDimensions.length > 0){
+                        if (value.filterDimensions.length > 0) {
                             filterDimension = value.filterDimensions[0];
                         }
-                        menuValue.values.push({id:value.id,displayName:arr[1],shortName:arr[1].substring(0,20)+"...",period:cms.preparePeriodFromReportTables(value),orgUnit:cms.prepareOrgUnitFromReportTables(value),dx:cms.prepareDxFromReportTables(value),filter:filterDimension});
+                        menuValue.values.push({
+                            id: value.id,
+                            displayName: arr[1],
+                            shortName: arr[1].substring(0, 20) + "...",
+                            period: cms.preparePeriodFromReportTables(value),
+                            orgUnit: cms.prepareOrgUnitFromReportTables(value),
+                            dx: cms.prepareDxFromReportTables(value),
+                            filter: filterDimension
+                        });
                     }
                 })
 
@@ -471,70 +485,389 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
         return menuarr;
 
     }
-    cms.getAnalytics = function(url){
 
-        return $http.get(url).then(handleSuccess, handleError('Error getting analytics'));
+    cms.preparePeriodFromReportTables = function (reportTable) {
+        var hasRelativePeriod = false;
+        var relativePeriod = "";
 
-        }
 
-    cms.preparePeriodFromReportTables = function(reportTable){
+        angular.forEach(reportTable.relativePeriods, function (rIsSelected, rPeriod) {
 
-        var periodLength = reportTable.periods.length;
-        var period = [];
-
-        angular.forEach(reportTable.periods, function(value){
-
-            if ( periodLength >1 ) {
-
+            if (rIsSelected) {
+                hasRelativePeriod = rIsSelected;
+                relativePeriod = rPeriod;
             }
 
-            period.push(value.id);
         });
 
-        return period.join(";");
+        var period = "";
+
+        if (hasRelativePeriod) {
+
+            var periods = cms.getAppropiateRelativePeriod(relativePeriod);
+            if (periods) {
+                var periodLength = periods.length;
+            } else {
+                return false
+            }
+
+            angular.forEach(periods, function (value) {
+
+                if (periodLength > 1) {
+                    period += ";"
+                }
+
+                period += value;
+            });
+        }
+        else {
+            var periodLength = reportTable.periods.length;
+
+            angular.forEach(reportTable.periods, function (value) {
+
+                if (periodLength > 1) {
+                    period += ";"
+                }
+
+                period += value.id;
+            });
+        }
+
+
+        return period;
 
     }
 
-    cms.prepareOrgUnitFromReportTables = function(reportTable){
+    cms.getAppropiateRelativePeriod = function (relativePeriod) {
+
+        var periodGroups = {
+
+            "lastMonth": {
+                populate: function () {
+                    var date = new Date();
+                    var thisYear = date.getFullYear();
+                    var thisMonth = date.getMonth();
+                    var newYear = thisYear;
+                    var newMonth = thisMonth;
+                    if (newMonth == 1) {
+                        newMonth = 12;
+                        newYear -= 1;
+                    } else {
+                        newMonth -= 1;
+                    }
+                    if (newMonth < 10) {
+                        newMonth = "0" + newMonth;
+                    }
+                    var lastMonth = newYear + newMonth;
+                    this.list.push(lastMonth);
+                    return this.list;
+                }, list: []
+            },
+            "last3Months": {
+                populate: function () {
+                    var date = new Date();
+                    var thisYear = date.getFullYear();
+                    var thisMonth = date.getMonth();
+                    var newYear = thisYear;
+                    var newMonth = thisMonth;
+
+                    var counter = 0;
+                    for (var counter = 0;counter < 3;counter++) {
+                        if (newMonth == 1) {
+                            newMonth = 12;
+                            newYear -= 1;
+                        } else {
+                            newMonth -= 1;
+                        }
+
+                        if (newMonth < 10) {
+                            newMonth = "0" + newMonth;
+                        }
+                        var lastMonth = newYear + newMonth;
+                        this.list.push(lastMonth);
+
+                    }
+
+
+                    return this.list;
+                }, list: []
+            },
+
+
+            "last12Months": {
+                populate: function () {
+                    var date = new Date();
+                    var thisYear = date.getFullYear();
+                    var thisMonth = date.getMonth();
+                    var newYear = thisYear;
+                    var newMonth = thisMonth;
+
+
+
+                    for (var counter = 0;counter < 12;counter++) {
+                        newMonth -= 1;
+                        if (newMonth == 0) {
+                            newMonth = 12;
+                            newYear -= 1;
+                        }
+                        if (newMonth < 10) {
+                            newMonth = "0" + newMonth;
+                        }
+                        var newPeriod = newYear + "" + newMonth;
+                        this.list.push(newPeriod);
+
+                    }
+
+                    return this.list;
+                }, list: []
+            },
+            "lastQuarter": {
+                populate: function () {
+                    var date = new Date();
+                    var thisYear = date.getFullYear();
+                    var thisMonth = date.getMonth();
+                    var thisQuarter = cms.getQuarterInDate(date);
+                    var newQuarter = thisQuarter;
+
+                    var counter = 0;
+
+                    for (var counter = 0;counter < 1;counter++) {
+                        if (thisQuarter == 1) {
+                            newQuarter = 4;
+                            thisYear -= 1;
+                        } else {
+                            newQuarter -= 1;
+                        }
+
+                        this.list.push(thisYear + "Q" + newQuarter);
+                    }
+                    return this.list;
+                }, list: []
+            },
+            "last4Quarters": {
+                populate: function () {
+                    var date = new Date();
+                    var thisYear = date.getFullYear();
+                    var thisQuarter = cms.getQuarterInDate(date);
+                    var newQuarter = thisQuarter;
+
+                    var counter = 0;
+
+                    for (var counter = 0;counter < 4;counter++) {
+                        if (thisQuarter == 1) {
+                            newQuarter = 4;
+                            thisYear -= 1;
+                        } else {
+                            newQuarter -= 1;
+                        }
+
+                        this.list.push(thisYear + "Q" + newQuarter);
+                    }
+                    return this.list;
+                }, list: []
+            },
+            "last5FinancialYears": {
+                populate: function () {
+                    var date = new Date();
+                    var thisYear = date.getFullYear();
+
+                    var counter = 0;
+
+                    for (var counter = 0;counter < 5;counter++) {
+                        thisYear -= 1;
+
+                        this.list.push(thisYear + "July");
+
+                    }
+                    return this.list;
+                }, list: []
+            },
+            "lastFinancialYear": {
+                populate: function () {
+                    var date = new Date();
+                    var thisYear = date.getFullYear();
+
+                    var counter = 0;
+
+                    for (var counter = 0;counter < 1;counter++) {
+                        thisYear -= 1;
+
+                        this.list.push(thisYear + "July");
+
+                    }
+                    return this.list;
+                }, list: []
+            }
+        }
+
+        return periodGroups[relativePeriod].populate();
+    }
+
+    cms.getQuarterInDate = function (date) {
+
+        date = date || new Date(); // If no date supplied, use today
+        var q = [1, 2, 3, 4];
+        return q[Math.floor(date.getMonth() / 3)];
+
+    }
+
+    cms.prepareOrgUnitFromReportTables = function (reportTable) {
 
         var organisationUnitsLength = reportTable.organisationUnits.length;
         var organisationUnits = "";
 
-        angular.forEach(reportTable.organisationUnits, function(value){
+        if (organisationUnitsLength>0){
+            angular.forEach(reportTable.organisationUnits, function (value) {
 
-            if ( organisationUnitsLength >1 ) {
-                organisationUnits+=";"
+                if (organisationUnitsLength > 1) {
+                    organisationUnits += ";"
+                }
+
+                organisationUnits += value.id;
+            });
+        }
+        else
+        {
+            var selectedOrganisationUnit = cms.getSelectedOrganisationUnit(reportTable);
+            if ( selectedOrganisationUnit )
+            {
+                switch(selectedOrganisationUnit) {
+                    case "userOrganisationUnit":
+                        organisationUnits = cms.getOrgUnit();
+                        console.log(organisationUnits);
+                        break;
+                    case "userOrganisationUnitChildren":
+                        organisationUnits = cms.getOrgUnitChildren();
+                        break;
+                    case "userOrganisationUnitGrandChildren":
+                        organisationUnits = cms.getOrgUnitGrandChildren();
+                        break;
+                    default:
+                        console.log(selectedOrganisationUnit);
+                }
+
             }
 
-            organisationUnits+=value.id;
-        });
+        }
+
+
 
         return organisationUnits;
     }
 
+    cms.getOrgUnit = function(){
+        var fromLocalStorage = eval(localStorage.getItem('userOrganisationUnits'));
+        return fromLocalStorage[0].id;
+    }
 
-    cms.prepareDxFromReportTables = function(reportTable){
+    cms.getOrgUnitChildren = function(){
+        var fromLocalStorage = eval(localStorage.getItem('userOrganisationUnits'));
+        var orgUnitsUids="";
+        fromLocalStorage[0].children.forEach(function(child){
+            orgUnitsUids+=";"+child.id;
+        });
+
+        return orgUnitsUids;
+    }
+
+    cms.getOrgUnitGrandChildren = function(){
+        var fromLocalStorage = eval(localStorage.getItem('userOrganisationUnits'));
+        var orgUnitsUids="";
+        fromLocalStorage[0].children.forEach(function(child){
+            child.children.forEach(function(grandChild){
+                orgUnitsUids+=";"+grandChild.id;
+            });
+        });
+
+        return orgUnitsUids;
+    }
+
+    cms.getSelectedOrganisationUnit = function(reportTable){
+        var organisationUnit = null;
+        var orgUnitChoices = ['userOrganisationUnit','userOrganisationUnitChildren','userOrganisationUnitGrandChildren'];
+        orgUnitChoices.forEach(function(orgUnit){
+            if ( reportTable[orgUnit] )
+            {
+                organisationUnit = orgUnit;
+            }
+        })
+
+        return organisationUnit;
+
+    }
+
+    cms.prepareDxFromReportTables = function (reportTable) {
 
         var dataDimensionItemsLength = reportTable.dataDimensionItems.length;
         var dataDimensionItems = "";
 
-        angular.forEach(reportTable.dataDimensionItems, function(value){
+        angular.forEach(reportTable.dataDimensionItems, function (value) {
 
-                if ( value.dataDimensionItemType == "AGGREGATE_DATA_ELEMENT" ) {
+            if (value.dataDimensionItemType == "AGGREGATE_DATA_ELEMENT") {
 
-                    dataDimensionItems+=value.dataElement.id+";"
-                }
+                dataDimensionItems += value.dataElement.id + ";"
+            }
 
 
-                if ( value.dataDimensionItemType == "INDICATOR" ) {
+            if (value.dataDimensionItemType == "INDICATOR") {
 
-                    dataDimensionItems+=value.indicator.id+";"
-                }
+                dataDimensionItems += value.indicator.id + ";"
+            }
         });
-        dataDimensionItems = dataDimensionItems.substring(0, dataDimensionItems.length-1);
+        dataDimensionItems = dataDimensionItems.substring(0, dataDimensionItems.length - 1);
 
         return dataDimensionItems;
     }
+
+    cms.getAnalytics = function (url) {
+
+        return $http.get(url).then(handleSuccess, handleError('Error getting analytics'));
+
+    }
+
+    cms.sortOrganisationUnits = function (orgUnit, orgUnitArray) {
+
+        angular.forEach(orgUnitArray, function (unitData) {
+
+            if (unitData == orgUnit.id) {
+                orgUnit.isExpanded = false;
+                orgUnit.isActive = false
+                orgUnit.selected = true;
+
+            }
+
+        })
+
+        var that = this;
+        if (orgUnit.children) {
+            orgUnit.children.sort(function (child1, child2) {
+                return orgUnitFunction(child1).localeCompare(orgUnitFunction(child2));
+            });
+            orgUnit.children.forEach(function (child) {
+                that.sortOrganisationUnits(child, orgUnitArray);
+            })
+        }
+    }
+
+    cms.loggedUser = function (passedUrl) {
+        var url = "../../../api/me.json?fields=:all,organisationUnits[id,name,level,children[id,name,level,children[id,name,level,children[id,name]]]]";
+        if (passedUrl){
+            url = passedUrl;
+        }
+
+        return $http.get(url).then(handleSuccess, handleError('Error loading logeged in user'));
+    }
+
+    cms.getOrgUnitTree = function (userOrgUnit) {
+        var orgUnitIds = [];
+        userOrgUnit.forEach(function (orgUnit) {
+            orgUnitIds.push(orgUnit.id);
+        });
+        return $http.get("../../../api/organisationUnits.json?filter=id:in:[" + orgUnitIds + "]&fields=id,name,level,children[id,name,level,children[id,name,level,children[id,name,level,children[id,name,level,children]]]]");
+
+    }
+
+
 
 
     cms.saveFileResource = function   ( dataElementId, optionComboId, fieldId, fileResource, onSuccessCallback )

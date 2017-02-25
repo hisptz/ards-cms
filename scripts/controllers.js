@@ -10,66 +10,23 @@ var cmsControllers = angular.module('cmsControllers', [])
         function ($rootScope,
                   $scope, $window, $routeParams, $location, $filter, cmsService, utilityService) {
 
-            $scope.formUnsaved = false;
-            $scope.fileNames = [];
-            $scope.currentFileNames = [];
 
 
-            $scope.downloadFile = function (eventUid, dataElementUid, e) {
-                eventUid = eventUid ? eventUid : $scope.currentEvent.event ? $scope.currentEvent.event : null;
-                if (!eventUid || !dataElementUid) {
+            $scope.interfacingClass="col-md-10";
 
-                    var dialogOptions = {
-                        headerText: 'error',
-                        bodyText: 'missing_file_identifier'
-                    };
+            $scope.changeClass = function(){
+                $scope.interfacingClass = "col-md-10";
+            }
 
-                    DialogService.showDialog({}, dialogOptions);
-                    return;
-                }
+            $scope.$on('hideLeftBar',function(){
+                $scope.interfacingClass="col-md-12";
+            })
 
-                $window.open('../api/events/files?eventUid=' + eventUid + '&dataElementUid=' + dataElementUid, '_blank', '');
-                if (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                }
-            };
+            $scope.$on('extendLeftBar',function(){
+                $scope.interfacingClass="col-md-8";
+            })
 
-            $scope.deleteFile = function (dataElement) {
 
-                if (!dataElement) {
-                    var dialogOptions = {
-                        headerText: 'error',
-                        bodyText: 'missing_file_identifier'
-                    };
-                    DialogService.showDialog({}, dialogOptions);
-                    return;
-                }
-
-                var modalOptions = {
-                    closeButtonText: 'cancel',
-                    actionButtonText: 'remove',
-                    headerText: 'remove',
-                    bodyText: 'are_you_sure_to_remove'
-                };
-
-                ModalService.showModal({}, modalOptions).then(function (result) {
-                    $scope.fileNames[$scope.currentEvent.event][dataElement] = null;
-                    $scope.currentEvent[dataElement] = null;
-                    $scope.updateEventDataValue($scope.currentEvent, dataElement);
-                });
-            };
-
-            $scope.updateFileNames = function () {
-                for (var dataElement in $scope.currentFileNames) {
-                    if ($scope.currentFileNames[dataElement]) {
-                        if (!$scope.fileNames[$scope.currentEvent.event]) {
-                            $scope.fileNames[$scope.currentEvent.event] = [];
-                        }
-                        $scope.fileNames[$scope.currentEvent.event][dataElement] = $scope.currentFileNames[dataElement];
-                    }
-                }
-            };
             // get report tables
             $scope.getReportTable = function () {
                 cmsService.getReportTables().then(function (reportTables) {
@@ -95,6 +52,19 @@ var cmsControllers = angular.module('cmsControllers', [])
 
                 });
             }
+
+            $scope.loadRawCharts = function () {
+                cmsService.getCharts().then(function (response) {
+                    var rowcharts = response.charts;
+
+                    $scope.charts = rowcharts;
+
+                }, function (error) {
+
+                });
+            }
+
+            $scope.loadRawCharts();
 
             $scope.loadMessages();
             $scope.getReportTable();
@@ -139,7 +109,6 @@ var cmsControllers = angular.module('cmsControllers', [])
 
             // Called when the editor is completely ready.
         $scope.onReady = function () {
-
 
         };
 
@@ -309,37 +278,7 @@ var cmsControllers = angular.module('cmsControllers', [])
         }
 
 
-        $scope.loadRawCharts = function () {
-            cmsService.getCharts().then(function (response) {
-                var rowcharts = response.charts;
-                $scope.loadCharts().then(function (response) {
-                    if (response) {
 
-                        if (response.length == rowcharts.length) {
-                            $scope.charts = response;//cmsService.getSelectedCharts(response.chartsStorage);
-                        } else {
-                            cmsService.saveCharts(rowcharts);
-                            if (response.length > 0) {
-                                cmsService.updateCharts(rowcharts);
-                            }
-                        }
-
-                    } else {
-                        cmsService.saveCharts(rowcharts);
-                    }
-
-
-                }, function (error) {
-                    console.log(error);
-                });
-            }, function (error) {
-
-            });
-        }
-
-        $scope.loadCharts = function () {
-            return cmsService.loadChartStorage();
-        }
 
 
         $scope.loadInformations = function () {
@@ -743,13 +682,14 @@ var cmsControllers = angular.module('cmsControllers', [])
         }
 
 
+
         $scope.getReportTable();
         $scope.loadMenu();
         $scope.loadArticles();
         $scope.loadMessages();
         $scope.loadInformations();
-        $scope.loadRawCharts();
-        $scope.loadCharts();
+        // $scope.loadRawCharts();
+        // $scope.loadCharts();
 
 
         // Editor options.
