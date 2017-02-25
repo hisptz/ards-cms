@@ -18,6 +18,8 @@ var cmsControllers = angular.module('cmsControllers', [])
                 $scope.interfacingClass = "col-md-10";
             }
 
+            cmsService.checkSession();
+
             $scope.$on('hideLeftBar',function(){
                 $scope.interfacingClass="col-md-12";
             })

@@ -200,6 +200,20 @@ cmsServices.service('cmsService',['$http','DHIS2URL',function($http,DHIS2URL){
     }
 
 
+    cms.checkSession = function(){
+        setInterval(function(){
+            $http.get("../../../api/me.json").then(function(myJsonObject){
+                if (typeof myJsonObject.data == "string"){
+                    window.location.href = "../../../dhis-web-commons/security/login.action";
+                }
+            },function(){
+
+            });
+        }, 2000);
+    }
+
+
+
     cms.updateSelectedCharts = function(charts){
 
         // save charts to storage
