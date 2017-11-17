@@ -6,7 +6,9 @@
       <hr/>
     </div>
     <div class="form-group">
-      <label for="contents">Articles Contents</label>
+      <label for="contents">Articles Contents
+        <img  *ngIf="loading" [ngStyle]="{height:'30px'}"  src="assets/img/balls-5.svg"  alt="">
+      </label>
       <ckeditor
         name="contents"
         id="contents"
