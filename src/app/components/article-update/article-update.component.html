@@ -1,0 +1,36 @@
+<div class="form-conteiner">
+  <form>
+    <div class="form-group">
+      <label>Create new article <span
+        *ngIf="(currentSelectedCategory!=='all')"> under {{currentSelectedCategory}}</span>.</label>
+      <hr/>
+    </div>
+    <div class="form-group">
+      <label for="contents">Articles Contents</label>
+      <ckeditor
+        name="contents"
+        id="contents"
+        [(ngModel)]="ckeditorContent"
+        debounce="500">
+      </ckeditor>
+    </div>
+    <div class="form-group">
+      <label for="category">Select<span *ngIf="(currentSelectedCategory!=='all')">ed</span> Category</label>
+      <select
+        id="category"
+        name="category"
+        class="form-control"
+        [disabled]="(currentSelectedCategory!=='all')"
+        [(ngModel)]="category">
+        <option selected="selected" *ngIf="(currentSelectedCategory!=='all')">{{currentSelectedCategory|titlecase}}
+        </option>
+        <option *ngFor="let menu of menus">
+          {{menu}}
+        </option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary" (click)="createArticle()">Create</button>
+    <button type="button" class="btn btn-danger" (click)="toggleForm()">Cancel</button>
+  </form>
+</div>

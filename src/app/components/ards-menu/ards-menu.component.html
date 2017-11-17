@@ -1,0 +1,91 @@
+<div *ngIf="isHeaderLoaded" class="navbar navbar-default top-bar navbar-fixed-top" style="background-color:#457B49;">
+  <div class="col-md-2" style="font-weight: bolder;">
+    <div style="font-weight: bolder; color:#fff;" class="hidden-sm hidden-xs">
+      <img src="{{fileUrl}}/dhis-web-commons/css/portalImages/nembo.png" class="img-rounded pull-left" style="height: 65px;width:70px">
+    </div>
+  </div>
+  <div class="col-md-8 text-center">
+    <span style="font-size:30px;text-align: center;color:#fff;font-weight:bolder;letter-spacing:1px">UNITED REPUBLIC OF TANZANIA</span>
+    <br><span style="font-size:14px;text-align: center;color:#fff;font-weight:bolder;letter-spacing: 3px;">ARDS WEB PORTAL</span>
+  </div>
+  <div class="col-md-2 hidden-sm hidden-xs">
+    <img src="{{fileUrl}}/dhis-web-commons/css/portalImages/tz_flag.gif" class="img-rounded pull-right" style="height: 65px; width: 70px">
+  </div>
+  <div id="headerMessage" class="bold"></div>
+  <div class="row normal">
+    <nav class="topnav navbar-static-top navbar-inverse responsive" style="padding-left: 30px;" role="navigation">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="container-fluid">
+        <div class="navbar-header" style="background-color:#457B49;">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false" style="margin-right: 35px !important;">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a *ngIf="menus['ARDS HOME']" class="navbar-brand" href="{{fileUrl}}/api/apps/home/index.html#/"><i class="fa fa-home"></i>ARDS</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" style="background-color:#457B49;">
+          <ul class="nav navbar-nav" style="background-color:#457B49" >
+
+            <li *ngIf="menus['dhis-web-dashboard-integration']"  style="border-right: solid 1px #888"><a id="menuLink5" href="{{fileUrl}}/dhis-web-dashboard-integration/index.action" class="menuLink">Dashboard</a></li>
+            <li *ngIf="menus['Reports App']" style="border-right: solid 1px #888"><a  href="{{fileUrl}}/api/apps/standardreport/index.html#/" class="menuLink">Report</a></li>
+            <li class="dropdown" style="border-right: solid 1px #888;">
+              <a  href="" class="dropdown-toggle" data-toggle="dropdown"class="menuLink"> Data <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li *ngIf="menus['dhis-web-pivot']" style="color:#ffffff!important;"><a href="{{fileUrl}}/api/apps/pivot-table/index.html" class="menuLink">Pivot table</a></li>
+                <li *ngIf="menus['dhis-web-visualizer']" style="color:#ffffff!important;"><a  href="{{fileUrl}}/dhis-web-visualizer/index.action" class="menuLink">Data visualizer</a></li>
+                <li *ngIf="menus['dhis-web-mapping']" style="color:#ffffff!important;"><a  href="{{fileUrl}}/dhis-web-mapping/index.action" class="menuLink">Map</a></li>
+
+              </ul>
+            </li>
+            <li *ngIf="menus['News']" style="border-right: solid 1px #888"><a href="{{fileUrl}}/api/apps/news/index.html#/" class="menuLink">News</a></li>
+            <li *ngIf="menus['Article']" style="border-right: solid 1px #888"><a href="{{fileUrl}}/api/apps/articles/index.html#/" class="menuLink">Articles</a></li>
+            <li *ngIf="menus['Ards Data entry']" style="border-right: solid 1px #888;">
+              <a  href=""  class="dropdown-toggle" data-toggle="dropdown"class="menuLink">Data Entry<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li *ngIf="menus['Ards Data entry']" style="color:#ffffff!important;"><a href="{{fileUrl}}/api/apps/ards-data-entry/index.html#/" >Data Entry&nbsp;</a></li>
+                <li *ngIf="menus['dhis-web-importexport']" style="color:#ffffff!important;"><a href="{{fileUrl}}/dhis-web-importexport/index.action" >Import Export&nbsp;</a></li>
+                <!--<li ng-if="menus['dhis-web-maintenance-dataadmin']" style=" color:#ffffff!important;"><a href="{{fileUrl}}/dhis-web-maintenance-dataadmin/optionSet.action"> Look up Table&nbsp;</a></li>-->
+              </ul>
+            </li>
+            <li *ngIf="menus['dhis-web-maintenance-dataadmin']" class="dropdown" style="border-right: solid 1px #888;">
+              <a href="" class="dropdown-toggle" data-toggle="dropdown"class="menuLink">Maintenance<b class="caret"></b></a>
+              <ul class="dropdown-menu" >
+                <li *ngIf="menus['dhis-web-maintenance-dataadmin']" style="color:#ffffff!important;"><a href="{{fileUrl}}/dhis-web-maintenance-dataadmin/index.action" >Data Administration&nbsp;</a></li>
+                <li *ngIf="menus['dhis-web-maintenance']" style="color:#ffffff!important;"><a href="{{fileUrl}}/dhis-web-maintenance/" >Data Elements and Computed values&nbsp;</a></li>
+                <li *ngIf="menus['dhis-web-maintenance']" style="color:#ffffff!important;"><a href="{{fileUrl}}/dhis-web-maintenance/#/list/dataSetSection/dataSet" >Entry Form&nbsp;</a></li>
+                <li *ngIf="menus['dhis-web-maintenance']" style="color:#ffffff!important;"><a href="{{fileUrl}}/api/apps/organisationunit/index.html#/" >Administrative Units&nbsp;</a></li>
+                <li *ngIf="menus['system Setting']" style="color:#ffffff!important;"><a href="{{fileUrl}}/api/apps/systemSetting/index.html#/" >Settings&nbsp;</a></li>
+                <li *ngIf="menus['dhis-web-maintenance-user']" style="color:#ffffff!important;"><a href="{{fileUrl}}/dhis-web-maintenance-user/index.action" >Users&nbsp;</a></li>
+                <li *ngIf="menus['CMS']" style="color:#ffffff!important;" class="cms"><a href="{{fileUrl}}/api/apps/cms/index.html#/" id="cms_settings_button">CMS&nbsp;</a></li>
+                <li *ngIf="menus['dhis-web-reporting']" style="color:#ffffff!important;"><a href="{{fileUrl}}/dhis-web-reporting/generateHtmlReport.action?uid=vDl5hipAW8w&" >System usage statistics&nbsp;</a></li>
+              </ul>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right" style="margin-right:40px;" >
+            <li style="width:172px!important;">
+              <a href="" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i>&nbsp;{{objectName.firstName }}<b class="caret"></b><span class="sr-only">(current)</span></a>
+              <ul class="dropdown-menu" style="padding-left: 3px;">
+                <li><a href="{{fileUrl}}/dhis-web-commons-about/showUpdateUserProfileForm.action"><i class="fa fa-pencil"></i>&nbsp;Update Info</a></li>
+                <li><a href="{{fileUrl}}/api/apps/userSetting/index.html#/"><i class="fa fa-pencil"></i>&nbsp;User Settings</a></li>
+                <li><a href="{{fileUrl}}/dhis-web-commons-about/help.action"><i class="fa fa-question-circle " style="color:black;"></i>&nbsp;Help Center</a></li>
+                <li><a href="{{fileUrl}}/dhis-web-commons-about/about.action" class="menuLink"><i class="fa fa-info-circle" style="color:black;"></i>&nbsp;About ARDS</a></li>
+                <li><a href="{{fileUrl}}/dhis-web-commons-about/showUpdateUserAccountForm.action"><i class="fa fa-lock"></i>&nbsp;Change Password</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="{{fileUrl}}/dhis-web-commons-security/logout.action"><i class="fa fa-power-off"></i>&nbsp;Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+</div>
+<!--<div *ngIf="isHeaderLoaded" class="navbar navbar-default top-bar navbar-fixed-top" style="background-color:#457B49;">-->
+<!--<div class="col-md-2" style="font-weight: bolder;">-->
+
+<!--</div>-->
+<!--</div>-->

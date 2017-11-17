@@ -1,0 +1,26 @@
+#sidebar {
+  position: fixed;
+  right: 0px;
+  margin-top: 25px;
+  background-color: #F3F3F3;
+  border:solid 1px #F3F3F3;
+  height: 100vh;
+}
+
+#sidebar-arrow {
+  position: fixed;
+  z-index: 1000;
+}
+
+#sidebar-arrow > li > a {
+  color: #666666;
+  font-size: 12px;
+}
+
+.sidebar-menu > li > a {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-size: 12px;
+  color: #000000;
+
+}

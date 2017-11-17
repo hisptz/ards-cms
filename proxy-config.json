@@ -1,0 +1,14 @@
+{
+  "/api": {
+    "target": "https://ards.hisptz.org/dev/",
+    "secure": "true",
+    "auth":"admin:ADMIN2016",
+    "changeOrigin":true
+  },
+  "/": {
+    "target": "https://ards.hisptz.org/dev/",
+    "secure": "true",
+    "auth":"admin:ADMIN2016",
+    "changeOrigin":true
+  }
+}

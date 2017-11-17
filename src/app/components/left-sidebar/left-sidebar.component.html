@@ -1,0 +1,56 @@
+<ul class="list-inline pull-right" id="sidebar-arrow" [ngStyle]="{'left' : getArrowLeftWidth(currentWidth)}">
+  <li><a (click)="resize('minimize')" *ngIf="!isMinSize"><i class="fa fa-arrow-left"></i></a></li>
+  <li><a (click)="resize('expand')" *ngIf="!isMaxSize"><i class="fa fa-arrow-right"></i></a></li>
+</ul>
+<div id="sidebar" [ngStyle]="{'width': currentWidth}" *ngIf="!hideMenu">
+  <br/>
+  <br/>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingOne" (click)="clickAccordon('analysis',$event)">
+            <h4 class="panel-title">
+              <a role="button" #analysis style="font-weight: bolder" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                Data Analysis
+              </a>
+            </h4>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+            <div class="panel-body">
+              <app-report-tables></app-report-tables>
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingTwo" (click)="clickAccordon('documents',$event)">
+            <h4 class="panel-title">
+              <a class="collapsed" #documents role="button" style="font-weight: bolder" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                Documents
+              </a>
+            </h4>
+          </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+            <div class="panel-body">
+              <app-documents></app-documents>
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingThree" (click)="clickAccordon('links',$event)">
+            <h4 class="panel-title">
+              <a class="collapsed" #links role="button" style="font-weight: bolder" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                Links
+              </a>
+            </h4>
+          </div>
+          <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+            <div class="panel-body">
+              <app-links></app-links>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

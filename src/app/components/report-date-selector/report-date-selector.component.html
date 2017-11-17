@@ -1,0 +1,5 @@
+<form #myForm="ngForm" novalidate style="margin-top: 10px;">
+  <label class="control-label"><small>Date of report</small></label>
+  <my-date-picker name="mydate" [options]="myDatePickerOptions"
+                  [(ngModel)]="dateModel" required (ngModelChange)="updateDate($event)"></my-date-picker>
+</form>

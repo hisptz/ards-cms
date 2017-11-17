@@ -1,0 +1,8 @@
+<div class="alert alert-danger" style="margin-top: 40px;" *ngIf="message$ | async">
+  <i class="fa fa-exclamation-triangle"></i>
+  Problem occurred while loading report, please try again
+  <ul class="list-inline">
+    <li><a (click)="reload()" class="btn btn-info" style="cursor: pointer;">Reset</a></li>
+    <li><a (click)="close()" class="btn btn-warning" style="cursor: pointer;">Cancel</a></li>
+  </ul>
+</div>

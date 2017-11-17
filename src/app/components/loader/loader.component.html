@@ -1,0 +1,5 @@
+<div style="padding-top: 15%; text-align: center;">
+  <img  *ngIf="!error"  src="assets/img/balls-5.svg" alt="">
+  <h4 *ngIf="!error" style="margin-top: 50px;">Loading {{resourceName}}</h4>
+  <h4  *ngIf="error" class="alert-danger">Problem in loading {{resourceName}}</h4>
+</div>

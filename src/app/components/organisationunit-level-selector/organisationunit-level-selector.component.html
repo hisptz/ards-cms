@@ -1,0 +1,9 @@
+<div class="form-group" style="margin-top: 5px;">
+  <label class="control-label"><small>Administrative unit children</small></label>
+  <select [(ngModel)]="selectedChildrenLevel" (change)="updateChildrenLevel(selectedChildrenLevel)" class="form-control input-sm" [disabled]="orgunitChildrenLevel.length == 0">
+    <option value="0" *ngIf="orgunitChildrenLevel.length == 0">No children level</option>
+    <option value="{{childrenLevel.level}}" *ngFor="let childrenLevel of orgunitChildrenLevel" [hidden]="childrenLevel.name == 'Ward' && hideWard">
+      {{childrenLevel.name}}
+    </option>
+  </select>
+</div>

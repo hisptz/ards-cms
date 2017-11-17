@@ -1,0 +1,27 @@
+<label class="control-label"><small>Period</small></label>
+<div class="row">
+  <div class="col-sm-6">
+    <select id="periodType" [(ngModel)]="period_type" class="form-control input-sm" style="height: 25px " (change)="changePeriodType()">
+      <option value="" disabled="disabled" selected="selected">Select period type</option>
+      <option  [value]="'Monthly'" [hidden]="periodOptions?.hideMonth">Monthly</option>
+      <option  [value]="'Quarterly'" [hidden]="periodOptions?.hideQuarter">Quarterly</option>
+      <option  [value]="'Yearly'" [hidden]="periodOptions?.hideYear">Yearly</option>
+      <option  [value]="'FinancialJuly'" [hidden]="periodOptions?.hideFinancialJuly">Financial-July</option>
+    </select>
+  </div>
+  <div class="col-sm-6">
+    <div class="btn-group btn-group-sm pull-right">
+      <button type="button" class="btn btn-default btn-sm" (click)="pushPeriodBackward()" style="height: 25px;font-size: 10px">Prev Year</button>
+      <button type="button" class="btn btn-default btn-sm" (click)="pushPeriodForward()" [disabled]="currentYear === year" style="height: 25px;font-size: 10px">Next Year</button>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <select [(ngModel)]="selectedPeriodId"  (change)="onPeriodChange(selectedPeriodId, periods)" id="" class="form-control input-sm" [disabled]="periods.length == 0">
+      <option *ngIf="selectedPeriodId == ''" value="" selected="selected" disabled="disabled">Select period</option>
+      <option [value]="period.id" *ngFor="let period of periods">{{ period.name }}</option>
+    </select>
+  </div>
+</div>
+

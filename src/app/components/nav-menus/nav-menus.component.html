@@ -1,0 +1,11 @@
+<div style="font-size:9pt!important;margin-top: 10px">
+  <!--Nav tabs -->
+
+  <ul id="tabs">
+    <li *ngFor="let menu of menus">
+      <a style="cursor: pointer;" [routerLink]="['/articles',menu|lowercase]" routerLinkActive="active">
+        {{menu}}
+      </a>
+    </li>
+  </ul>
+</div>

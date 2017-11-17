@@ -1,0 +1,27 @@
+<app-nav-menus [menus]="menus"></app-nav-menus>
+<div style="padding-top: 10px">
+  <button class="btn btn-default" *ngIf="!showAddForm" (click)="onCloseFormEvent()">
+    <i class="fa fa-plus"></i>
+    &nbsp;Add New
+  </button>
+  <app-article-update
+    *ngIf="showAddForm"
+    [articles]="articles"
+    [ckeditorContent]="ckeditorContent"
+    [currentSelectedCategory]="currentSelectedCategory"
+    [menus]="menus"
+    (closeFormEvent)="onCloseFormEvent($event)"
+    [isUpdate]="isUpdate"
+  ></app-article-update>
+
+  <div *ngIf="filteredArticles&&!showAddForm">
+    <div *ngFor="let article of filteredArticles">
+      <app-article-renderer
+        [contents]="article.content"
+      ></app-article-renderer>
+    </div>
+  </div>
+  <div *ngIf="!filteredArticles">
+    <app-loader [resourceName]="'articles ...'"></app-loader>
+  </div>
+</div>
