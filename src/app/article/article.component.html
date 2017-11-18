@@ -1,6 +1,6 @@
 <app-nav-menus [menus]="menus"></app-nav-menus>
 <div style="padding-top: 10px">
-  <button class="btn btn-default" *ngIf="!showAddForm&&!showEditForm" (click)="onCloseFormEvent()">
+  <button class="btn btn-default" *ngIf="!showAddForm&&!showEditForm" (click)="onCloseAddFormEvent()">
     <i class="fa fa-plus"></i>
     &nbsp;Add New
   </button>
@@ -19,6 +19,7 @@
   <app-article-update
     *ngIf="showEditForm"
     [articles]="articles"
+    [article]="updatedArticle"
     [ckeditorContent]="ckeditorContent"
     [currentSelectedCategory]="currentSelectedCategory"
     [menus]="menus"
@@ -31,6 +32,7 @@
       <app-article-renderer
         [article]="article"
         (updateArticleEvent)="onUpdateArticleEvent($event)"
+        (toggleHideShowArticleEvent)="onToggleHideShowArticleEvent($event)"
       ></app-article-renderer>
     </div>
   </div>

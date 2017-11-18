@@ -3,6 +3,7 @@ import {ActivatedRoute} from '@angular/router';
 import {ArticleService} from '../providers/article.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {HomeMenuService} from '../providers/homeMenus.service';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-article',
@@ -12,6 +13,7 @@ import {HomeMenuService} from '../providers/homeMenus.service';
 export class ArticleComponent implements OnInit {
 
   articles: any;
+  updatedArticle: any;
   filteredArticles: any;
   currentSelectedCategory = 'all';
   showAddForm = false;
@@ -24,10 +26,7 @@ export class ArticleComponent implements OnInit {
     this.homeMenusService.getHomeMenus().subscribe(menus => {
       this.menus = ['All', ...menus];
 
-      this.articleService.getArticles().subscribe(articles => {
-        this.articles = articles;
-        this.checkRouteChanges();
-      });
+      this.getAllArticles();
 
     });
   }
@@ -36,6 +35,13 @@ export class ArticleComponent implements OnInit {
     this.checkRouteChanges();
   }
 
+  getAllArticles() {
+    this.articles = null;
+    return this.articleService.getArticles().subscribe(articles => {
+      this.articles = articles;
+      this.checkRouteChanges();
+    });
+  }
 
   onUpdateArticleEvent($event) {
     const article = $event;
@@ -43,7 +49,27 @@ export class ArticleComponent implements OnInit {
       this.isUpdate = true;
       this.currentSelectedCategory = article.category;
       this.ckeditorContent = article.content;
+      this.updatedArticle = article;
       this.showEditForm = !this.showEditForm;
+    }
+  }
+
+  onToggleHideShowArticleEvent($event) {
+    const article = $event;
+    if (article) {
+      const articles = _.clone(this.articles);
+      if (articles) {
+        const articlesUpdated = [];
+        articles.filter(currentArticle => {
+          currentArticle.id !== article.id ? articlesUpdated.push(currentArticle) : articlesUpdated.push(article);
+        });
+        this.articles = articlesUpdated;
+      }
+
+      this.articleService.saveArticle(this.articles).subscribe(response => {
+        this.getAllArticles();
+      });
+
     }
   }
 
@@ -51,16 +77,15 @@ export class ArticleComponent implements OnInit {
     this.isUpdate = false;
     this.showAddForm = !this.showAddForm;
     if ($event && $event.load) {
-      this.checkRouteChanges();
+      this.getAllArticles();
     }
   }
 
   onCloseEditFormEvent($event) {
-    console.log($event);
     this.isUpdate = false;
     this.showEditForm = !this.showEditForm;
     if ($event && $event.load) {
-      this.checkRouteChanges();
+      this.getAllArticles();
     }
   }
 

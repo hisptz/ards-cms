@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ArticleService} from '../../providers/article.service';
-
+import * as _ from 'lodash';
 @Component({
   selector: 'app-article-update',
   templateUrl: './article-update.component.html',
@@ -8,6 +8,7 @@ import {ArticleService} from '../../providers/article.service';
 })
 export class ArticleUpdateComponent implements OnInit {
   @Input() articles;
+  @Input() article;
   @Input() currentSelectedCategory;
   @Input() ckeditorContent;
   @Input() menus;
@@ -28,28 +29,25 @@ export class ArticleUpdateComponent implements OnInit {
   }
 
 
-
-  updateArticle() {
+  updateArticle(article) {
     this.loading = true;
-    this.category = !this.category || this.category === "" ? this.currentSelectedCategory : this.category;
-    if (this.category) {
-      const article = {
-        id: this.articles.length,
-        category: this.capitalize(this.category),
-        content: this.ckeditorContent,
-        order: 1,
-        shown: true
-      };
+    const articles = _.clone(this.articles);
 
-      console.log(article);
-
-      // this.articles.push(article);
-      // this.articleService.saveArticle(this.articles).subscribe(response => {
-      //   this.loading = false;
-      //   this.closeEditFormEvent.emit({load: true});
-      // });
+    if (articles) {
+      const articlesUpdated = [];
+      articles.filter(currentArticle => {
+        currentArticle.id !== article.id ? articlesUpdated.push(currentArticle) : articlesUpdated.push(article);
+      });
+      this.articles = articlesUpdated;
     }
+
+    this.articleService.saveArticle(this.articles).subscribe(response => {
+      this.loading = false;
+      this.closeEditFormEvent.emit({load: true});
+    });
+
   }
+
 
   capitalize(stringCharacters) {
     return stringCharacters.replace(/(?:^|\s)\S/g, (a) => {

@@ -7,7 +7,8 @@
     </div>
     <div class="form-group">
       <label for="contents">Articles Contents
-        <img  *ngIf="loading" [ngStyle]="{height:'30px'}"  src="assets/img/balls-5.svg"  alt=""> <span style="font-size: 12px!important;font-weight: normal;text-style:italics;">updating article ...</span>
+        <img *ngIf="loading" [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt=""> <span *ngIf="loading"
+                                                                                                    style="font-size: 12px!important;font-weight: normal;text-style:italic;">updating article ...</span>
       </label>
       <ckeditor
         name="contents"
@@ -23,12 +24,16 @@
         name="category"
         class="form-control"
         [(ngModel)]="category">
-        <option *ngFor="let menu of menus" [selected]="(currentSelectedCategory!=='all')" [disabled]="(currentSelectedCategory==='all')">
+        <option *ngFor="let menu of menus"
+                [selected]="(currentSelectedCategory!=='All' && menu===currentSelectedCategory)"
+                [disabled]="(currentSelectedCategory==='All')">
           {{menu}}
         </option>
       </select>
     </div>
-    <button type="submit" class="btn btn-primary" (click)="updateArticle()">Update</button>
+    <button type="submit" class="btn btn-primary"
+            (click)="updateArticle({id:article.id,content:ckeditorContent,order:1,shown:true,category:category})">Update
+    </button>
     <button type="button" class="btn btn-danger" (click)="toggleForm()">Cancel</button>
   </form>
 </div>

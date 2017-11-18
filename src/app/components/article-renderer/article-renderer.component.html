@@ -5,15 +5,25 @@
         <button type="button"  style="color:orange;" (click)="editArticle(article)"  class="btn btn-default">
           <i class="fa fa-edit"></i>
         </button>
-        <button type="button" style="color:black;"  class="btn btn-default">
-          <i class="fa fa-minus"></i>
+        <button type="button" style="color:black;" (click)="toggleHideShow(article)" class="btn btn-default">
+          <i *ngIf="article.shown" class="fa fa-minus"></i>
+          <i *ngIf="!article.shown" class="fa fa-plus"></i>
         </button>
         <button type="button" style="color:green;"  class="btn btn-default">
           <i class="fa fa-arrow-up"></i>
         </button>
-        <button type="button" style="color:red;" class="btn btn-default">
+        <button type="button" style="color:red;"  (click)="toggleDeleteOptions(article.id)" class="btn btn-default">
           <i class="fa fa-trash"></i>
         </button>
+        <br/>
+        <br/>
+        <div class="dropdown show" [ngClass]="{open:showDeleteOptions[article.id]}">
+          <a></a>
+          <div class="dropdown-menu" style="padding:5px;min-width: 150px!important;">
+            <a class="dropdown-item" style="cursor: pointer" (click)="deleteArticle(article)"><i class="fa fa-check" style="color:green;"></i>&nbsp;Confirm</a><br/>
+            <a class="dropdown-item" style="cursor: pointer" (click)="toggleDeleteOptions(article.id)"><i class="fa fa-close" style="color:red;"></i>&nbsp;Cancel</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-import {Component, Input,Output,EventEmitter, OnInit} from '@angular/core';
+import {Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-article-renderer',
@@ -8,13 +8,29 @@ import {Component, Input,Output,EventEmitter, OnInit} from '@angular/core';
 export class ArticleRendererComponent implements OnInit {
   @Input() article;
   @Output() updateArticleEvent = new EventEmitter;
-  constructor() { }
+  @Output() toggleHideShowArticleEvent = new EventEmitter;
+  showDeleteOptions: Array<any> = [];
+
+  constructor() {
+  }
 
   ngOnInit() {
   }
 
-  editArticle(article){
+  editArticle(article) {
     this.updateArticleEvent.emit(article);
   }
 
+  toggleHideShow(article) {
+    article.shown = !article.shown;
+    this.toggleHideShowArticleEvent.emit(article);
+  }
+
+  toggleDeleteOptions(id) {
+    this.showDeleteOptions[id]?this.showDeleteOptions[id]=!this.showDeleteOptions[id]:this.showDeleteOptions[id]=true;
+  }
+
+  deleteArticle(article) {
+
+  }
 }
