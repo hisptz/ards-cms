@@ -1,23 +1,36 @@
 <app-nav-menus [menus]="menus"></app-nav-menus>
 <div style="padding-top: 10px">
-  <button class="btn btn-default" *ngIf="!showAddForm" (click)="onCloseFormEvent()">
+  <button class="btn btn-default" *ngIf="!showAddForm&&!showEditForm" (click)="onCloseFormEvent()">
     <i class="fa fa-plus"></i>
     &nbsp;Add New
   </button>
-  <app-article-update
+
+
+  <app-article-add
     *ngIf="showAddForm"
     [articles]="articles"
     [ckeditorContent]="ckeditorContent"
     [currentSelectedCategory]="currentSelectedCategory"
     [menus]="menus"
-    (closeFormEvent)="onCloseFormEvent($event)"
+    (closeAddFormEvent)="onCloseAddFormEvent($event)"
+    [isUpdate]="false"
+  ></app-article-add>
+
+  <app-article-update
+    *ngIf="showEditForm"
+    [articles]="articles"
+    [ckeditorContent]="ckeditorContent"
+    [currentSelectedCategory]="currentSelectedCategory"
+    [menus]="menus"
+    (closeEditFormEvent)="onCloseEditFormEvent($event)"
     [isUpdate]="isUpdate"
   ></app-article-update>
 
-  <div *ngIf="filteredArticles&&!showAddForm">
+  <div *ngIf="filteredArticles&&!showAddForm&&!showEditForm">
     <div *ngFor="let article of filteredArticles">
       <app-article-renderer
-        [contents]="article.content"
+        [article]="article"
+        (updateArticleEvent)="onUpdateArticleEvent($event)"
       ></app-article-renderer>
     </div>
   </div>

@@ -1,13 +1,13 @@
 <div class="form-conteiner">
   <form>
     <div class="form-group">
-      <label>Update article <span
+      <label>Create new article <span
         *ngIf="(currentSelectedCategory!=='all')"> under {{currentSelectedCategory}}</span>.</label>
       <hr/>
     </div>
     <div class="form-group">
       <label for="contents">Articles Contents
-        <img  *ngIf="loading" [ngStyle]="{height:'30px'}"  src="assets/img/balls-5.svg"  alt=""> <span style="font-size: 12px!important;font-weight: normal;text-style:italics;">updating article ...</span>
+        <img  *ngIf="loading" [ngStyle]="{height:'30px'}"  src="assets/img/balls-5.svg"  alt="">
       </label>
       <ckeditor
         name="contents"
@@ -22,13 +22,16 @@
         id="category"
         name="category"
         class="form-control"
+        [disabled]="(currentSelectedCategory!=='all')"
         [(ngModel)]="category">
-        <option *ngFor="let menu of menus" [selected]="(currentSelectedCategory!=='all')" [disabled]="(currentSelectedCategory==='all')">
+        <option selected="selected" *ngIf="(currentSelectedCategory!=='all')">{{currentSelectedCategory|titlecase}}
+        </option>
+        <option *ngFor="let menu of menus">
           {{menu}}
         </option>
       </select>
     </div>
-    <button type="submit" class="btn btn-primary" (click)="updateArticle()">Update</button>
+    <button type="submit" class="btn btn-primary" (click)="createArticle()">Create</button>
     <button type="button" class="btn btn-danger" (click)="toggleForm()">Cancel</button>
   </form>
 </div>

@@ -15,6 +15,7 @@ export class ArticleComponent implements OnInit {
   filteredArticles: any;
   currentSelectedCategory = 'all';
   showAddForm = false;
+  showEditForm = false;
   ckeditorContent: any = '';
   menus: any;
   isUpdate = false;
@@ -36,8 +37,28 @@ export class ArticleComponent implements OnInit {
   }
 
 
-  onCloseFormEvent($event) {
+  onUpdateArticleEvent($event) {
+    const article = $event;
+    if (article) {
+      this.isUpdate = true;
+      this.currentSelectedCategory = article.category;
+      this.ckeditorContent = article.content;
+      this.showEditForm = !this.showEditForm;
+    }
+  }
+
+  onCloseAddFormEvent($event) {
+    this.isUpdate = false;
     this.showAddForm = !this.showAddForm;
+    if ($event && $event.load) {
+      this.checkRouteChanges();
+    }
+  }
+
+  onCloseEditFormEvent($event) {
+    console.log($event);
+    this.isUpdate = false;
+    this.showEditForm = !this.showEditForm;
     if ($event && $event.load) {
       this.checkRouteChanges();
     }

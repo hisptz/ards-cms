@@ -28,6 +28,7 @@ import {ArticleService} from './providers/article.service';
 import { ArticleRendererComponent } from './components/article-renderer/article-renderer.component';
 import {CKEditorModule} from 'ng2-ckeditor';
 import { ArticleUpdateComponent } from './components/article-update/article-update.component';
+import { ArticleAddComponent } from './components/article-add/article-add.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { ArticleUpdateComponent } from './components/article-update/article-upda
     LinksUpdateComponent,
     ArticleRendererComponent,
     ArticleUpdateComponent,
+    ArticleAddComponent,
   ],
   imports: [
     BrowserModule,

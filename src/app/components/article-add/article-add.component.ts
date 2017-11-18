@@ -1,18 +1,18 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ArticleService} from '../../providers/article.service';
+import {ArticleService} from "../../providers/article.service";
 
 @Component({
-  selector: 'app-article-update',
-  templateUrl: './article-update.component.html',
-  styleUrls: ['./article-update.component.css']
+  selector: 'app-article-add',
+  templateUrl: './article-add.component.html',
+  styleUrls: ['./article-add.component.css']
 })
-export class ArticleUpdateComponent implements OnInit {
+export class ArticleAddComponent implements OnInit {
   @Input() articles;
   @Input() currentSelectedCategory;
   @Input() ckeditorContent;
   @Input() menus;
   @Input() isUpdate;
-  @Output() closeEditFormEvent = new EventEmitter;
+  @Output() closeAddFormEvent = new EventEmitter;
   category: any;
   loading = false;
 
@@ -20,16 +20,13 @@ export class ArticleUpdateComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.category = this.currentSelectedCategory;
   }
 
   toggleForm() {
-    this.closeEditFormEvent.emit();
+    this.closeAddFormEvent.emit();
   }
 
-
-
-  updateArticle() {
+  createArticle() {
     this.loading = true;
     this.category = !this.category || this.category === "" ? this.currentSelectedCategory : this.category;
     if (this.category) {
@@ -40,15 +37,17 @@ export class ArticleUpdateComponent implements OnInit {
         order: 1,
         shown: true
       };
-
-      console.log(article);
-
-      // this.articles.push(article);
-      // this.articleService.saveArticle(this.articles).subscribe(response => {
-      //   this.loading = false;
-      //   this.closeEditFormEvent.emit({load: true});
-      // });
+      this.articles.push(article);
+      this.articleService.saveArticle(this.articles).subscribe(response => {
+        this.loading = false;
+        this.closeAddFormEvent.emit({load: true});
+      });
     }
+  }
+
+
+  updateArticle(updatedArticle) {
+
   }
 
   capitalize(stringCharacters) {
@@ -57,6 +56,4 @@ export class ArticleUpdateComponent implements OnInit {
     });
   }
 
-
 }
-

@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-lg-12 col-md-12 col-xs-12">
       <div class="btn-group pull-right">
-        <button type="button" style="color:orange;"  class="btn btn-default">
+        <button type="button"  style="color:orange;" (click)="editArticle(article)"  class="btn btn-default">
           <i class="fa fa-edit"></i>
         </button>
         <button type="button" style="color:black;"  class="btn btn-default">
@@ -17,6 +17,6 @@
       </div>
     </div>
   </div>
-  <div [innerHTML]="contents"></div>
+  <div [innerHTML]="article.content"></div>
 </div>
 
