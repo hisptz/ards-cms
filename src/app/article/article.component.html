@@ -1,6 +1,6 @@
 <app-nav-menus [menus]="menus"></app-nav-menus>
 <div style="padding-top: 10px">
-  <button class="btn btn-default" *ngIf="!showAddForm&&!showEditForm" (click)="onCloseAddFormEvent()">
+  <button class="btn btn-default" *ngIf="!showAddForm&&!showEditForm" title="Add new article" (click)="onCloseAddFormEvent()">
     <i class="fa fa-plus"></i>
     &nbsp;Add New
   </button>

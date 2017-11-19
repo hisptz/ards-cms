@@ -1,3 +1,19 @@
-<p>
-  home-page-menu-update works!
-</p>
+<div class="menu-edit-conteiner" style="margin-top: 10px">
+  <div *ngIf="actionLoading">
+    <div class="alert alert-info" role="alert">
+      <img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp; {{actionLoadingMessage}}
+    </div>
+  </div>
+  <form >
+    <div class="form-group">
+      <label>Update Menu</label>
+    </div>
+    <hr/>
+    <div class="form-group">
+      <label for="menu_name">Menu Name</label>
+      <input type="text" class="form-control" #menu_name name="menu" value="{{menu}}" id="menu_name" placeholder="Menu Name">
+    </div>
+    <button type="button" class="btn btn-primary" (click)="updateMenu(menu_name.value)">Update</button>
+    <button type="button" class="btn btn-danger" (click)="cancelMenuUpdate()">Cancel</button>
+  </form>
+</div>

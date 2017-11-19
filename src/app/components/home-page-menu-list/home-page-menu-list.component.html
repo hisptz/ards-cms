@@ -1,32 +1,38 @@
-<div>
-  <table class="table">
+<div style="margin-top: 10px">
+  <table class="table table-bordered table-hover" *ngIf="(menuList&&menuList.length>0)&&!actionLoading">
     <thead>
     <tr>
-      <th scope="col">#</th>
-      <th scope="col">First Name</th>
-      <th scope="col">Last Name</th>
-      <th scope="col">Username</th>
+      <th style="width: 50px!important;">#</th>
+      <th>Menu</th>
+      <th style="width: 100px!important;">Action</th>
     </tr>
     </thead>
     <tbody>
-    <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-    </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
+    <tr *ngFor="let menu of menuList; let i = index" style="cursor: pointer">
+      <th>{{i+1}}</th>
+      <td>{{menu}}</td>
+      <td>
+        <div class="btn-group pull-right">
+          <button type="button" style="color:orange;" (click)="editHomeMenu(menu)" class="btn btn-default btn-sm">
+            <i class="fa fa-edit"></i>
+          </button>
+          <button type="button" style="color:red;" (click)="deleteHomeMenu(menu)" class="btn btn-default btn-sm">
+            <i class="fa fa-trash"></i>
+          </button>
+        </div>
+      </td>
     </tr>
     </tbody>
   </table>
+  <div *ngIf="(!menuList||menuList==[])&&!actionLoading">
+    <div class="alert alert-info" role="alert">
+      <strong><i class="fa fa-warning"></i></strong> The list is empty no menu available, click <span
+      style="font-weight:bold">Add new</span> button to create new menu.
+    </div>
+  </div>
+  <div *ngIf="actionLoading">
+    <div class="alert alert-info" role="alert">
+      <img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp; {{actionLoadingMessage}}
+    </div>
+  </div>
 </div>
