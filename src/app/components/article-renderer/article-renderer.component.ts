@@ -9,6 +9,7 @@ export class ArticleRendererComponent implements OnInit {
   @Input() article;
   @Output() updateArticleEvent = new EventEmitter;
   @Output() toggleHideShowArticleEvent = new EventEmitter;
+  @Output() deleteArticleEvent = new EventEmitter;
   showDeleteOptions: Array<any> = [];
 
   constructor() {
@@ -31,6 +32,6 @@ export class ArticleRendererComponent implements OnInit {
   }
 
   deleteArticle(article) {
-
+    this.deleteArticleEvent.emit(article);
   }
 }

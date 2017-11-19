@@ -3,7 +3,6 @@
  */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {ArticleComponent} from './article.component';
 import {article_routing} from './article-routing.module';
 
 @NgModule({

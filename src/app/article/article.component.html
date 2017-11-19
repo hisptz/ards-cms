@@ -5,7 +5,6 @@
     &nbsp;Add New
   </button>
 
-
   <app-article-add
     *ngIf="showAddForm"
     [articles]="articles"
@@ -26,17 +25,27 @@
     (closeEditFormEvent)="onCloseEditFormEvent($event)"
     [isUpdate]="isUpdate"
   ></app-article-update>
+  <br/>
+  <br/>
+  <div *ngIf="actionLoading" class="alert alert-info" role="alert">
+    <img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp; {{actionLoadingMessage}}
+  </div>
 
   <div *ngIf="filteredArticles&&!showAddForm&&!showEditForm">
     <div *ngFor="let article of filteredArticles">
       <app-article-renderer
         [article]="article"
         (updateArticleEvent)="onUpdateArticleEvent($event)"
+        (deleteArticleEvent)="onDeleteArticleEvent($event)"
         (toggleHideShowArticleEvent)="onToggleHideShowArticleEvent($event)"
       ></app-article-renderer>
     </div>
   </div>
-  <div *ngIf="!filteredArticles">
-    <app-loader [resourceName]="'articles ...'"></app-loader>
+
+  <div *ngIf="!actionLoading&&(!filteredArticles||filteredArticles.length==0)&&!showAddForm&&!showEditForm">
+    <div class="no-articles-conteiner">
+      <p *ngIf="currentSelectedCategory==='all'" style="padding: 70px!important;text-align:center;font-weight:bolder;font-size: 12px;color: #cccccc;" class="ng-binding">NO ARTICLES CURRENTLY</p>
+      <p *ngIf="currentSelectedCategory!=='all'" style="padding: 70px!important;text-align:center;font-weight:bolder;font-size: 12px;color: #cccccc;" class="ng-binding">NO ARTICLES FOR  {{currentSelectedCategory|uppercase}}  CURRENTLY</p>
+    </div>
   </div>
 </div>

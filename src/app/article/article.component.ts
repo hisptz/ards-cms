@@ -21,11 +21,14 @@ export class ArticleComponent implements OnInit {
   ckeditorContent: any = '';
   menus: any;
   isUpdate = false;
+  actionLoading = false;
+  actionLoadingMessage = '';
 
   constructor(private route: ActivatedRoute, private articleService: ArticleService, private homeMenusService: HomeMenuService) {
+    this.actionLoading = true;
+    this.actionLoadingMessage = 'loading sectors please wait ...';
     this.homeMenusService.getHomeMenus().subscribe(menus => {
       this.menus = ['All', ...menus];
-
       this.getAllArticles();
 
     });
@@ -37,9 +40,15 @@ export class ArticleComponent implements OnInit {
 
   getAllArticles() {
     this.articles = null;
+
+      this.actionLoading = true;
+      this.actionLoadingMessage = 'loading articles please wait ...';
+
     return this.articleService.getArticles().subscribe(articles => {
       this.articles = articles;
       this.checkRouteChanges();
+      this.actionLoading = false;
+      this.actionLoadingMessage = '';
     });
   }
 
@@ -53,6 +62,29 @@ export class ArticleComponent implements OnInit {
       this.showEditForm = !this.showEditForm;
     }
   }
+
+  onDeleteArticleEvent($event) {
+    this.actionLoading = true;
+    this.actionLoadingMessage = 'deleting article...';
+    const article = $event;
+    if (article) {
+      const articles = _.clone(this.articles);
+      if (articles) {
+        this.articles = null;
+        const articlesUpdated = [];
+        articles.filter(currentArticle => {
+          currentArticle.id !== article.id ? articlesUpdated.push(currentArticle) : null;
+        });
+        this.articles = articlesUpdated;
+      }
+
+      this.articleService.saveArticle(this.articles).subscribe(response => {
+        this.getAllArticles();
+      });
+
+    }
+  }
+
 
   onToggleHideShowArticleEvent($event) {
     const article = $event;
