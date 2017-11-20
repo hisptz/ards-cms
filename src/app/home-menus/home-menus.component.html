@@ -1,5 +1,5 @@
 <div style="margin-top: 10px;">
-  <button class="btn btn-default" title="Add new menu">
+  <button class="btn btn-default" (click)="newMenuForm()" *ngIf="!showAddForm&&!showEditForm" title="Add new menu">
     <i class="fa fa-plus"></i>
     &nbsp;Add New
   </button>
@@ -14,12 +14,15 @@
     (editHomeMenuEvent)="onEditHomeMenuEvent($event)"
   ></app-home-page-menu-list>
   <app-home-page-menu-add
-    *ngIf="showAddForm">
+    *ngIf="showAddForm"
+    [menu]="currentModifiedMenu"
+    [menuList]="menuList"
+    (cancelUpdateEvent)="onCancelAddEvent($event)">
   </app-home-page-menu-add>
   <app-home-page-menu-update
     *ngIf="showEditForm"
     [menu]="currentModifiedMenu"
     [menuList]="menuList"
-    (cancelUpdateEvent)="onCancelUpdateEvent()">
+    (cancelUpdateEvent)="onCancelUpdateEvent($event)">
   </app-home-page-menu-update>
 </div>

@@ -32,6 +32,11 @@ export class HomeMenusComponent implements OnInit {
     });
   }
 
+
+  newMenuForm() {
+    this.showAddForm = true;
+  }
+
   onEditHomeMenuEvent($event) {
     this.currentModifiedMenu = $event;
     this.showEditForm = true;
@@ -39,13 +44,43 @@ export class HomeMenusComponent implements OnInit {
 
   }
 
-  onCancelUpdateEvent() {
+  onCancelUpdateEvent($event) {
+
     this.showEditForm = false;
     this.currentModifiedMenu = null;
+    if ($event && $event.load) {
+      this.getMenus()
+    }
+
+  }
+
+  onCancelAddEvent($event) {
+    this.showAddForm = false;
+    this.currentModifiedMenu = null;
+    if ($event && $event.load) {
+      this.getMenus();
+    }
+
   }
 
   onDeleteHomeMenuEvent($event) {
     this.currentModifiedMenu = $event;
+    this.actionLoading = true;
+    this.actionLoadingMessage = "Delete home page menu, please wait ...";
+    const menuListClone = _.clone(this.menuList);
+    let newMenuList = [];
+    if (menuListClone) {
+      menuListClone.filter(menu => {
+        if (menu !== $event) {
+          newMenuList.push(menu);
+        }
+      });
+    }
+
+    this.homeMenuService.saveMenu(newMenuList).subscribe(response => {
+      this.actionLoading = false;
+      this.getMenus();
+    });
 
   }
 
