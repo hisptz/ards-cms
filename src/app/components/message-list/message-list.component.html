@@ -1,0 +1,29 @@
+<table class="table table-bordered table-responsive table-condensed">
+  <thead>
+  <tr>
+    <th scope="col">Message Head</th>
+    <th scope="col">Message Body</th>
+    <th scope="col" style="width:120px;">Action</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let message of messageList">
+    <td>{{message.title}}</td>
+    <td [innerHTML]="message.body"></td>
+    <td>
+      <div class="btn-group pull-right">
+        <button type="button" style="color:orange;" (click)="editMessage(message)" class="btn btn-default btn-sm">
+          <i class="fa fa-edit"></i>
+        </button>
+        <button type="button" style="color:orange;" (click)="toggleMessage(message)" class="btn btn-default btn-sm">
+          <i class="fa fa-minus" title="Hide massage" *ngIf="!message.hidden"></i>
+          <i class="fa fa-plus" title="Make massage visible" *ngIf="message.hidden"></i>
+        </button>
+        <button type="button" style="color:red;" (click)="deleteMessage(message)" class="btn btn-default btn-sm">
+          <i class="fa fa-trash"></i>
+        </button>
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>

@@ -29,6 +29,7 @@ import { ArticleRendererComponent } from './components/article-renderer/article-
 import {CKEditorModule} from 'ng2-ckeditor';
 import { ArticleUpdateComponent } from './components/article-update/article-update.component';
 import { ArticleAddComponent } from './components/article-add/article-add.component';
+import {MessageService} from "./providers/message.service";
 
 @NgModule({
   declarations: [
@@ -60,7 +61,7 @@ import { ArticleAddComponent } from './components/article-add/article-add.compon
     ArticleModule,
     CKEditorModule
   ],
-  providers: [ReportTableService, DocumentService, LinkService, ArticleService, HomeMenuService],
+  providers: [ReportTableService, DocumentService, LinkService, ArticleService, HomeMenuService, MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

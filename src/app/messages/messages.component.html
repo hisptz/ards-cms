@@ -1,3 +1,31 @@
-<p>
-  messages works!
-</p>
+<div style="margin-top: 10px;">
+  <button class="btn btn-default" *ngIf="!showAddForm&&!showEditForm&&messageList"
+          (click)="addMessage()" title="Add new menu">
+    <i class="fa fa-plus"></i>
+    &nbsp;Add New
+  </button>
+  <!--||messageList.length<2-->
+  <div *ngIf="actionLoading" style="margin-top: 10px!important;">
+    <div class="alert alert-info" role="alert">
+      <img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp; {{actionLoadingMessage}}
+    </div>
+  </div>
+  <div style="margin-top: 10px;">
+    <app-message-list
+      *ngIf="!actionLoading&&!showAddForm&&!showEditForm"
+      [messageList]="messageList"
+      (editMessageEvent)="onEditMessageEvent($event)"
+      (deleteMessageEvent)="onDeleteMessageEvent($event)"
+      (toggleHideShowMessageEvent)="onToggleHideShowMessageEvent($event)"
+    ></app-message-list>
+    <app-message-add
+      *ngIf="showAddForm"
+      [messageList]="messageList"
+      (addMessageEvent)="onAddMessageEvent($event)"
+      (toggleAddMessageFormEvent)="onToggleAddMessageFormEvent()"
+    >
+    </app-message-add>
+    <app-message-update
+      *ngIf="showEditForm"></app-message-update>
+  </div>
+</div>
