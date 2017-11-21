@@ -12,6 +12,7 @@ export class MessagesComponent implements OnInit {
   @Input() actionLoading: boolean;
   showAddForm = false;
   showEditForm = false;
+  updatedMessage: any;
 
   constructor(private messageService: MessageService) {
     this.actionLoading = true;
@@ -23,6 +24,8 @@ export class MessagesComponent implements OnInit {
   }
 
   getMessages() {
+    this.actionLoading = true;
+    this.actionLoadingMessage = 'Loading messages please wait ....';
     this.messageService.getMessages().subscribe(messages => {
       this.messageList = [messages.messageOne, messages.messageTwo];
       this.actionLoading = false;
@@ -42,12 +45,13 @@ export class MessagesComponent implements OnInit {
 
   onEditMessageEvent($event) {
     this.showEditForm = true;
+    this.updatedMessage = $event;
   }
 
   onToggleHideShowMessageEvent($event) {
     const message = $event;
     this.actionLoading = true;
-    this.actionLoadingMessage = message.hidden?'Hiding message please wait ....':'Making message visible please wait ....';
+    this.actionLoadingMessage = message.hidden ? 'Hiding message please wait ....' : 'Making message visible please wait ....';
     let messageListClone = _.clone(this.messageList);
     const newMessageList = [];
     messageListClone.forEach(messageItem => {
@@ -58,7 +62,7 @@ export class MessagesComponent implements OnInit {
       }
     });
     this.refineMessageList(newMessageList);
-    this.messageService.saveMessage(this.refineMessageList(newMessageList)).subscribe(response=>{
+    this.messageService.saveMessage(this.refineMessageList(newMessageList)).subscribe(response => {
       this.getMessages();
     })
 
@@ -70,12 +74,20 @@ export class MessagesComponent implements OnInit {
   }
 
   onToggleEditMessageFormEvent($event) {
-    console.log($event);
+    this.showEditForm = false;
+    if ($event && $event.load) {
+      this.getMessages();
+    }
   }
 
 
   onDeleteMessageEvent($event) {
-    console.log($event);
+    let messageObject = {
+      messageOne: $event.id == 1 ? null : this.messageList[0],
+      messageTwo: $event.id == 2 ? null : this.messageList[1]
+    }
+
+    console.log(messageObject);
   }
 
   refineMessageList(messageListClone) {

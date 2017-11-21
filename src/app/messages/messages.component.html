@@ -1,5 +1,5 @@
 <div style="margin-top: 10px;">
-  <button class="btn btn-default" *ngIf="!showAddForm&&!showEditForm&&messageList"
+  <button class="btn btn-default" *ngIf="!showAddForm&&!showEditForm&&(messageList&&messageList?.length<2)"
           (click)="addMessage()" title="Add new menu">
     <i class="fa fa-plus"></i>
     &nbsp;Add New
@@ -26,6 +26,12 @@
     >
     </app-message-add>
     <app-message-update
-      *ngIf="showEditForm"></app-message-update>
+      [messageId]="updatedMessage?.id"
+      [messageTitle]="updatedMessage?.title"
+      [ckeditorContent]="updatedMessage?.body"
+      [messageList]="messageList"
+      *ngIf="showEditForm"
+      (toggleEditMessageFormEvent)="onToggleEditMessageFormEvent($event)">
+    </app-message-update>
   </div>
 </div>

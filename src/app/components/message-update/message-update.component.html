@@ -1,3 +1,31 @@
-<p>
-  message-update works!
-</p>
+<div class="form-conteiner">
+  <form>
+    <div class="form-group">
+      <label>Edit message</label>
+      <hr/>
+    </div>
+    <div class="form-group">
+      <label for="messageTitle">Title</label>
+      <input id="messageTitle" [(ngModel)]="messageTitle" name="title" class="form-control">
+    </div>
+    <div class="form-group">
+      <label for="contents">Message Body
+
+      </label>
+      <div *ngIf="loading" class="alert alert-info" role="alert">
+        <img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp; creating message ...
+      </div>
+      <ckeditor
+        name="body"
+        id="contents"
+        [(ngModel)]="ckeditorContent"
+        debounce="500">
+      </ckeditor>
+    </div>
+    <button type="submit" class="btn btn-primary"
+            (click)="updateMessage({id:messageId,title:messageTitle,body:ckeditorContent})">
+      Create
+    </button>
+    <button type="button" class="btn btn-danger" (click)="toggleEditForm()">Cancel</button>
+  </form>
+</div>

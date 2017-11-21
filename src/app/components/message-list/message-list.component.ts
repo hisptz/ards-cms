@@ -14,26 +14,6 @@ export class MessageListComponent implements OnInit {
   @Output() deleteMessageEvent = new EventEmitter;
   @Output() toggleHideShowMessageEvent = new EventEmitter;
 
-  // messageList = [{
-  //   "messageOne": {
-  //     "id": 1,
-  //     "title": "HOW TO CLEAR CACHE",
-  //     "body": "<p>1. Click &quot;Clear cache&quot; button on your right<br />\n2. Scroll down, Click &quot;Select all&quot; and clear cache<br />\n3. Go back.</p>\n",
-  //     "expired_date": "",
-  //     "hidden": false
-  //   }
-  // },
-  //   {
-  //     "messageTwo": {
-  //       "id": 2,
-  //       "title": "FOMU YA MWEZI WA TATU KUTOONEKANA",
-  //       "body": "<p>Fomu ya mwezi wa 3 haiwezi kuonekana sasa, tunatarajia kwamba DS na DME wataanza kupokea fomu hizo wiki ya kwanza ya mwezi wa 4.</p>\n",
-  //       "expired_date": "",
-  //       "hidden": false
-  //     }
-  //   }
-  // ];
-
   constructor() {
   }
 
@@ -47,7 +27,6 @@ export class MessageListComponent implements OnInit {
   }
 
   editMessage(message) {
-
     this.editMessageEvent.emit(message);
   }
 
