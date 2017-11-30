@@ -1,5 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
+import {DocumentService} from "../../providers/document.service";
 
 @Component({
   selector: 'app-document-update',
@@ -8,48 +9,57 @@ import {FormControl, FormGroup} from '@angular/forms';
 })
 export class DocumentUpdateComponent implements OnInit {
 
-
-  addForm = new FormGroup({
-    documentName: new FormControl(),
-    document: new FormControl()
-  });
-
-  formData: FormData = new FormData();
-
+  documentName: any;
+  loading = false;
+  errorMessage: any;
+  error = false;
   fileValue: any;
+  isAttached: any;
+  @Output() documentUploadedSuccessfull = new EventEmitter;
 
-  constructor() {
+  constructor(private elem: ElementRef, private documentService: DocumentService) {
+
   }
 
   ngOnInit() {
+    const newDate = new Date();
+    const eventDate = newDate.getFullYear() + '-' + newDate.getMonth() + '-' + newDate.getDate();
+    console.log(eventDate);
   }
 
 
-  uploadDocument(addForm) {
-    console.log(addForm);
-    console.log(addForm.value);
-    this.formData.append('documentName', 'test');
-    console.log(this.formData);
+  uploadDocument() {
+    this.loading = true;
+    this.documentUploadedSuccessfull.emit(!this.loading);
+    let file = this.elem.nativeElement.querySelector('#file_selector').files[0];
+    const formData = new FormData();
+    formData.append('upload', file, file.name);
+    formData.append('name', this.documentName);
+    formData.append('id', '');
+    formData.append('url', 'http://');
+    formData.append('external', "false");
+    formData.append('attachment', this.isAttached);
+
+
+    this.documentService.saveDocument(formData).subscribe(documentResponse => {
+      this.documentUploadedSuccessfull.emit({uploaded: true});
+      this.errorMessage = 'file upload failed';
+      this.error = true;
+      this.loading = false;
+    }, error => {
+      this.errorMessage = 'file upload failed';
+      this.error = true;
+      this.loading = false;
+    });
   }
 
-  updateFileSelected(event) {
-    const files = event.target.files;
-    if (files.length > 0) {
+  updateFileSelected($event) {
 
-      this.formData.append('document', files[0], files[0].name);
-
-    }
   }
 
   uploadFile() {
-    const photo: any = document.getElementById('addForm');
-    // the file is the first element in the files property
-    const file = photo.files[0];
-
-    console.log('File name: ' + file.fileName);
-    console.log('File size: ' + file.fileSize);
-
-    return false;
+    // let files = this.elem.nativeElement.querySelector('#file_selector').files;
+    console.log(this.elem.nativeElement);
   }
 
 }

@@ -18,8 +18,8 @@
     </div>
   </div>
 
-  <div *ngIf="!reportTables">
-    <app-loader [resourceName]="'Saved Analysis'" [error]="isError" [customeStyle]="loaderStyle"></app-loader>
+  <div *ngIf="!reportTables" style="padding: 10px">
+    <div class="alert alert-info"><img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp;loading analysis please wait</div>
   </div>
 
 

@@ -45,7 +45,6 @@ export class MessagesComponent implements OnInit {
     this.showEditForm = true;
     // this.actionLoading = true;
     // this.actionLoadingMessage = 'Loading message please wait ....';
-    console.log(this.messageList);
   }
 
   onEditMessageEvent($event) {
@@ -70,7 +69,6 @@ export class MessagesComponent implements OnInit {
     this.messageService.saveMessage(this.refineMessageList(newMessageList)).subscribe(response => {
       this.getMessages();
     })
-    console.log($event);
 
   }
 

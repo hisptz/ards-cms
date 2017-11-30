@@ -14,7 +14,7 @@ export class ChartsDisplayComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.charts)
+
   }
 
   collapseData(chart) {

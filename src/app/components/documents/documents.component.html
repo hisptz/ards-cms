@@ -1,6 +1,9 @@
 <div>
   <div class="panel-body" style="padding:0px!important;">
-    <ul class="list-group" *ngIf="documents">
+    <div *ngIf="loading" style="padding: 10px">
+      <div class="alert alert-info"><img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp;{{message}} documents please wait</div>
+    </div>
+    <ul class="list-group" *ngIf="documents&&!loading">
       <li class="list-group-item" style="cursor:pointer;" title="{{document.name}}"  *ngFor="let document of documents">
         <table style="width: 270px" >
           <tr>
@@ -17,10 +20,8 @@
         </table>
       </li>
     </ul>
-    <div *ngIf="!documents">
-      <app-loader [resourceName]="'Documents'"  [error]="isError" [customeStyle]="loaderStyle"></app-loader>
-    </div>
-    <app-document-update></app-document-update>
+
+    <app-document-update (documentUploadedSuccessfull)="onDocumentUploadedSuccessfull($event)"></app-document-update>
     <div class="popover fade bottom in" role="tooltip" id="popover258016"
          style="top: 24392px; left: 557.602px; display: block;">
       <div class="arrow" style="left: 50%;"></div>

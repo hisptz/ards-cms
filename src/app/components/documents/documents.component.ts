@@ -10,22 +10,43 @@ export class DocumentsComponent implements OnInit {
   documents: any;
   isError = false;
   loaderStyle = {width: '10px', height: '10px'};
-
-
-
+  loading = true;
+  message = 'loading';
   constructor(private documentService: DocumentService) {
   }
 
   ngOnInit() {
-    this.documentService.getDocuments().subscribe(documents => {
-      this.documents = documents;
-    }, error => {
-      this.isError = true;
-    });
+    this.loadDocument();
   }
 
   deleteDocument(document) {
-    console.log(document);
+    this.message = 'deleting';
+    this.loading = true;
+    this.documentService.deleteDocuments(document.id).subscribe(response=>{
+      if (response.statusText === 'OK')
+      {
+        this.loadDocument();
+      }
+    })
+  }
+
+  onDocumentUploadedSuccessfull($event) {
+    if ($event.uploaded){
+      this.loadDocument();
+    }
+
+  }
+
+  loadDocument() {
+    this.loading = true;
+    this.message = 'loading';
+    this.documentService.getDocuments().subscribe(documents => {
+      this.documents = documents;
+      this.loading = false;
+      this.isError = false;
+    }, error => {
+      this.isError = true;
+    });
   }
 
   hideDocument(document) {

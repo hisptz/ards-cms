@@ -22,8 +22,8 @@
     <div *ngIf="links && links.length==0" class="col-lg-12 col-md-12 col-xs-12">
       <div class="alert alert-info">No links available</div>
     </div>
-    <div *ngIf="!links">
-      <app-loader [resourceName]="'links'"  [error]="isError" [customeStyle]="loaderStyle"></app-loader>
+    <div *ngIf="!links" style="padding: 10px">
+      <div class="alert alert-info"><img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp;loading links please wait</div>
     </div>
     <div *ngIf="actionLoading.isHappening"  class="col-lg-12 col-md-12 col-xs-12">
       <div class="alert alert-info">

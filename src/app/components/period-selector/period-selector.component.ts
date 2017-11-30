@@ -93,7 +93,6 @@
 //
 //   transferDataSuccess(data,current){
 //     if(data.dragData.id == current.id){
-//       console.log("Droping in the same area")
 //     }else{
 //       let number = (this.getPeriodPosition(data.dragData.id) > this.getPeriodPosition(current.id))?0:1;
 //       this.deletePeriod( data.dragData );
@@ -257,7 +256,6 @@
 //         periods.unshift(newPeriods[monthIndex < 0 ? monthIndex + 12 : monthIndex]);
 //         sortIndex += 2;
 //       }
-//       console.log(JSON.stringify(periods))
 //     } else if(type == "BiMonthly"){
 //       periods.push({id:year+'01B',name:'January - February '+year,selected:true},{id:year+'02B',name:'March - April '+year},{id:year+'03B',name:'May - June '+year},{id:year+'04B',name:'July - August '+year},{id:year+'05B',name:'September - October '+year},{id:year+'06B',name:'November - December '+year})
 //     }else if(type == "Quarterly"){
@@ -412,7 +410,6 @@
 //     else if(period_type == "SixMonthlyApril"){
 //       let year = period.substring(0,4);
 //       let six_month = period.substring(4,12);
-//       console.log(period.substring(4,12))
 //       let time = "";
 //       if(six_month == "AprilS2"){
 //         time = year+"AprilS1"

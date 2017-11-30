@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Http, Response} from '@angular/http';
+import {Http,Headers, RequestOptions,RequestOptionsArgs, Response} from '@angular/http';
 import {Observable, Subscription} from 'rxjs';
 import * as _ from 'lodash';
 
@@ -89,13 +89,50 @@ export class DocumentService {
     });
   }
 
-  saveDocument() {
+  saveDocument(formData) {
 
+
+    let reqstHeadDon = new Headers({
+      'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' ,
+      'Accept-Encoding':'gzip,deflate,br',
+      'Host':'ards.hisptz.org',
+      'Referer':'https://ards.hisptz.org/dev/dhis-web-reporting/displayViewDocumentForm.action',
+      'Access-Control-Allow-Origin': '*'});
+
+    const options = new RequestOptions({ headers: reqstHeadDon });
+
+
+    return Observable.create(observer => {
+      this.http.post('../../../dhis-web-reporting/saveDocument.action', formData,options)
+        .subscribe((response: any) => {
+          observer.next(response);
+          observer.complete();
+        }, (error) => {
+          observer.next(error);
+          observer.complete();
+        });
+    });
   }
 
-  deleteDocument() {
-
+  deleteDocuments(documentId){
+    return Observable.create(observer => {
+      this.http.delete('../../../api/documents/'+documentId)
+        .subscribe((response: any) => {
+          observer.next(response);
+          observer.complete();
+        }, () => console.warn('You are offline'));
+    });
   }
+  saveDataValue(payload) {
+    return Observable.create(observer => {
+      this.http.post('../../../api/events', payload)
+        .subscribe((response: any) => {
+          observer.next(response);
+          observer.complete();
+        }, () => console.warn('You are offline'));
+    });
+  }
+
 
   private _prepareDisplayName(displayName) {
     let newDisplayName = '';

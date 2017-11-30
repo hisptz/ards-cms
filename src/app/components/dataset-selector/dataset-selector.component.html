@@ -1,9 +1,0 @@
-<div class="form-group" style="margin-top: 2px;">
-  <label class="control-label"><small>Entry form / Report</small></label>
-  <select [(ngModel)]="selectedDataset" (change)="getSelectedDataset(selectedDataset)" id="dataSetId" name="dataSetId" class="form-control input-sm" [disabled]="assignedDatasets.length == 0">
-    <option value="" *ngIf="assignedDatasets.length == 0" selected="selected" disabled="disabled">
-      <span *ngIf="assignedDatasets.length == 0"><img [src]="'assets/img/balls-3.svg'" alt="" style="width: 30px; height: 30px;">Loading datasets..</span>
-    </option>
-    <option value="{{dataset.id}}" *ngFor="let dataset of assignedDatasets">{{dataset.name}}</option>
-  </select>
-</div>

@@ -54,9 +54,7 @@ export class LinksComponent implements OnInit {
   }
 
   editLink(link) {
-    console.log(this.updatedLink);
     this.updatedLink = link;
-    console.log(this.updatedLink);
   }
 
   redirectLink(link, event) {

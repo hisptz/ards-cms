@@ -64,7 +64,6 @@ export class RightSidebarComponent implements OnInit {
     const newPair = {all: charts.all, selected: []};
     charts.selected.forEach(chart => {
       const chartIndex = _.findIndex(charts.all,['id',chart]);
-      console.log(chartIndex, chart, charts.all)
       if(chartIndex>=0){
         newPair.selected.push({
           id:chart,
