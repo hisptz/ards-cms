@@ -42,7 +42,7 @@ export class DocumentService {
 
               dataStoreDocuments.forEach(document => {
                 const docIndex = _.findIndex(preparedDocuments, ['id', document.id]);
-                preparedDocuments[docIndex].hidden = document.hidden;
+                preparedDocuments[docIndex]?preparedDocuments[docIndex].hidden = document.hidden:null;
               })
 
               this._updateDataStoreDocuments(preparedDocuments).subscribe(dataStoreResponse => {
@@ -53,6 +53,7 @@ export class DocumentService {
                 observer.complete();
               });
             } else {
+              dataStoreDocuments = [];
               preparedDocuments.forEach(preparedDocument => {
                 const documentIndex = _.findIndex(dataStoreDocuments, ['id', preparedDocument.id]);
                 if (documentIndex < 0) {
@@ -60,11 +61,13 @@ export class DocumentService {
                 }
               });
 
-              /**
-               * Return sanitized report tables
-               */
-              observer.next(preparedDocuments);
-              observer.complete();
+              this._updateDataStoreDocuments(preparedDocuments).subscribe(dataStoreResponse => {
+                /**
+                 * Return sanitized report tables
+                 */
+                observer.next(preparedDocuments);
+                observer.complete();
+              });
             }
           });
 

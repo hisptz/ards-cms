@@ -12,4 +12,8 @@ export class ControlMenuComponent implements OnInit {
   ngOnInit() {
   }
 
+  switchPage(){
+    const win = window.open('../../../api/apps/home/index.html#/','_self');
+  }
+
 }

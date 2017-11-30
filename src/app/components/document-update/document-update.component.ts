@@ -10,6 +10,7 @@ import {DocumentService} from "../../providers/document.service";
 export class DocumentUpdateComponent implements OnInit {
 
   documentName: any;
+  documentFile: any;
   loading = false;
   errorMessage: any;
   error = false;
@@ -29,28 +30,32 @@ export class DocumentUpdateComponent implements OnInit {
 
 
   uploadDocument() {
-    this.loading = true;
-    this.documentUploadedSuccessfull.emit(!this.loading);
-    let file = this.elem.nativeElement.querySelector('#file_selector').files[0];
-    const formData = new FormData();
-    formData.append('upload', file, file.name);
-    formData.append('name', this.documentName);
-    formData.append('id', '');
-    formData.append('url', 'http://');
-    formData.append('external', "false");
-    formData.append('attachment', this.isAttached);
+    if (this.documentName !== '') {
+      this.loading = true;
+      this.documentUploadedSuccessfull.emit(!this.loading);
+      let file = this.elem.nativeElement.querySelector('#file_selector').files[0];
+      const formData = new FormData();
+      formData.append('upload', file, file.name);
+      formData.append('name', this.documentName);
+      formData.append('id', '');
+      formData.append('url', 'http://');
+      formData.append('external', "false");
+      formData.append('attachment', this.isAttached);
+      this.documentName = "";
+      this.documentFile = null;
 
 
-    this.documentService.saveDocument(formData).subscribe(documentResponse => {
-      this.documentUploadedSuccessfull.emit({uploaded: true});
-      this.errorMessage = 'file upload failed';
-      this.error = true;
-      this.loading = false;
-    }, error => {
-      this.errorMessage = 'file upload failed';
-      this.error = true;
-      this.loading = false;
-    });
+      this.documentService.saveDocument(formData).subscribe(documentResponse => {
+        this.documentUploadedSuccessfull.emit({uploaded: true});
+        this.errorMessage = 'file upload failed';
+        this.error = true;
+        this.loading = false;
+      }, error => {
+        this.errorMessage = 'file upload failed';
+        this.error = true;
+        this.loading = false;
+      });
+    }
   }
 
   updateFileSelected($event) {
