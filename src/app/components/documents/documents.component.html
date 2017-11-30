@@ -4,10 +4,10 @@
       <div class="alert alert-info"><img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp;{{message}} documents please wait</div>
     </div>
     <ul class="list-group" *ngIf="documents&&!loading">
-      <li class="list-group-item" style="cursor:pointer;" title="{{document.name}}"  *ngFor="let document of documents">
+      <li class="list-group-item"  title="{{document.name}}"  *ngFor="let document of documents">
         <table style="width: 270px" >
           <tr>
-            <td class="pull-left" >{{document.displayName}}</td>
+            <td class="pull-left" style="cursor:pointer;" (click)="previewDocument('../../../api/documents/'+document.id+'/data',$event)">{{document.displayName}}</td>
             <td class="pull-right">
               <a class="btn btn-default btn-xs" (click)="deleteDocument(document)"><i
                 class="fa fa-trash alert-danger"></i></a>
