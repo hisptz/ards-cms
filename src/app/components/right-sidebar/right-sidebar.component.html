@@ -1,18 +1,25 @@
-<div >
+<div>
   <div id="sidebar" [ngStyle]="{'width': currentWidth}" *ngIf="!hideMenu">
-    <br/>
-    <br/>
-    <div class="row">
-      <div class="col-md-12">
-
+    <div class="right_conteiner">
+      <app-right-message-display *ngFor="let message of messages" [message]="message"></app-right-message-display>
+      <div style="height:100px;text-align: center;margin-bottom: 0px;margin-top: 5px"
+           *ngIf="!loading&&(!messages||messages.length==0)"
+           class="alert alert-info">
+        <p style="margin-top: 12px">No messages found</p>
+      </div>
+      <div style="height:100px;text-align: center;margin-bottom: 0px;margin-top: 5px" *ngIf="loading"
+           class="alert alert-info">
+        <div class="alert alert-info" role="alert">
+          <img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp; loading messages
+        </div>
       </div>
     </div>
     <hr>
-    <div class="row">
-      <div class="col-md-12">
-
-      </div>
+    <div class="" style="padding:10px;">
+      <app-charts-update (selectedChartUpdated)="onSelectedChartUpdated($event)" (loadingChart)="onloadingChart($event)"></app-charts-update>
+    </div>
+    <div class="" style="padding:10px;">
+      <app-charts-display [loading]="loadingChart" [charts]="charts.all" [selectedCharts]="charts.selected"></app-charts-display>
     </div>
   </div>
-
 </div>

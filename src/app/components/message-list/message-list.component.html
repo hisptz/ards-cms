@@ -1,4 +1,4 @@
-<table class="table table-bordered table-responsive table-condensed">
+<table *ngIf="messageList&&messageList.length>0" class="table table-bordered table-responsive table-condensed">
   <thead>
   <tr>
     <th scope="col">Message Head</th>
@@ -9,7 +9,7 @@
   <tbody>
   <tr *ngFor="let message of messageList">
     <td>{{message.title}}</td>
-    <td [innerHTML]="message.body"></td>
+    <td [innerHTML]="message.body|safeTableRowHtml"></td>
     <td>
       <div class="btn-group pull-right">
         <button type="button" style="color:orange;" (click)="editMessage(message)" class="btn btn-default btn-sm">
@@ -27,3 +27,9 @@
   </tr>
   </tbody>
 </table>
+<div *ngIf="(!messageList||messageList.length==0)">
+  <div class="alert alert-info" role="alert">
+    <strong><i class="fa fa-warning"></i></strong> The list is empty no messages available, click <span
+    style="font-weight:bold">Add new</span> button to create new message.
+  </div>
+</div>

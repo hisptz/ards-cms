@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-charts-display',
@@ -6,10 +6,21 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./charts-display.component.css']
 })
 export class ChartsDisplayComponent implements OnInit {
+  @Input() charts;
+  @Input() selectedCharts;
+  @Input() loading;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
+    console.log(this.charts)
+  }
+
+  collapseData(chart) {
+    this.selectedCharts.forEach(selected => {
+      chart.id === selected.id ? selected.state = !selected.state : selected.state = false;
+    });
   }
 
 }

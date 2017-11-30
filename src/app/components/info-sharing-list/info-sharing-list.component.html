@@ -1,0 +1,29 @@
+<div style="margin-top: 10px!important;">
+
+  <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" *ngIf="infoSharings">
+    <div class="panel panel-default" *ngFor="let infoSharing of infoSharings; let i = index;">
+      <div class="panel-heading" id="heading{{infoSharing.id}}" (click)="openSharing(infoSharing)"
+           style="cursor: pointer">
+        <h4 class="panel-title">
+          <a role="button">
+            {{infoSharing.title}}
+          </a>
+          <a class=" pull-right"><i class="fa fa-chevron-right"></i></a>
+        </h4>
+
+      </div>
+      <div id="collapse_{{infoSharing.id}}" class="panel-collapse" [ngClass]="{collapse:!infoSharing.show, in:infoSharing.show,collapsed:infoSharing.show}">
+        <div class="panel-body" style="padding:10px!important;">
+          <div>
+            <button class="btn btn-default btn-sm"  (click)="editSharing(infoSharing)"><i class="fa fa-pencil"></i>&nbsp;Edit</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteSharing(infoSharing)"><i class="fa fa-trash"></i>&nbsp;Delete</button>
+          </div>
+          <div [innerHTML]="infoSharing.body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+

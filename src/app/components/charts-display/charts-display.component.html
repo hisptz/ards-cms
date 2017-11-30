@@ -1,3 +1,26 @@
-<p>
-  charts-display works!
-</p>
+<div>
+  <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" *ngIf="!loading&&selectedCharts.length>0">
+    <div class="panel panel-default" *ngFor="let chart of selectedCharts; let i = index;">
+      <div class="panel-heading" id="heading{{chart}}" style="cursor: pointer" (click)="collapseData(chart)">
+        <h4 class="panel-title">
+          <a role="button">
+            {{chart.name}}
+          </a>
+        </h4>
+      </div>
+      <div id="collapse_{{chart}}" class="panel-collapse" [ngClass]="{collapse:!chart.state, in:chart.state,collapsed:chart.state}" >
+        <div class="panel-body" style="padding:10px!important;">
+          <a href="../../../dhis-web-visualizer/index.html?id={{chart.id}}" target="_blank">
+            <img src="../../../api/charts/{{chart.id}}/data?width=150&amp;height=250" title="Click to explore "></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="(!selectedCharts||selectedCharts.length<=0)&&!loading">
+    <div class="alert alert-info">No chart selected</div>
+  </div>
+  <div *ngIf="loading">
+    <div class="alert alert-info"><img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp;loading charts please wait</div>
+  </div>
+
+</div>

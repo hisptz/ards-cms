@@ -27,7 +27,12 @@ export class MessagesComponent implements OnInit {
     this.actionLoading = true;
     this.actionLoadingMessage = 'Loading messages please wait ....';
     this.messageService.getMessages().subscribe(messages => {
-      this.messageList = [messages.messageOne, messages.messageTwo];
+      const messageArray = [];
+      const keys = Object.getOwnPropertyNames(messages);
+      keys.forEach(key => {
+        messageArray.push(messages[key]);
+      });
+      this.messageList = messageArray;
       this.actionLoading = false;
     });
   }
@@ -65,12 +70,15 @@ export class MessagesComponent implements OnInit {
     this.messageService.saveMessage(this.refineMessageList(newMessageList)).subscribe(response => {
       this.getMessages();
     })
-
+    console.log($event);
 
   }
 
-  onToggleAddMessageFormEvent() {
+  onToggleAddMessageFormEvent($event) {
     this.showAddForm = false;
+    if ($event && $event.load) {
+      this.getMessages();
+    }
   }
 
   onToggleEditMessageFormEvent($event) {
@@ -82,26 +90,32 @@ export class MessagesComponent implements OnInit {
 
 
   onDeleteMessageEvent($event) {
-    let messageObject = {
-      messageOne: $event.id == 1 ? null : this.messageList[0],
-      messageTwo: $event.id == 2 ? null : this.messageList[1]
-    }
+    this.actionLoading = true;
+    this.actionLoadingMessage = 'Deleting message please wait ....';
+    let messageObject = {};
 
-    console.log(messageObject);
+      if ($event.id === 1) {
+        messageObject['messageTwo'] = this.messageList[_.findIndex(this.messageList, ['id',2])]
+      }
+
+      if ($event.id === 2) {
+        messageObject['messageOne'] = this.messageList[_.findIndex(this.messageList, ['id',1])];
+      }
+
+    this.messageService.saveMessage(messageObject).subscribe(response => {
+      this.getMessages();
+    })
   }
 
   refineMessageList(messageListClone) {
-    let messageObject = {
-      messageOne: {},
-      messageTwo: {}
-    }
+    let messageObject = {}
     messageListClone.forEach(message => {
       if (message.id === 1) {
-        messageObject.messageOne = message;
+        messageObject['messageOne'] = message;
       }
 
       if (message.id === 2) {
-        messageObject.messageTwo = message;
+        messageObject['messageTwo'] = message;
       }
 
     })

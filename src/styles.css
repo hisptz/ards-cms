@@ -1,1 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+.chart-dropdown{
+  /*padding:10px;*/
+  min-width: 200px;
+}
+
+.item-style{
+  padding: 10px;
+}

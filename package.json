@@ -25,6 +25,7 @@
     "@ngrx/effects": "^2.0.3",
     "@ngrx/store": "^2.2.2",
     "@ngrx/store-devtools": "^3.2.4",
+    "angular-2-dropdown-multiselect": "^1.6.3",
     "angular-tree-component": "^3.5.0",
     "angular2-csv": "^0.2.1",
     "bootstrap": "^3.3.7",

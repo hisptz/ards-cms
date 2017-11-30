@@ -10,6 +10,7 @@ import {MessageAddComponent} from "../components/message-add/message-add.compone
 import {MessageUpdateComponent} from "../components/message-update/message-update.component";
 import {CKEditorModule} from "ng2-ckeditor";
 import {FormsModule} from "@angular/forms";
+import {SafeTableRowHtmlPipe} from "../pipes/safe-table-row-html.pipe";
 
 @NgModule({
   imports: [
@@ -23,6 +24,7 @@ import {FormsModule} from "@angular/forms";
     MessageListComponent,
     MessageAddComponent,
     MessageUpdateComponent,
+    SafeTableRowHtmlPipe
   ]
 })
 export class MessagesModule { }

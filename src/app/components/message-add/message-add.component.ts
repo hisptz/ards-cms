@@ -26,7 +26,7 @@ export class MessageAddComponent implements OnInit {
 
     if (messageListClone && messageListClone.length < 2) {
       messageListClone.push({
-        id: messageListClone.length + 1,
+        id: messageListClone.length>0?messageListClone.length + 1:1,
         title: message.title,
         body: message.body,
         expired_date: '',
@@ -34,7 +34,7 @@ export class MessageAddComponent implements OnInit {
       });
 
       this.messageService.saveMessage(this.refineMessageList(messageListClone)).subscribe(response=>{
-        this.addMessageFormEvent.emit();
+        this.toggleAddMessageFormEvent.emit({load:true});
       })
     }
 
@@ -46,16 +46,14 @@ export class MessageAddComponent implements OnInit {
 
   refineMessageList(messageListClone) {
     let messageObject = {
-      messageOne: {},
-      messageTwo: {}
     }
     messageListClone.forEach(message => {
       if (message.id === 1) {
-        messageObject.messageOne = message;
+        messageObject['messageOne'] = message;
       }
 
       if (message.id === 2) {
-        messageObject.messageTwo = message;
+        messageObject['messageTwo'] = message;
       }
 
     })

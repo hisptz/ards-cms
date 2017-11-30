@@ -1,3 +1,43 @@
-<p>
-  info-sharing works!
-</p>
+<div style="margin-top: 10px;">
+
+  <button class="btn btn-default" title="Add new" (click)="addNewSharing()">
+    <i class="fa fa-plus"></i>
+    &nbsp;Add New
+  </button>
+
+  <div *ngIf="actionLoading" style="margin-top: 10px!important;">
+    <div class="alert alert-info" role="alert">
+      <img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp; {{actionLoadingMessage}}
+    </div>
+  </div>
+
+  <div *ngIf="!actionLoading&&(!infoSharings||infoSharings.length==0)">
+    <div class="alert alert-info" role="alert">
+      <strong><i class="fa fa-warning"></i></strong> The list is empty no information sharing available, click <span
+      style="font-weight:bold">Add new</span> button to create new.
+    </div>
+  </div>
+
+  <app-info-sharing-list
+    *ngIf="!showAddSharingForm&&!showEditSharingForm&&!actionLoading"
+    [infoSharings]="infoSharings"
+    (editSharingEvent)="onEditSharingEvent($event)"
+    (updateSharingEvent)="onUpdateSharingEvent($event)"
+    >
+  </app-info-sharing-list>
+
+  <app-info-sharing-add
+    *ngIf="showAddSharingForm"
+    [infoSharings]="infoSharings"
+    (addSharingEvent)="onAddSharingEvent($event)"
+    (cancelSharingEvent)="onCancelSharingEvent($event)">
+  </app-info-sharing-add>
+
+  <app-info-sharing-update
+    *ngIf="showEditSharingForm"
+    [updatedSharing]="updatedSharing"
+    [infoSharings]="infoSharings"
+    (updateSharingEvent)="onUpdateSharingEvent($event)">
+  </app-info-sharing-update>
+
+</div>

@@ -29,7 +29,6 @@ export class ArdsMenuComponent implements OnInit {
               for (const menu of data.modules) {
                 this.menus[menu.name] = true;
               }
-              console.log(this.objectName);
               this.isHeaderLoaded = true;
             });
         }, error => {

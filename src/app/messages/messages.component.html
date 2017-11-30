@@ -22,7 +22,7 @@
       *ngIf="showAddForm"
       [messageList]="messageList"
       (addMessageEvent)="onAddMessageEvent($event)"
-      (toggleAddMessageFormEvent)="onToggleAddMessageFormEvent()"
+      (toggleAddMessageFormEvent)="onToggleAddMessageFormEvent($event)"
     >
     </app-message-add>
     <app-message-update
