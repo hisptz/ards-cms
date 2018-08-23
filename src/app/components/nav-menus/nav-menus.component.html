@@ -3,7 +3,7 @@
 
   <ul id="tabs">
     <li *ngFor="let menu of menus">
-      <a style="cursor: pointer;" [routerLink]="['/articles',menu|lowercase]" routerLinkActive="active">
+      <a style="cursor: pointer; padding: 0.7em 2.5em" [routerLink]="['/articles',menu|lowercase]" routerLinkActive="active">
         {{menu}}
       </a>
     </li>
