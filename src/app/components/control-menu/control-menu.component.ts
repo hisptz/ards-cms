@@ -6,14 +6,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./control-menu.component.css']
 })
 export class ControlMenuComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
+  ngOnInit() {}
 
-  ngOnInit() {
+  switchPage() {
+    const win = window.open(
+      '../../../api/apps/ARDS-HOME/index.html#/',
+      '_self'
+    );
   }
-
-  switchPage(){
-    const win = window.open('../../../api/apps/home/index.html#/','_self');
-  }
-
 }
