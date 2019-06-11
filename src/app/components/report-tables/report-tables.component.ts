@@ -15,6 +15,7 @@ export class ReportTablesComponent implements OnInit {
   ngOnInit() {
     this.reportTable.getReportTables().subscribe(
       reportTables => {
+        console.log('reportTables:', reportTables);
         this.reportTables = reportTables;
       },
       error => {

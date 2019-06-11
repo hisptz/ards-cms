@@ -6,6 +6,7 @@ import 'jqueryui';
 import * as _ from 'lodash';
 // import { multiselect } from "../../../scripts/jquery-ui-multiselect/src/jquery.multiselect.js";
 import { Observable } from 'rxjs';
+import { Http, Response } from "@angular/http";
 
 declare let jQuery: any;
 @Component({
@@ -13,25 +14,31 @@ declare let jQuery: any;
   templateUrl: './analysis.component.html',
   styleUrls: ['./analysis.component.css']
 })
-export class AnalysisComponent implements AfterViewInit {
+export class AnalysisComponent {
   reportTableContent: any;
   monthList = '';
   yearlist = '';
   quarterList = '';
   routerParams: any = null;
   isError = false;
+  reportTableData;
   errorMessage: string = '';
   constructor(
     private reportTable: ReportTableService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private http: Http
   ) {
     this.preparePeriodFilter('2016');
   }
-
-  ngAfterViewInit() {
+  ngOnInit(){
+    console.log('OnInit');
+    
     this.reportTable.getReportTables().subscribe(reportTable => {
+      this.reportTableData = reportTable;
+      console.log('Parameter Report Table:', JSON.stringify(this.reportTableData));
       this.route.params.subscribe(params => {
+        console.log('Parameter subscription:', JSON.stringify(this.reportTableData));
         const reportTableGroup = _.find(reportTable, {
           id: params.analysisGroup
         });
@@ -42,6 +49,27 @@ export class AnalysisComponent implements AfterViewInit {
     });
   }
 
+  run(detailsForAnalytics){
+    return Observable.create((obs) => {
+      this.http
+        .get(
+          "../../../api/analytics?dimension=dx:" +
+          detailsForAnalytics.dx +
+          "&filter=pe:" +
+          detailsForAnalytics.pe +
+          "&filter=ou:" +
+          detailsForAnalytics.ou
+        )
+        .map((res: Response) => res.json())
+        .catch(error => Observable.throw(new Error(error)))
+        .subscribe(analytics => {
+          console.log(analytics);
+          obs.next(analytics);
+          obs.complete();
+          // andre console.log(analytics);
+        })
+    })
+  }
   selectYears(event?) {
     $('.periodfilter button')
       .removeClass('btn-success')

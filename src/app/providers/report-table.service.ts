@@ -41,32 +41,32 @@ export class ReportTableService {
             if (response && response.hasOwnProperty("reportTables")) {
               const reportTables = response.reportTables;
               let indexId = 0;
-              reportTables.forEach(reportTable => {
-                const tableName = reportTable.name;
-                const relativePeriodsList = _.compact(
-                  _.map(reportTable.relativePeriods, (item, index) =>
-                    item == true ? _.toUpper(_.snakeCase(index)) : null
-                  )
-                );
-                const fixedPeriodList = _.map(reportTable.periods, "id");
-                const dataDimensionItemsList = _.compact(
-                  _.map(reportTable.dataDimensionItems, data => {
-                    const dataDimensionType = _.camelCase(
-                      data.dataDimensionItemType
+              this.http
+                .get(
+                  "../../../api/me.json?fields=*,dataViewOrganisationUnits[id,name,level],organisationUnits[id,name,level]"
+                )
+                .map((res: Response) => res.json())
+                .catch(error => Observable.throw(new Error(error)))
+                .subscribe(userDetails => {
+                  let observables = [];
+                  reportTables.forEach(reportTable => {
+                    const tableName = reportTable.name;
+                    const relativePeriodsList = _.compact(
+                      _.map(reportTable.relativePeriods, (item, index) =>
+                        item == true ? _.toUpper(_.snakeCase(index)) : null
+                      )
                     );
-                    return data[dataDimensionType]
-                      ? data[dataDimensionType]["id"]
-                      : null;
-                  })
-                );
-
-                this.http
-                  .get(
-                    "../../../api/me.json?fields=*,dataViewOrganisationUnits[id,name,level],organisationUnits[id,name,level]"
-                  )
-                  .map((res: Response) => res.json())
-                  .catch(error => Observable.throw(new Error(error)))
-                  .subscribe(userDetails => {
+                    const fixedPeriodList = _.map(reportTable.periods, "id");
+                    const dataDimensionItemsList = _.compact(
+                      _.map(reportTable.dataDimensionItems, data => {
+                        const dataDimensionType = _.camelCase(
+                          data.dataDimensionItemType
+                        );
+                        return data[dataDimensionType]
+                          ? data[dataDimensionType]["id"]
+                          : null;
+                      })
+                    );
                     const detailsForAnalytics = {
                       id: reportTable.id,
                       pe: _.join(
@@ -83,54 +83,47 @@ export class ReportTableService {
                         ";"
                       )
                     };
+                    //observables.push(run());
 
-                    this.http
-                      .get(
-                        "../../../api/analytics?dimension=dx:" +
-                          detailsForAnalytics.dx +
-                          "&filter=pe:" +
-                          detailsForAnalytics.pe +
-                          "&filter=ou:" +
-                          detailsForAnalytics.ou
-                      )
-                      .map((res: Response) => res.json())
-                      .catch(error => Observable.throw(new Error(error)))
-                      .subscribe(analytics => {
-                        if (tableName.indexOf(":") > 0) {
-                          const splitName = tableName.split(":");
-                          const parentIndex = _.findIndex(preparedReportTable, [
-                            "name",
-                            splitName[0]
-                          ]);
-                          if (parentIndex >= 0) {
-                            preparedReportTable[parentIndex].children.push({
-                              id: reportTable.id,
-                              name: splitName[1],
-                              link: _.camelCase(splitName[1]),
-                              detailsForAnalytics: detailsForAnalytics
-                            });
-                          } else {
-                            preparedReportTable.push({
-                              id: "_" + indexId,
-                              state: false,
-                              name: splitName[0],
-                              children: [{ name: splitName[1] }]
-                            });
-                          }
-                        }
-                        // andre console.log(analytics);
-                      });
+                    if (tableName.indexOf(":") > 0) {
+                      const splitName = tableName.split(":");
+                      const parentIndex = _.findIndex(preparedReportTable, [
+                        "name",
+                        splitName[0]
+                      ]);
+                      if (parentIndex >= 0) {
+                        preparedReportTable[parentIndex].children.push({
+                          id: reportTable.id,
+                          name: splitName[1],
+                          link: _.camelCase(splitName[1]),
+                          detailsForAnalytics: detailsForAnalytics
+                        });
+                      } else {
+                        preparedReportTable.push({
+                          id: "_" + indexId,
+                          state: false,
+                          name: splitName[0],
+                          children: [{ name: splitName[1] }]
+                        });
+                        indexId++;
+                      }
+                    }
 
-                    indexId++;
                   });
-              });
+                  observer.next(preparedReportTable);
+                  observer.complete();
+                  // forkJoin(observables).subscribe(() => {
+                  //   observer.next(preparedReportTable);
+                  //   observer.complete();
+                  // })
+                });
+              
             }
             /**
              * Return sanitized report tables
              */
             // console.log(preparedReportTable);
-            observer.next(preparedReportTable);
-            observer.complete();
+            
           },
           () => console.warn("You are offline")
         );
