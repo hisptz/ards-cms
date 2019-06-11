@@ -1,14 +1,14 @@
 {
   "/api": {
-    "target": "https://ards.hisptz.org/dev/",
+    "target": "https://ards.kilimo.go.tz",
     "secure": "true",
-    "auth":"admin:ADMIN2016",
-    "changeOrigin":true
+    "auth": "admin:ADMIN2016",
+    "changeOrigin": true
   },
   "/": {
-    "target": "https://ards.hisptz.org/dev/",
+    "target": "https://ards.kilimo.go.tz",
     "secure": "true",
-    "auth":"admin:ADMIN2016",
-    "changeOrigin":true
+    "auth": "admin:ADMIN2016",
+    "changeOrigin": true
   }
 }

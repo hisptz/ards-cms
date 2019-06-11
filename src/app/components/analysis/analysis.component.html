@@ -1,0 +1,149 @@
+<html>
+  <head>
+    <title>LGDM2 Data Analysis</title>
+  </head>
+
+  <body>
+    <div class="row" style="margin-top:60px;">
+      <div class="col-sm-12">
+        <div
+          class="alert alert-danger fade in"
+          role="alert"
+          style="padding: 4px"
+        >
+          <button type="button" class="close" data-dismiss="alert">
+            <span aria-hidden="true">x</span><span class="sr-only">Close</span>
+          </button>
+          <strong>Empty Value!</strong> Please select at least one
+          Administrative unit, period and data.
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3" style="padding:0">
+            Administrative units <br />
+            <div class="btn-group btn-group-xs unitfilter">
+              <button type="button" class="btn btn-default" id="allunits">
+                all
+              </button>
+              <button type="button" class="btn btn-default" id="regions">
+                Regions
+              </button>
+              <button type="button" class="btn btn-default" id="district">
+                disticts
+              </button>
+            </div>
+            <br />
+            <select
+              name="adminUnit"
+              multiple="multiple"
+              class="form-control adminUnit"
+            >
+            </select>
+          </div>
+          <div class="col-sm-3" style="padding:0">
+            Periods <br />
+            <div class="btn-group btn-group-xs periodfilter">
+              <button
+                type="button"
+                class="btn btn-default"
+                id="years"
+                (click)="selectYears($event)"
+              >
+                Yearly
+              </button>
+              <button
+                type="button"
+                class="btn btn-default"
+                id="quarters"
+                (click)="selectQuaters($event)"
+              >
+                quarterly
+              </button>
+              <button
+                type="button"
+                class="btn btn-default"
+                id="months"
+                (click)="selectMonths($event)"
+              >
+                monthly
+              </button>
+            </div>
+            <br />
+            <select
+              id="periodSelect"
+              name="periods"
+              multiple="multiple"
+              class="periods"
+            >
+            </select>
+          </div>
+          <div class="col-sm-3 px-0">
+            Data<br /><br />
+            <select
+              name="data"
+              multiple="multiple"
+              class="form-control data-element"
+            >
+            </select>
+          </div>
+          <div class="col-sm-3">
+            Category<br /><br />
+            <select name="category" class="category" id="categoryList">
+              <option value="pe">period</option>
+              <option value="ou">administrative units</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top: 15px">
+          <div class="btn-group btn-group-xs reports">
+            <button class="btn btn-default" id="draw_table">
+              <img src="assets/img/table.png" style="height:20px;width:20px" />
+              Table
+            </button>
+            <button class="btn btn-default" id="draw_bar">
+              <img src="assets/img/bar.png" style="height:20px;width:20px" />
+              Bar Chart
+            </button>
+            <button class="btn btn-default" id="draw_column">
+              <img src="assets/img/column.png" style="height:20px;width:20px" />
+              Column Chart
+            </button>
+            <button class="btn btn-default" id="draw_line">
+              <img src="assets/img/line.png" style="height:20px;width:20px" />
+              Line Chart
+            </button>
+            <button class="btn btn-default" id="draw_pie">
+              <img src="assets/img/pie.png" style="height:20px;width:20px" />
+              Pie Chart
+            </button>
+            <button class="btn btn-default" id="draw_staked">
+              <img src="assets/img/staked.jpg" style="height:20px;width:20px" />
+              Stacked Chart
+            </button>
+            <button class="btn btn-default" id="draw_spider">
+              <img src="assets/img/spider.jpg" style="height:20px;width:20px" />
+              Spider Chart
+            </button>
+            <button class="btn btn-default" id="draw_combined">
+              <img
+                src="assets/img/combined.jpg"
+                style="height:20px;width:20px"
+              />
+              Combined Chart
+            </button>
+            <button
+              class="btn btn-default"
+              id="export_cvs"
+              style="margin-left: 5px"
+            >
+              <img src="assets/img/cvs.jpg" style="height:20px;width:20px" />
+              Export to Excel
+            </button>
+          </div>
+        </div>
+        <div class="row" id="mainarea" style="margin-top: 15px"></div>
+      </div>
+    </div>
+  </body>
+</html>

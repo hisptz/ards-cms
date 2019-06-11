@@ -7,10 +7,7 @@
     {
       "root": "src",
       "outDir": "dist",
-      "assets": [
-        "assets",
-        "favicon.ico"
-      ],
+      "assets": ["assets", "favicon.ico"],
       "index": "index.html",
       "main": "main.ts",
       "polyfills": "polyfills.ts",
@@ -21,9 +18,35 @@
       "styles": [
         "../node_modules/bootstrap/dist/css/bootstrap.min.css",
         "../node_modules/font-awesome/css/font-awesome.min.css",
+        "scripts/jquery-ui-multiselect/demos/assets/style.css",
+        "scripts/bootstrap/css/bootstrap.css",
+        "scripts/jquery-ui-multiselect/jquery.multiselect.css",
+        "scripts/jquery-ui-multiselect/jquery.multiselect.filter.css",
+        "scripts/jquery-ui-multiselect/demos/assets/prettify.css",
         "styles.css"
       ],
-      "scripts": [],
+      "scripts": [
+        "scripts/bootstrap/js/bootstrap.js",
+        "scripts/Highcharts/js/highcharts.js",
+        "scripts/Highcharts/js/modules/exporting.js",
+        "scripts/Highcharts/js/themes/sand-signika.js",
+        "scripts/multiselect/js/jquery.multi-select.js",
+        "scripts/jquery-ui-multiselect/src/jquery.multiselect.min.js",
+        "scripts/jquery-ui-multiselect/src/jquery.multiselect.filter.js",
+        "scripts/jquery-ui-multiselect/demos/assets/prettify.js",
+        "scripts/data_analysis1.js",
+        "scripts/buildmenu.js",
+        "scripts/orgUnits.js",
+        "scripts/periods.js",
+        "scripts/data_element.js",
+        "scripts/bar.js",
+        "scripts/line.js",
+        "scripts/column.js",
+        "scripts/table.js",
+        "scripts/pie.js",
+        "scripts/spiderweb.js",
+        "scripts/staked.js"
+      ],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",

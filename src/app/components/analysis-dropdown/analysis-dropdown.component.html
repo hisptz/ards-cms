@@ -1,0 +1,14 @@
+<div class="control-fluid" style="margin-top:60px">
+  <analysis-controls></analysis-controls>
+  <!-- 
+  <div class="row">
+    <div class="col-7">
+      {{ reportTableContent | json }}
+    </div>
+  </div> -->
+  <analysis-item
+    *ngIf="routerParams"
+    [routerParams]="routerParams"
+    [reportTableContent]="reportTableContent"
+  ></analysis-item>
+</div>

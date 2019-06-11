@@ -1,38 +1,44 @@
-<div style="margin-top: 45px">
+<div style="margin-top: 45px" *ngIf="showAppControlMenu">
   <ul class="nav nav-tabs" role="tablist" style="font-size: 12px">
-    <li role="presentation" routerLinkActive="active" >
-      <a routerLink="/articles/all" >
-        <span ><i class="fa fa-file-text-o"></i></span>
+    <li role="presentation" routerLinkActive="active">
+      <a routerLink="/articles/all">
+        <span><i class="fa fa-file-text-o"></i></span>
         &nbsp; Articles
       </a>
     </li>
-    <li role="presentation"  routerLinkActive="active">
-      <a routerLink="/home-page-menus" >
-        <span ><i class="fa fa-list"></i></span>
+    <li role="presentation" routerLinkActive="active">
+      <a routerLink="/home-page-menus">
+        <span><i class="fa fa-list"></i></span>
         &nbsp; Home Page Menus
       </a>
     </li>
     <li role="presentation" routerLinkActive="active">
-      <a routerLink="/messages" >
-        <span ><i class="fa fa-envelope"></i></span>
+      <a routerLink="/messages">
+        <span><i class="fa fa-envelope"></i></span>
         &nbsp; Messages
       </a>
     </li>
-    <li role="presentation"  routerLinkActive="active">
-      <a routerLink="/information-sharing" >
-        <span ><i class="fa fa-th-large"></i></span>
+    <li role="presentation" routerLinkActive="active">
+      <a routerLink="/information-sharing">
+        <span><i class="fa fa-th-large"></i></span>
         &nbsp; Information Sharing
       </a>
     </li>
   </ul>
   <div id="page_switcher">
     <div class="onoffswitch pull-right">
-      <input type="checkbox" class="toggleBtn onoffswitch-checkbox" (click)="switchPage()" id="onoffswitch6">
+      <input
+        type="checkbox"
+        class="toggleBtn onoffswitch-checkbox"
+        (click)="switchPage()"
+        id="onoffswitch6"
+      />
       <label for="onoffswitch6" class="onoffswitch-label">
         <div class="onoffswitch-inner " style=""></div>
-        <div class="onoffswitch-switch" style="text-align: center"><i class="fa fa-arrow-right"></i></div>
+        <div class="onoffswitch-switch" style="text-align: center">
+          <i class="fa fa-arrow-right"></i>
+        </div>
       </label>
     </div>
-
   </div>
 </div>

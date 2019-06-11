@@ -1,7 +1,12 @@
-<label class="control-label"><small>Administrative unit</small></label>
+<!-- <label class="control-label"><small>Administrative unit</small></label>
 <div class="panel" style="margin-bottom: 0px;">
-  <div class="panel-body" style="max-height: 200px; height: 200px; overflow-y: auto;">
-    <div *ngIf="organisationUnits.length == 0"><small>Loading Administrative unit</small></div>
+  <div
+    class="panel-body"
+    style="max-height: 200px; height: 200px; overflow-y: auto;"
+  >
+    <div *ngIf="organisationUnits.length == 0">
+      <small>Loading Administrative unit</small>
+    </div>
     <div class="tree-area">
       <tree-root
         #orgtree
@@ -9,20 +14,33 @@
         (onActivate)="activateOrganisationUnit($event)"
         (onDeactivate)="deactivateOrganisationUnit($event)"
       >
-        <!--<ng-template #treeNodeTemplate let-node>-->
-          <!--<span (click)="updateModelOnSelect(node.data)">{{ node.data.name }}</span>-->
-        <!--</ng-template>-->
+      <ng-template #treeNodeTemplate let-node>
+      <span (click)="updateModelOnSelect(node.data)">{{ node.data.name }}</span>
+      </ng-template>
       </tree-root>
     </div>
   </div>
 </div>
 <div class="form-group" style="margin-top: 5px;">
-  <label class="control-label"><small>Administrative unit children</small></label>
-  <select [(ngModel)]="selectedChildrenLevel" (change)="updateChildrenLevel(selectedChildrenLevel)" class="form-control input-sm" [disabled]="orgunitChildrenLevels.length == 0">
-    <option value="0" *ngIf="orgunitChildrenLevels.length == 0">No children level</option>
-    <option value="{{childrenLevel.level}}" *ngFor="let childrenLevel of orgunitChildrenLevels" [hidden]="childrenLevel.name == 'Ward' && hideWard">
-      Show {{childrenLevel.name === 'Regional' ? 'Region' : childrenLevel.name}}s
+  <label class="control-label"
+    ><small>Administrative unit children</small></label
+  >
+  <select
+    [(ngModel)]="selectedChildrenLevel"
+    (change)="updateChildrenLevel(selectedChildrenLevel)"
+    class="form-control input-sm"
+    [disabled]="orgunitChildrenLevels.length == 0"
+  >
+    <option value="0" *ngIf="orgunitChildrenLevels.length == 0"
+      >No children level</option
+    >
+    <option
+      value="{{ childrenLevel.level }}"
+      *ngFor="let childrenLevel of orgunitChildrenLevels"
+      [hidden]="childrenLevel.name == 'Ward' && hideWard"
+    >
+      Show
+      {{ childrenLevel.name === "Regional" ? "Region" : childrenLevel.name }}s
     </option>
   </select>
-</div>
-
+</div> -->

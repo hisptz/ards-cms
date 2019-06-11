@@ -1,17 +1,54 @@
 <div>
-  <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" *ngIf="reportTables">
-    <div class="panel panel-default" *ngFor="let reportTable of reportTables; let i = index;">
-      <div class="panel-heading" id="heading{{reportTable.id}}" style="cursor: pointer" (click)="collapseData(reportTable.id)">
+  <div
+    class="panel-group"
+    id="accordion"
+    role="tablist"
+    aria-multiselectable="true"
+    *ngIf="reportTables"
+  >
+    <div
+      class="panel panel-default"
+      *ngFor="let reportTable of reportTables; let i = index"
+    >
+      <div
+        class="panel-heading"
+        id="heading{{ reportTable.id }}"
+        style="cursor: pointer"
+        (click)="collapseData(reportTable.id)"
+      >
         <h4 class="panel-title">
           <a role="button">
-            {{reportTable.name}}
+            {{ reportTable.name }}
           </a>
         </h4>
       </div>
-      <div id="collapse_{{reportTable.id}}" class="panel-collapse" [ngClass]="{collapse:!reportTable.state, in:reportTable.state,collapsed:reportTable.state}" >
+      <div
+        id="collapse_{{ reportTable.id }}"
+        class="panel-collapse"
+        [ngClass]="{
+          collapse: !reportTable.state,
+          in: reportTable.state,
+          collapsed: reportTable.state
+        }"
+      >
         <div class="panel-body" style="padding:0px!important;">
           <ul class="list-group">
-            <li class="list-group-item" style="cursor:pointer;" *ngFor="let table of reportTable.children">{{table.name}}</li>
+            <li
+              class="list-group-item"
+              style="cursor:pointer;"
+              *ngFor="let table of reportTable.children"
+            >
+              <a
+                [routerLink]="[
+                  '/analysis',
+                  reportTable.id,
+                  table.id,
+                  table.link
+                ]"
+                routerLinkActive="router-link-active"
+                >{{ table.name }}</a
+              >
+            </li>
           </ul>
         </div>
       </div>
@@ -19,8 +56,12 @@
   </div>
 
   <div *ngIf="!reportTables" style="padding: 10px">
-    <div class="alert alert-info"><img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp;loading analysis please wait</div>
+    <div class="alert alert-info">
+      <img
+        [ngStyle]="{ height: '30px' }"
+        src="assets/img/balls-5.svg"
+        alt=""
+      />&nbsp;loading analysis please wait
+    </div>
   </div>
-
-
 </div>
