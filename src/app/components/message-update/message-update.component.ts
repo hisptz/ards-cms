@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {MessageService} from "../../providers/message.service";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MessageService } from '../../providers/message.service';
 import * as _ from 'lodash';
 @Component({
   selector: 'app-message-update',
@@ -8,34 +8,28 @@ import * as _ from 'lodash';
 })
 export class MessageUpdateComponent implements OnInit {
   loading: any;
-  @Output() toggleEditMessageFormEvent = new EventEmitter;
-  @Output() editMessageFormEvent = new EventEmitter;
+  @Output() toggleEditMessageFormEvent = new EventEmitter();
+  @Output() editMessageFormEvent = new EventEmitter();
   @Input() messageId: any;
   @Input() messageTitle: any;
   @Input() ckeditorContent: any;
   @Input() messageList: any;
 
-  constructor(private messageService: MessageService) {
-  }
+  constructor(private messageService: MessageService) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   updateMessage(message) {
     this.loading = true;
-    let messageListClone = _.clone(this.messageList);
-    const newMessageList = [];
-    messageListClone.forEach(messageItem => {
-      if (messageItem.id === message.id) {
-        newMessageList.push(message);
-      } else {
-        newMessageList.push(messageItem);
-      }
+    let newMessageList = _.map([...this.messageList], messageItem => {
+      return messageItem.id === message.id ? message : messageItem;
     });
-    this.messageService.saveMessage(this.refineMessageList(newMessageList)).subscribe(response => {
-      this.toggleEditMessageFormEvent.emit({load: true});
-    })
 
+    this.messageService
+      .saveMessage(this.refineMessageList(newMessageList))
+      .subscribe(response => {
+        this.toggleEditMessageFormEvent.emit({ load: true });
+      });
   }
 
   toggleEditForm() {
@@ -43,22 +37,16 @@ export class MessageUpdateComponent implements OnInit {
   }
 
   refineMessageList(messageListClone) {
-    let messageObject = {
-      messageOne: {},
-      messageTwo: {}
-    }
-    messageListClone.forEach(message => {
-      if (message.id === 1) {
-        messageObject.messageOne = message;
-      }
+    let messageObject = {};
 
-      if (message.id === 2) {
-        messageObject.messageTwo = message;
+    _.map(messageListClone, messageItem => {
+      if (messageItem.id === 1) {
+        messageObject['messageOne'] = messageItem;
       }
-
-    })
+      if (messageItem.id === 2) {
+        messageObject['messageTwo'] = messageItem;
+      }
+    });
     return messageObject;
   }
-
-
 }
