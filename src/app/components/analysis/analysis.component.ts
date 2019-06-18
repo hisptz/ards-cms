@@ -74,7 +74,7 @@ export class AnalysisComponent {
       name: 'Stacked Chart',
       id: 'draw_stacked',
       img: 'assets/img/staked.jpg',
-      type: 'stacked',
+      type: 'stacking',
       isChart: 'True'
     },
     {
@@ -88,7 +88,7 @@ export class AnalysisComponent {
       name: 'Combined Chart',
       id: 'draw_combined',
       img: 'assets/img/combined.jpg',
-      type: 'combined',
+      type: 'spline',
       isChart: 'True'
     },
     {
@@ -163,6 +163,7 @@ export class AnalysisComponent {
               filter;
           }
           this.analytics$ = this.run(url);
+          this.toggleReportType(this.reportDisplay);
         }
       });
     });
@@ -184,7 +185,11 @@ export class AnalysisComponent {
   toggleReportType(currentReportMode) {
     this.reportDisplay = currentReportMode;
     setTimeout(() => {
-      this.analysisItem.drawChart(currentReportMode.type);
+      if (currentReportMode.isAction) {
+        this.analysisItem.download();
+      } else {
+        this.analysisItem.drawChart(currentReportMode.type);
+      }
     }, 200);
   }
   selectYears(event?) {

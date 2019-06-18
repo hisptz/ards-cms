@@ -1,54 +1,58 @@
-<h4 *ngIf="reportTableContent && !reportDisplay.isChart">
-  <p class="text-center">{{ analysisGroup }}:{{ reportTableContent.name }}</p>
-</h4>
 <div *ngIf="analyticsPayload">
-  <table class="table table-bordered" *ngIf="reportDisplay.type == 'table'">
-    <thead>
-      <ng-container *ngIf="analyticsPayload.metaData as metadata">
-        <tr *ngIf="metadata.dimensions as metadataDimensions">
-          <ng-container *ngIf="metadataDimensions.dx as dataDimensions">
-            <th></th>
-            <th *ngFor="let dataDimension of dataDimensions">
-              <ng-container *ngIf="metadata.items as items">
-                {{ items[dataDimension]['name'] }}
-              </ng-container>
-            </th>
-          </ng-container>
-        </tr>
-      </ng-container>
-    </thead>
-    <tbody>
-      <ng-container *ngIf="analyticsPayload.metaData as metadata">
-        <ng-container *ngIf="metadata.dimensions as metadataDimensions">
-          <ng-container
-            *ngIf="metadataDimensions[selectedCategory] as categoryDimensions"
-          >
-            <tr *ngFor="let categoryDimension of categoryDimensions">
-              <td *ngIf="metadata.items as items">
-                {{ items[categoryDimension]['name'] }}
-              </td>
-              <ng-container *ngIf="metadataDimensions.dx as dataDimensions">
-                <td *ngFor="let dataDimension of dataDimensions">
-                  <span *ngFor="let rowItem of analyticsPayload.rows">
-                    <span
-                      *ngIf="
-                        rowItem[0] == dataDimension &&
-                        rowItem[1] == categoryDimension
-                      "
-                    >
-                      {{ rowItem[2] | number }}
-                    </span>
-                  </span>
+  <div #dataTable>
+    <h4 *ngIf="reportTableContent && !reportDisplay.isChart">
+      <p class="text-center">
+        {{ analysisGroup }}:{{ reportTableContent.name }}
+      </p>
+    </h4>
+    <table class="table table-bordered" [hidden]="reportDisplay.isChart">
+      <thead>
+        <ng-container *ngIf="analyticsPayload.metaData as metadata">
+          <tr *ngIf="metadata.dimensions as metadataDimensions">
+            <ng-container *ngIf="metadataDimensions.dx as dataDimensions">
+              <th></th>
+              <th *ngFor="let dataDimension of dataDimensions">
+                <ng-container *ngIf="metadata.items as items">
+                  {{ items[dataDimension]['name'] }}
+                </ng-container>
+              </th>
+            </ng-container>
+          </tr>
+        </ng-container>
+      </thead>
+      <tbody>
+        <ng-container *ngIf="analyticsPayload.metaData as metadata">
+          <ng-container *ngIf="metadata.dimensions as metadataDimensions">
+            <ng-container
+              *ngIf="metadataDimensions[selectedCategory] as categoryDimensions"
+            >
+              <tr *ngFor="let categoryDimension of categoryDimensions">
+                <td *ngIf="metadata.items as items">
+                  {{ items[categoryDimension]['name'] }}
                 </td>
-              </ng-container>
-            </tr>
+                <ng-container *ngIf="metadataDimensions.dx as dataDimensions">
+                  <td *ngFor="let dataDimension of dataDimensions">
+                    <span *ngFor="let rowItem of analyticsPayload.rows">
+                      <span
+                        *ngIf="
+                          rowItem[0] == dataDimension &&
+                          rowItem[1] == categoryDimension
+                        "
+                      >
+                        {{ rowItem[2] | number }}
+                      </span>
+                    </span>
+                  </td>
+                </ng-container>
+              </tr>
+            </ng-container>
           </ng-container>
         </ng-container>
-      </ng-container>
-    </tbody>
-  </table>
+      </tbody>
+    </table>
+  </div>
 
   <div id="chartContainer" *ngIf="reportDisplay.isChart">
-    Chart
+    Loading Chart
   </div>
 </div>

@@ -38,6 +38,7 @@ import { ArticleUpdateComponent } from './components/article-update/article-upda
 import { ArticleAddComponent } from './components/article-add/article-add.component';
 import { MessageService } from './providers/message.service';
 import { SharingService } from './providers/sharing.service';
+import { ExcelDownloadService } from './providers/excel-download.service';
 import { ChartsUpdateComponent } from './components/charts-update/charts-update.component';
 import { RightMessageDisplayComponent } from './components/right-message-display/right-message-display.component';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
@@ -90,6 +91,7 @@ import { ChartService } from './providers/chart.service';
     LinkService,
     ArticleService,
     HomeMenuService,
+    ExcelDownloadService,
     MessageService,
     SharingService,
     ChartService
