@@ -97,52 +97,30 @@
 
         <div class="row" style="margin-top: 15px">
           <div class="btn-group btn-group-xs reports">
-            <button class="btn btn-default" id="draw_table">
-              <img src="assets/img/table.png" style="height:20px;width:20px" />
-              Table
-            </button>
-            <button class="btn btn-default" id="draw_bar">
-              <img src="assets/img/bar.png" style="height:20px;width:20px" />
-              Bar Chart
-            </button>
-            <button class="btn btn-default" id="draw_column">
-              <img src="assets/img/column.png" style="height:20px;width:20px" />
-              Column Chart
-            </button>
-            <button class="btn btn-default" id="draw_line">
-              <img src="assets/img/line.png" style="height:20px;width:20px" />
-              Line Chart
-            </button>
-            <button class="btn btn-default" id="draw_pie">
-              <img src="assets/img/pie.png" style="height:20px;width:20px" />
-              Pie Chart
-            </button>
-            <button class="btn btn-default" id="draw_staked">
-              <img src="assets/img/staked.jpg" style="height:20px;width:20px" />
-              Stacked Chart
-            </button>
-            <button class="btn btn-default" id="draw_spider">
-              <img src="assets/img/spider.jpg" style="height:20px;width:20px" />
-              Spider Chart
-            </button>
-            <button class="btn btn-default" id="draw_combined">
-              <img
-                src="assets/img/combined.jpg"
-                style="height:20px;width:20px"
-              />
-              Combined Chart
-            </button>
             <button
+              *ngFor="let reportType of reportTypes"
               class="btn btn-default"
-              id="export_cvs"
-              style="margin-left: 5px"
+              id="{{ reportType.id }}"
+              [ngClass]="{
+                'btn-success': reportDisplay.type == reportType.type
+              }"
+              (click)="toggleReportType(reportType)"
             >
-              <img src="assets/img/cvs.jpg" style="height:20px;width:20px" />
-              Export to Excel
+              <img src="{{ reportType.img }}" style="height:20px;width:20px" />
+              {{ reportType.name }}
             </button>
           </div>
         </div>
-        <div class="row" id="mainarea" style="margin-top: 15px"></div>
+        <div class="row" id="mainarea" style="margin-top: 15px">
+          <analysis-item
+            #analysisItem
+            [reportDisplay]="reportDisplay"
+            [analyticsPayload]="analytics$ | async"
+            [selectedCategory]="selectedCategory"
+            [reportTableContent]="reportTableContent"
+            [analysisGroup]="analysisGroup"
+          ></analysis-item>
+        </div>
       </div>
     </div>
   </body>

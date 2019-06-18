@@ -57,7 +57,10 @@
       type="text/javascript"
       src="../../../dhis-web-commons/javascripts/jQuery/jquery.plugin.min.js"
     ></script>
+    <!-- <script src="https://code.highcharts.com/highcharts.js"></script>
 
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/offline-exporting.js"></script> -->
     <script
       type="text/javascript"
       src="../../../dhis-web-commons/bootstrap/js/bootstrap.min.js"
@@ -72,15 +75,15 @@
     ></script> -->
     <script>
       try {
-        if ("Dhis2HeaderBar" in window) {
+        if ('Dhis2HeaderBar' in window) {
           Dhis2HeaderBar.initHeaderBar(
-            document.querySelector("#header"),
-            "../../../api",
+            document.querySelector('#header'),
+            '../../../api',
             { noLoadingIndicator: true }
           );
         }
       } catch (e) {
-        if ("console" in window) {
+        if ('console' in window) {
           console.error(e);
         }
       }

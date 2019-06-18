@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { ReportTableService } from '../../providers/report-table.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as $ from 'jquery';
@@ -6,7 +6,8 @@ import 'jqueryui';
 import * as _ from 'lodash';
 // import { multiselect } from "../../../scripts/jquery-ui-multiselect/src/jquery.multiselect.js";
 import { Observable } from 'rxjs';
-import { Http, Response } from "@angular/http";
+import { Http, Response } from '@angular/http';
+import { AnalysisItemComponent } from '../analysis-item/analysis-item.component';
 
 declare let jQuery: any;
 @Component({
@@ -15,60 +16,176 @@ declare let jQuery: any;
   styleUrls: ['./analysis.component.css']
 })
 export class AnalysisComponent {
+  @ViewChild('analysisItem') analysisItem: AnalysisItemComponent;
+
+  analytics$: Observable<any>;
   reportTableContent: any;
+  analysisGroup;
   monthList = '';
   yearlist = '';
   quarterList = '';
   routerParams: any = null;
   isError = false;
   reportTableData;
+  selectedCategory;
+  reportDisplay = {
+    name: 'Table',
+    id: 'draw_table',
+    img: 'assets/img/table.png',
+    type: 'table'
+  };
   errorMessage: string = '';
+  reportTypes = [
+    {
+      name: 'Table',
+      id: 'draw_table',
+      img: 'assets/img/table.png',
+      type: 'table'
+    },
+    {
+      name: 'Bar Chart',
+      id: 'draw_bar',
+      img: 'assets/img/column.png',
+      type: 'bar',
+      isChart: 'True'
+    },
+    {
+      name: 'Column Chart',
+      id: 'draw_table',
+      img: 'assets/img/bar.png',
+      type: 'column',
+      isChart: 'True'
+    },
+    {
+      name: 'Line Chart',
+      id: 'draw_line',
+      img: 'assets/img/line.png',
+      type: 'line',
+      isChart: 'True'
+    },
+    {
+      name: 'Pie Chart',
+      id: 'draw_pie',
+      img: 'assets/img/pie.png',
+      type: 'pie',
+      isChart: 'True'
+    },
+    {
+      name: 'Stacked Chart',
+      id: 'draw_stacked',
+      img: 'assets/img/staked.jpg',
+      type: 'stacked',
+      isChart: 'True'
+    },
+    {
+      name: 'Spider Chart',
+      id: 'draw_spider',
+      img: 'assets/img/spider.jpg',
+      type: 'spider',
+      isChart: 'True'
+    },
+    {
+      name: 'Combined Chart',
+      id: 'draw_combined',
+      img: 'assets/img/combined.jpg',
+      type: 'combined',
+      isChart: 'True'
+    },
+    {
+      name: 'Export to Excel',
+      id: 'export_csv',
+      img: 'assets/img/cvs.jpg',
+      isAction: 'True'
+    }
+  ];
   constructor(
     private reportTable: ReportTableService,
     private router: Router,
     private route: ActivatedRoute,
     private http: Http
   ) {
-    this.preparePeriodFilter('2016');
+    this.preparePeriodFilter('2019');
   }
-  ngOnInit(){
-    console.log('OnInit');
-    
+  ngOnInit() {
     this.reportTable.getReportTables().subscribe(reportTable => {
-      this.reportTableData = reportTable;
-      console.log('Parameter Report Table:', JSON.stringify(this.reportTableData));
       this.route.params.subscribe(params => {
-        console.log('Parameter subscription:', JSON.stringify(this.reportTableData));
-        const reportTableGroup = _.find(reportTable, {
-          id: params.analysisGroup
-        });
-        this.reportTableContent = _.find(reportTable, {
-          id: params.analysisGroup
-        });
+        this.analysisGroup = _.get(
+          _.find(reportTable, {
+            id: params.analysisGroup
+          }),
+          'name'
+        );
+        this.reportTableContent = _.find(
+          _.get(
+            _.find(reportTable, {
+              id: params.analysisGroup
+            }),
+            'children'
+          ),
+          {
+            id: params.analysisItemId
+          }
+        );
+        {
+          if (
+            !this.reportTableContent.detailsForAnalytics.ou ||
+            !this.reportTableContent.detailsForAnalytics.dx ||
+            !this.reportTableContent.detailsForAnalytics.pe
+          ) {
+            $('.alert').fadeIn('slow');
+            setTimeout(function() {
+              $('.alert').fadeOut('slow');
+            }, 3000);
+          } else {
+            var data_dimension = `dimension=dx:${
+              this.reportTableContent.detailsForAnalytics.dx
+            }`;
+            this.selectedCategory = $('select[name=category]').val();
+            //creating column dimension
+            var column_dimension = 'dimension=' + this.selectedCategory + ':';
+            //if column will be administrative units
+            this.selectedCategory == 'ou'
+              ? (column_dimension += this.reportTableContent.detailsForAnalytics
+                  .ou)
+              : (column_dimension += this.reportTableContent.detailsForAnalytics
+                  .pe);
+            //creating filter dimensions
+            var filter =
+              this.selectedCategory != 'ou'
+                ? `filter=ou:${this.reportTableContent.detailsForAnalytics.ou}`
+                : `filter=pe:${this.reportTableContent.detailsForAnalytics.pe}`;
+            var url =
+              '../../../api/analytics.json?' +
+              data_dimension +
+              '&' +
+              column_dimension +
+              '&' +
+              filter;
+          }
+          this.analytics$ = this.run(url);
+        }
       });
     });
   }
 
-  run(detailsForAnalytics){
-    return Observable.create((obs) => {
+  run(url) {
+    return Observable.create(obs => {
       this.http
-        .get(
-          "../../../api/analytics?dimension=dx:" +
-          detailsForAnalytics.dx +
-          "&filter=pe:" +
-          detailsForAnalytics.pe +
-          "&filter=ou:" +
-          detailsForAnalytics.ou
-        )
+        .get(url)
         .map((res: Response) => res.json())
         .catch(error => Observable.throw(new Error(error)))
         .subscribe(analytics => {
-          console.log(analytics);
           obs.next(analytics);
           obs.complete();
-          // andre console.log(analytics);
-        })
-    })
+        });
+    });
+  }
+
+  toggleReportType(currentReportMode) {
+    this.reportDisplay = currentReportMode;
+    setTimeout(() => {
+      this.analysisItem.drawChart(currentReportMode.type);
+    }, 200);
   }
   selectYears(event?) {
     $('.periodfilter button')

@@ -1,7 +1,7 @@
-import { Injectable } from "@angular/core";
-import { Http, Response } from "@angular/http";
-import { Observable, Subscription } from "rxjs";
-import * as _ from "lodash";
+import { Injectable } from '@angular/core';
+import { Http, Response } from '@angular/http';
+import { Observable, Subscription } from 'rxjs';
+import * as _ from 'lodash';
 
 @Injectable()
 export class ReportTableService {
@@ -16,34 +16,34 @@ export class ReportTableService {
   getReportTables() {
     return Observable.create(observer => {
       this.http
-        .get("../../../api/reportTables.json?fields=:all&paging=false")
+        .get('../../../api/reportTables.json?fields=:all&paging=false')
         .map((res: Response) => res.json())
         .catch(error => Observable.throw(new Error(error)))
         .subscribe(
           (response: any) => {
             const preparedReportTable = [
               {
-                id: "agriculture",
+                id: 'agriculture',
                 state: true,
-                name: "Agriculture",
+                name: 'Agriculture',
                 children: []
               },
               {
-                id: "livestock",
+                id: 'livestock',
                 state: false,
-                name: "Livestock",
+                name: 'Livestock',
                 children: []
               },
-              { id: "fishery", state: false, name: "Fishery", children: [] },
-              { id: "trade", state: false, name: "Trade", children: [] }
+              { id: 'fishery', state: false, name: 'Fishery', children: [] },
+              { id: 'trade', state: false, name: 'Trade', children: [] }
             ];
 
-            if (response && response.hasOwnProperty("reportTables")) {
+            if (response && response.hasOwnProperty('reportTables')) {
               const reportTables = response.reportTables;
               let indexId = 0;
               this.http
                 .get(
-                  "../../../api/me.json?fields=*,dataViewOrganisationUnits[id,name,level],organisationUnits[id,name,level]"
+                  '../../../api/me.json?fields=*,dataViewOrganisationUnits[id,name,level],organisationUnits[id,name,level]'
                 )
                 .map((res: Response) => res.json())
                 .catch(error => Observable.throw(new Error(error)))
@@ -56,14 +56,14 @@ export class ReportTableService {
                         item == true ? _.toUpper(_.snakeCase(index)) : null
                       )
                     );
-                    const fixedPeriodList = _.map(reportTable.periods, "id");
+                    const fixedPeriodList = _.map(reportTable.periods, 'id');
                     const dataDimensionItemsList = _.compact(
                       _.map(reportTable.dataDimensionItems, data => {
                         const dataDimensionType = _.camelCase(
                           data.dataDimensionItemType
                         );
                         return data[dataDimensionType]
-                          ? data[dataDimensionType]["id"]
+                          ? data[dataDimensionType]['id']
                           : null;
                       })
                     );
@@ -73,22 +73,22 @@ export class ReportTableService {
                         fixedPeriodList.length > 0
                           ? fixedPeriodList
                           : relativePeriodsList,
-                        ";"
+                        ';'
                       ),
-                      dx: _.join(dataDimensionItemsList, ";"),
+                      dx: _.join(dataDimensionItemsList, ';'),
                       ou: _.join(
                         reportTable.ou
                           ? reportTable.ou
-                          : _.map(userDetails.organisationUnits, "id"),
-                        ";"
+                          : _.map(userDetails.organisationUnits, 'id'),
+                        ';'
                       )
                     };
                     //observables.push(run());
 
-                    if (tableName.indexOf(":") > 0) {
-                      const splitName = tableName.split(":");
+                    if (tableName.indexOf(':') > 0) {
+                      const splitName = tableName.split(':');
                       const parentIndex = _.findIndex(preparedReportTable, [
-                        "name",
+                        'name',
                         splitName[0]
                       ]);
                       if (parentIndex >= 0) {
@@ -100,7 +100,7 @@ export class ReportTableService {
                         });
                       } else {
                         preparedReportTable.push({
-                          id: "_" + indexId,
+                          id: '_' + indexId,
                           state: false,
                           name: splitName[0],
                           children: [{ name: splitName[1] }]
@@ -108,8 +108,8 @@ export class ReportTableService {
                         indexId++;
                       }
                     }
-
                   });
+                  console.log(preparedReportTable);
                   observer.next(preparedReportTable);
                   observer.complete();
                   // forkJoin(observables).subscribe(() => {
@@ -117,15 +117,13 @@ export class ReportTableService {
                   //   observer.complete();
                   // })
                 });
-              
             }
             /**
              * Return sanitized report tables
              */
             // console.log(preparedReportTable);
-            
           },
-          () => console.warn("You are offline")
+          () => console.warn('You are offline')
         );
     });
   }
