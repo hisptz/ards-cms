@@ -125,7 +125,6 @@ export class AnalysisItemComponent implements OnInit {
         };
       });
       seriesList = _.concat(columnCombine, seriesDataList);
-      console.log(JSON.stringify(seriesList));
     } else {
       seriesList = seriesDataList;
     }

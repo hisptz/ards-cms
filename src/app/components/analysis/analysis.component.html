@@ -7,6 +7,7 @@
     <div class="row" style="margin-top:60px;">
       <div class="col-sm-12">
         <div
+          *ngIf="!reportTableContent"
           class="alert alert-danger fade in"
           role="alert"
           style="padding: 4px"
@@ -88,7 +89,13 @@
           </div>
           <div class="col-sm-3">
             Category<br /><br />
-            <select name="category" class="category" id="categoryList">
+            <select
+              name="category"
+              class="category"
+              id="categoryList"
+              [ngModel]="selectedCategory"
+              (ngModelChange)="onChangeCategory($event)"
+            >
               <option value="pe">period</option>
               <option value="ou">administrative units</option>
             </select>

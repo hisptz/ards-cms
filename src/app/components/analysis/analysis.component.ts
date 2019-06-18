@@ -27,7 +27,7 @@ export class AnalysisComponent {
   routerParams: any = null;
   isError = false;
   reportTableData;
-  selectedCategory;
+  selectedCategory = 'pe';
   reportDisplay = {
     name: 'Table',
     id: 'draw_table',
@@ -107,6 +107,10 @@ export class AnalysisComponent {
     this.preparePeriodFilter('2019');
   }
   ngOnInit() {
+    this.getReport();
+  }
+
+  getReport() {
     this.reportTable.getReportTables().subscribe(reportTable => {
       this.route.params.subscribe(params => {
         this.analysisGroup = _.get(
@@ -168,7 +172,6 @@ export class AnalysisComponent {
       });
     });
   }
-
   run(url) {
     return Observable.create(obs => {
       this.http
@@ -192,6 +195,12 @@ export class AnalysisComponent {
       }
     }, 200);
   }
+
+  onChangeCategory(event) {
+    this.selectedCategory = event;
+    this.getReport();
+  }
+
   selectYears(event?) {
     $('.periodfilter button')
       .removeClass('btn-success')
@@ -217,7 +226,7 @@ export class AnalysisComponent {
     // $(".periods").multiselectfilter("destroy");
     // $(".periods").multiselect("destroy");
     $('.periods').html(this.quarterList);
-    // $(".periods")
+    $('.periods');
     //   .multiselect()
     //   .multiselectfilter();
   }
