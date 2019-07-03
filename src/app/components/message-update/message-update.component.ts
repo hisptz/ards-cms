@@ -47,13 +47,19 @@ export class MessageUpdateComponent implements OnInit {
       messageOne: {},
       messageTwo: {}
     }
-    messageListClone.forEach(message => {
-      if (message.id === 1) {
-        messageObject.messageOne = message;
+    messageListClone.forEach((message, index) => {
+      if ((index + 1) === 1) {
+        messageObject.messageOne = {
+          ...message,
+          id: 1
+        };
       }
 
-      if (message.id === 2) {
-        messageObject.messageTwo = message;
+      if ((index + 1) === 2) {
+        messageObject.messageTwo = {
+          ...message,
+          id: 2
+        };
       }
 
     })
