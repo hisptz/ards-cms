@@ -1,6 +1,7 @@
-import {Component, OnInit, Output, EventEmitter} from '@angular/core';
-import {MessageService} from "../../providers/message.service";
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { MessageService } from '../../providers/message.service';
 import * as _ from 'lodash';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-right-sidebar',
@@ -8,12 +9,11 @@ import * as _ from 'lodash';
   styleUrls: ['./right-sidebar.component.css']
 })
 export class RightSidebarComponent implements OnInit {
-
   sidebarConfiguration: any = {
     normalWidth: '300px',
     largeWidth: '300px',
-    hideWidth: '5px',
-  }
+    hideWidth: '5px'
+  };
 
   @Output() onWidthChange: EventEmitter<string> = new EventEmitter<string>();
 
@@ -21,34 +21,35 @@ export class RightSidebarComponent implements OnInit {
   hideMenu: boolean = false;
   isMaxSize: boolean = false;
   isMinSize: boolean = false;
+  messageArray$: Observable<any>;
   messages: any;
   loading = true;
   loadingChart = true;
-  charts = {all: null, selected: null};
+  charts = { all: null, selected: null };
 
   constructor(private messageService: MessageService) {
+    this.getMessages();
   }
 
   ngOnInit() {
     this.currentWidth = this.sidebarConfiguration.normalWidth;
-    this.getMessages();
+    this.messageArray$ = this.messageService.getMessages();
   }
 
   getMessages() {
     this.loading = true;
-    this.messageService.getMessages().subscribe((messages) => {
-      this.messages = this.refineMessages(messages);
+    this.messageService.getMessages().subscribe(messages => {
       this.loading = false;
-    })
+    });
   }
 
   refineMessages(messages) {
     const newMessagesList = [];
     const properties = Object.getOwnPropertyNames(messages);
-
+    console.log('hey');
     properties.forEach(messageId => {
       newMessagesList.push(messages[messageId]);
-    })
+    });
 
     return newMessagesList;
   }
@@ -61,18 +62,18 @@ export class RightSidebarComponent implements OnInit {
   }
 
   refineCharts(charts) {
-    const newPair = {all: charts.all, selected: []};
+    const newPair = { all: charts.all, selected: [] };
     charts.selected.forEach(chart => {
-      const chartIndex = _.findIndex(charts.all,['id',chart]);
-      if(chartIndex>=0){
+      const chartIndex = _.findIndex(charts.all, ['id', chart]);
+      if (chartIndex >= 0) {
         newPair.selected.push({
-          id:chart,
+          id: chart,
           name: charts.all[chartIndex].name,
-          state:false
-        })
+          state: false
+        });
       }
     });
-    newPair.selected[0]?newPair.selected[0].state = true:null;
+    newPair.selected[0] ? (newPair.selected[0].state = true) : null;
     return newPair;
   }
 
@@ -101,7 +102,6 @@ export class RightSidebarComponent implements OnInit {
         this.currentWidth = this.sidebarConfiguration.hideWidth;
         this.hideMenu = true;
       }
-
     }
 
     this.onWidthChange.emit(this.currentWidth);
@@ -110,8 +110,6 @@ export class RightSidebarComponent implements OnInit {
   getArrowLeftWidth(currentWidth) {
     const width = parseInt(currentWidth.slice(0, -2));
     const newWidth = width > 40 ? width - 40 : 5;
-    return newWidth + 'px'
+    return newWidth + 'px';
   }
-
-
 }

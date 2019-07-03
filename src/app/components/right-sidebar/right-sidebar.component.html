@@ -1,25 +1,50 @@
 <div>
-  <div id="sidebar" [ngStyle]="{'width': currentWidth}" *ngIf="!hideMenu">
+  <div id="sidebar" [ngStyle]="{ width: currentWidth }" *ngIf="!hideMenu">
     <div class="right_conteiner">
-      <app-right-message-display *ngFor="let message of messages" [message]="message"></app-right-message-display>
-      <div style="height:100px;text-align: center;margin-bottom: 0px;margin-top: 5px"
-           *ngIf="!loading&&(!messages||messages.length==0)"
-           class="alert alert-info">
-        <p style="margin-top: 12px">No messages found</p>
+      <div *ngIf="messageArray$ | async as messages">
+        <app-right-message-display
+          *ngFor="let message of messages"
+          [message]="message"
+        ></app-right-message-display>
       </div>
-      <div style="height:100px;text-align: center;margin-bottom: 0px;margin-top: 5px" *ngIf="loading"
-           class="alert alert-info">
+
+      <div *ngIf="messageArray$ | async as messages">
+        <div
+          style="height:100px;text-align: center;margin-bottom: 0px;margin-top: 5px"
+          *ngIf="!loading && (!messages || messages.length == 0)"
+          class="alert alert-info"
+        >
+          <p style="margin-top: 12px">No messages found</p>
+        </div>
+      </div>
+
+      <div
+        style="height:100px;text-align: center;margin-bottom: 0px;margin-top: 5px"
+        *ngIf="loading"
+        class="alert alert-info"
+      >
         <div class="alert alert-info" role="alert">
-          <img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp; loading messages
+          <img
+            [ngStyle]="{ height: '30px' }"
+            src="assets/img/balls-5.svg"
+            alt=""
+          />&nbsp; loading messages
         </div>
       </div>
     </div>
-    <hr>
+    <hr />
     <div class="" style="padding:10px;">
-      <app-charts-update (selectedChartUpdated)="onSelectedChartUpdated($event)" (loadingChart)="onloadingChart($event)"></app-charts-update>
+      <app-charts-update
+        (selectedChartUpdated)="onSelectedChartUpdated($event)"
+        (loadingChart)="onloadingChart($event)"
+      ></app-charts-update>
     </div>
     <div class="" style="padding:10px;">
-      <app-charts-display [loading]="loadingChart" [charts]="charts.all" [selectedCharts]="charts.selected"></app-charts-display>
+      <app-charts-display
+        [loading]="loadingChart"
+        [charts]="charts.all"
+        [selectedCharts]="charts.selected"
+      ></app-charts-display>
     </div>
   </div>
 </div>
