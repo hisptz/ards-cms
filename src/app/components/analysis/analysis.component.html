@@ -7,7 +7,7 @@
     <div class="row" style="margin-top:60px;">
       <div class="col-sm-12">
         <div
-          *ngIf="!reportTableContent"
+          *ngIf="showSelectionError"
           class="alert alert-danger fade in"
           role="alert"
           style="padding: 4px"
@@ -22,70 +22,136 @@
         <div class="row">
           <div class="col-sm-3" style="padding:0">
             Administrative units <br />
-            <div class="btn-group btn-group-xs unitfilter">
-              <button type="button" class="btn btn-default" id="allunits">
-                all
-              </button>
-              <button type="button" class="btn btn-default" id="regions">
-                Regions
-              </button>
-              <button type="button" class="btn btn-default" id="district">
-                disticts
-              </button>
+            <div class="row" style="padding:0; margin:0;">
+              <div class="btn-group btn-group-xs unitfilter">
+                <button
+                  type="button"
+                  style="font-size: 10px"
+                  class="btn btn-default"
+                  id="allunits"
+                  click="prepareOrgUnitFilter()"
+                >
+                  all
+                </button>
+                <button
+                  type="button"
+                  style="font-size: 10px"
+                  class="btn btn-default"
+                  id="regions"
+                  (click)="selectRegions($event)"
+                >
+                  Regions
+                </button>
+                <button
+                  type="button"
+                  style="font-size: 10px"
+                  class="btn btn-default"
+                  id="district"
+                  (click)="selectDistricts($event)"
+                >
+                  disticts
+                </button>
+              </div>
             </div>
-            <br />
-            <select
-              name="adminUnit"
-              multiple="multiple"
-              class="form-control adminUnit"
-            >
-            </select>
+            <div class="row" style="padding:0; margin:0;">
+              <div class="col-12">
+                <button
+                  (click)="showOrgUnitSelector = !showOrgUnitSelector"
+                  class="btn btn-default dropdown-toggle"
+                  style="padding:3px; font-size: 10px"
+                  type="button"
+                >
+                  {{ currentOrgunitsSelections.length }} selected
+                  <span class="caret"></span>
+                </button>
+              </div>
+            </div>
+            <analysis-dropdown
+              *ngIf="showOrgUnitSelector"
+              [activeFilter]="'ou'"
+              [displayingOrgUnits]="displayingOrgUnits"
+              (orgUnitSelection)="onChangedOrgUnit($event)"
+            ></analysis-dropdown>
           </div>
           <div class="col-sm-3" style="padding:0">
-            Periods <br />
-            <div class="btn-group btn-group-xs periodfilter">
-              <button
-                type="button"
-                class="btn btn-default"
-                id="years"
-                (click)="selectYears($event)"
-              >
-                Yearly
-              </button>
-              <button
-                type="button"
-                class="btn btn-default"
-                id="quarters"
-                (click)="selectQuaters($event)"
-              >
-                quarterly
-              </button>
-              <button
-                type="button"
-                class="btn btn-default"
-                id="months"
-                (click)="selectMonths($event)"
-              >
-                monthly
-              </button>
+            Periods
+            <div class="row" style="padding:0; margin:0;">
+              <div class="btn-group btn-group-xs periodfilter">
+                <button
+                  type="button"
+                  style="font-size: 10px"
+                  class="btn btn-default"
+                  id="years"
+                  (click)="selectYears($event)"
+                >
+                  Yearly
+                </button>
+                <button
+                  type="button"
+                  style="font-size: 10px"
+                  class="btn btn-default"
+                  id="quarters"
+                  (click)="selectQuaters($event)"
+                >
+                  quarterly
+                </button>
+                <button
+                  type="button"
+                  style="font-size: 10px"
+                  class="btn btn-default"
+                  id="months"
+                  (click)="selectMonths($event)"
+                >
+                  monthly
+                </button>
+              </div>
             </div>
-            <br />
-            <select
-              id="periodSelect"
-              name="periods"
-              multiple="multiple"
-              class="periods"
-            >
-            </select>
+            <div class="row" style="padding:0; margin:0;">
+              <div class="col-12">
+                <button
+                  (click)="showPeriodSelector = !showPeriodSelector"
+                  class="btn btn-default dropdown-toggle"
+                  style="padding:3px;font-size: 10px"
+                  type="button"
+                >
+                  {{ currentPeriodSelections.length }} selected
+                  <span class="caret"></span>
+                </button>
+              </div>
+            </div>
+            <analysis-dropdown
+              *ngIf="showPeriodSelector"
+              [activeFilter]="'pe'"
+              [displayingPeriod]="displayingPeriod"
+              (periodSelection)="onChangedPeriod($event)"
+            ></analysis-dropdown>
           </div>
-          <div class="col-sm-3 px-0">
-            Data<br /><br />
-            <select
-              name="data"
-              multiple="multiple"
-              class="form-control data-element"
-            >
-            </select>
+          <div class="col-sm-3" style="padding:0">
+            Data
+            <br />
+            <br />
+            <div class="row" style="padding:0; margin:0;">
+              <div class="col-12">
+                <button
+                  (click)="showDataSelector = !showDataSelector"
+                  class="btn btn-default dropdown-toggle"
+                  style="padding:3px; font-size: 10px"
+                  type="button"
+                >
+                  {{ currentDataSelections.length }} selected
+                  <span class="caret"></span>
+                </button>
+              </div>
+            </div>
+            <ng-container *ngIf="analytics$ | async as analytics"
+              ><analysis-dropdown
+                *ngIf="showDataSelector"
+                [activeFilter]="'dx'"
+                [analyticsPayload]="analytics"
+                [displayingData]="displayingData"
+                (dataSelection)="onChangedData($event)"
+              ></analysis-dropdown
+            ></ng-container>
           </div>
           <div class="col-sm-3">
             Category<br /><br />
@@ -107,6 +173,7 @@
             <button
               *ngFor="let reportType of reportTypes"
               class="btn btn-default"
+              style="font-size:10px;"
               id="{{ reportType.id }}"
               [ngClass]="{
                 'btn-success': reportDisplay.type == reportType.type
@@ -118,6 +185,7 @@
             </button>
           </div>
         </div>
+
         <div class="row" id="mainarea" style="margin-top: 15px">
           <analysis-item
             #analysisItem
@@ -127,6 +195,9 @@
             [reportTableContent]="reportTableContent"
             [analysisGroup]="analysisGroup"
           ></analysis-item>
+        </div>
+        <div class="row" *ngIf="!(analytics$ | async)">
+          Loading favorite
         </div>
       </div>
     </div>

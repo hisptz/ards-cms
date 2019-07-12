@@ -33,7 +33,9 @@ export class AnalysisItemComponent implements OnInit {
 
   constructor(private excelDownload: ExcelDownloadService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    _.get(this.analyticsPayload, `metaData.dimensions[dx]`);
+  }
 
   download() {
     const fileName = `${this.analysisGroup}-${this.reportTableContent.name}`;
@@ -45,7 +47,6 @@ export class AnalysisItemComponent implements OnInit {
 
   drawChart(chartType) {
     this.chartType = chartType;
-
     if (chartType == 'stacking') {
       chartType = 'column';
     } else if (chartType == 'spider') {

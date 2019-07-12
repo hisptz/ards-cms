@@ -1,6 +1,6 @@
-import { Injectable } from "@angular/core";
-import { Http, Response } from "@angular/http";
-import { Observable } from "rxjs";
+import { Injectable } from '@angular/core';
+import { Http, Response } from '@angular/http';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class OrganisationUnitService {
@@ -11,7 +11,7 @@ export class OrganisationUnitService {
   getOrgunitLevels(): Observable<any> {
     return this.http
       .get(
-        "../../../api/organisationUnitLevels.json?fields=id,name,level&order=level:asc?paging=false"
+        '../../../api/organisationUnitLevels.json?fields=id,name,level&order=level:asc?paging=false'
       )
       .map((response: Response) => response.json())
       .catch(error => Observable.throw(new Error(error)));
@@ -20,15 +20,17 @@ export class OrganisationUnitService {
   getOrgunitGroups(): Observable<any> {
     return this.http
       .get(
-        "../../../api/organisationUnitGroups.json?fields=id,name&paging=false"
+        '../../../api/organisationUnitGroups.json?fields=id,name&paging=false'
       )
       .map((response: Response) => response.json())
       .catch(error => Observable.throw(new Error(error)));
   }
 
-  getOrgunits(url: string): Observable<any> {
+  public getOrgunits(): Observable<any> {
     return this.http
-      .get(url)
+      .get(
+        'api/organisationUnits.json?fields=id,name,level&order=name:asc&paging=false'
+      )
       .map((response: Response) => response.json())
       .catch(error => Observable.throw(new Error(error)));
   }

@@ -56,7 +56,24 @@ export class ReportTableService {
                         item == true ? _.toUpper(_.snakeCase(index)) : null
                       )
                     );
+                    const relativeOrgunitList = _.compact(
+                      _.map(reportTable, (value, key) => {
+                        if (value == true) {
+                          return key == 'userOrganisationUnitChildren'
+                            ? 'USER_ORGUNIT_CHILDREN'
+                            : key == 'userOrganisationUnit'
+                            ? 'USER_ORGUNIT'
+                            : key == 'userOrganisationUnitGrandChildren'
+                            ? 'USER_ORGUNIT_GRANDCHILDREN'
+                            : null;
+                        }
+                      })
+                    );
                     const fixedPeriodList = _.map(reportTable.periods, 'id');
+                    const fixedOrgunitList = _.map(
+                      reportTable.organisationUnits,
+                      'id'
+                    );
                     const dataDimensionItemsList = _.compact(
                       _.map(reportTable.dataDimensionItems, data => {
                         const dataDimensionType = _.camelCase(
@@ -67,6 +84,7 @@ export class ReportTableService {
                           : null;
                       })
                     );
+
                     const detailsForAnalytics = {
                       id: reportTable.id,
                       pe: _.join(
@@ -77,9 +95,9 @@ export class ReportTableService {
                       ),
                       dx: _.join(dataDimensionItemsList, ';'),
                       ou: _.join(
-                        reportTable.ou
-                          ? reportTable.ou
-                          : _.map(userDetails.organisationUnits, 'id'),
+                        fixedOrgunitList.length > 0
+                          ? fixedOrgunitList
+                          : relativeOrgunitList,
                         ';'
                       )
                     };
@@ -109,7 +127,6 @@ export class ReportTableService {
                       }
                     }
                   });
-                  console.log(preparedReportTable);
                   observer.next(preparedReportTable);
                   observer.complete();
                   // forkJoin(observables).subscribe(() => {
@@ -126,5 +143,15 @@ export class ReportTableService {
           () => console.warn('You are offline')
         );
     });
+  }
+
+  getDataElements(dataElements): any {
+    return this.http
+      .get(
+        'api/dataElements.json?fields=id,name,level&order=name:asc&paging=false&filter=id:in:' +
+          dataElements
+      )
+      .map((response: Response) => response.json())
+      .catch(error => Observable.throw(new Error(error)));
   }
 }
