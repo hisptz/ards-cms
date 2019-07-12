@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-right-message-display',
@@ -7,9 +7,7 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class RightMessageDisplayComponent implements OnInit {
   @Input() message;
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }
