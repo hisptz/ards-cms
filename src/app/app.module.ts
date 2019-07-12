@@ -4,6 +4,7 @@ import { AppComponent } from './app.component';
 import { ArdsMenuComponent } from './components/ards-menu/ards-menu.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { OrganisationUnitService } from './providers/organisation-unit.service';
 import { LeftSidebarComponent } from './components/left-sidebar/left-sidebar.component';
 import { RightSidebarComponent } from './components/right-sidebar/right-sidebar.component';
 import { NavMenusComponent } from './components/nav-menus/nav-menus.component';
@@ -36,6 +37,7 @@ import { ArticleUpdateComponent } from './components/article-update/article-upda
 import { ArticleAddComponent } from './components/article-add/article-add.component';
 import { MessageService } from './providers/message.service';
 import { SharingService } from './providers/sharing.service';
+import { ExcelDownloadService } from './providers/excel-download.service';
 import { ChartsUpdateComponent } from './components/charts-update/charts-update.component';
 import { RightMessageDisplayComponent } from './components/right-message-display/right-message-display.component';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
@@ -88,7 +90,9 @@ import { ChartService } from './providers/chart.service';
     LinkService,
     ArticleService,
     HomeMenuService,
+    ExcelDownloadService,
     MessageService,
+    OrganisationUnitService,
     SharingService,
     ChartService
   ],

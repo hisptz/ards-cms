@@ -20,7 +20,7 @@
       type="text/javascript"
       src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"
     ></script>
-    <!-- <script type="text/javascript" src="assets/prettify.js"></script> -->
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
   </head>
   <body>
     <app-root>
@@ -57,7 +57,10 @@
       type="text/javascript"
       src="../../../dhis-web-commons/javascripts/jQuery/jquery.plugin.min.js"
     ></script>
+    <!-- <script src="https://code.highcharts.com/highcharts.js"></script>
 
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/offline-exporting.js"></script> -->
     <script
       type="text/javascript"
       src="../../../dhis-web-commons/bootstrap/js/bootstrap.min.js"
@@ -72,15 +75,15 @@
     ></script> -->
     <script>
       try {
-        if ("Dhis2HeaderBar" in window) {
+        if ('Dhis2HeaderBar' in window) {
           Dhis2HeaderBar.initHeaderBar(
-            document.querySelector("#header"),
-            "../../../api",
+            document.querySelector('#header'),
+            '../../../api',
             { noLoadingIndicator: true }
           );
         }
       } catch (e) {
-        if ("console" in window) {
+        if ('console' in window) {
           console.error(e);
         }
       }

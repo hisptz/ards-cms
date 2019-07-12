@@ -1,14 +1,54 @@
-<div class="control-fluid" style="margin-top:60px">
-  <analysis-controls></analysis-controls>
-  <!-- 
-  <div class="row">
-    <div class="col-7">
-      {{ reportTableContent | json }}
+<div class="panel panel-default" style="font-size:10px">
+  <div class="panel-heading">
+    <div class="row">
+      <div>
+        Filter:
+        <input type="text" placeholder=" Enter keywords" />
+      </div>
     </div>
-  </div> -->
-  <analysis-item
-    *ngIf="routerParams"
-    [routerParams]="routerParams"
-    [reportTableContent]="reportTableContent"
-  ></analysis-item>
+    <div class="row">
+      Check All Uncheck All
+    </div>
+  </div>
+  <div
+    class="panel-body"
+    style="max-height: 120px; min-height: 120px; overflow-y: scroll;"
+  >
+    <div *ngIf="activeFilter == 'pe'">
+      <div *ngFor="let item of displayingPeriod">
+        <input
+          type="checkbox"
+          value="item.id"
+          id="item.id"
+          (click)="onItemClick($event, item, displayingPeriod)"
+          [checked]="item.selected"
+        />
+        {{ item.name }}
+      </div>
+    </div>
+    <div *ngIf="activeFilter == 'ou'">
+      <div *ngFor="let item of displayingOrgUnits">
+        <input
+          type="checkbox"
+          value="item.id"
+          id="item.id"
+          (click)="onItemClick($event, item, displayingOrgUnits)"
+          [checked]="item.selected"
+        />
+        {{ item.name }}
+      </div>
+    </div>
+    <div *ngIf="activeFilter == 'dx'">
+      <div *ngFor="let item of displayingData">
+        <input
+          type="checkbox"
+          value="item.id"
+          id="item.id"
+          (click)="onItemClick($event, item, displayingData)"
+          [checked]="item.selected"
+        />
+        {{ item.name }}
+      </div>
+    </div>
+  </div>
 </div>
