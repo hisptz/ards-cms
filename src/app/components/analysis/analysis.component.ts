@@ -164,7 +164,7 @@ export class AnalysisComponent {
               ).length > 0
                 ? _.map(this.currentDataSelections, 'id')
                 : _.split(this.reportTableContent.detailsForAnalytics.dx, ';');
-            console.log(this.currentDataSelections);
+            // console.log(this.currentDataSelections);
             // ========================================================================================================================================================
 
             this.currentPeriodSelections =

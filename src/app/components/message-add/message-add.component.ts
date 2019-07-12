@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {MessageService} from "../../providers/message.service";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MessageService } from '../../providers/message.service';
 import * as _ from 'lodash';
 @Component({
   selector: 'app-message-add',
@@ -8,36 +8,35 @@ import * as _ from 'lodash';
 })
 export class MessageAddComponent implements OnInit {
   loading: any;
-  @Output() toggleAddMessageFormEvent = new EventEmitter;
-  @Output() addMessageFormEvent = new EventEmitter;
+  @Output() toggleAddMessageFormEvent = new EventEmitter();
+  @Output() addMessageFormEvent = new EventEmitter();
   title: any;
   ckeditorContent: any;
   @Input() messageList: any;
 
   constructor(private messageService: MessageService) {
+    console.log(this.messageList);
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   createMessage(message) {
     this.loading = true;
+    console.log(this.messageList);
     let messageListClone = _.clone(this.messageList);
 
     if (messageListClone && messageListClone.length < 2) {
       messageListClone.push({
-        id: messageListClone.length>0?messageListClone.length + 1:1,
+        id: messageListClone.length > 0 ? messageListClone.length + 1 : 1,
         title: message.title,
         body: message.body,
         expired_date: '',
         hidden: false
       });
-
       this.messageService.saveMessage(this.refineMessageList(messageListClone)).subscribe(response=>{
         this.toggleAddMessageFormEvent.emit({load:true});
       })
     }
-
   }
 
   toggleAddForm() {
@@ -47,18 +46,21 @@ export class MessageAddComponent implements OnInit {
   refineMessageList(messageListClone) {
     let messageObject = {
     }
-    messageListClone.forEach(message => {
-      if (message.id === 1) {
-        messageObject['messageOne'] = message;
+    messageListClone.forEach((message, index) => {
+      if ((index + 1) === 1) {
+        messageObject['messageOne'] = {
+          ...message,
+          id: 1
+        };
       }
 
-      if (message.id === 2) {
-        messageObject['messageTwo'] = message;
+      if ((index + 1) === 2) {
+        messageObject['messageTwo'] = {
+          ...message,
+          id: 2
+        };
       }
-
-    })
+    });
     return messageObject;
   }
-
-
 }
