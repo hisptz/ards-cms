@@ -14,7 +14,13 @@
     ></a>
   </li>
 </ul>
-<div id="sidebar" [ngStyle]="{ width: currentWidth }" *ngIf="!hideMenu">
+<div
+  id="sidebar"
+  class="scroll"
+  [ngStyle]="{ width: currentWidth }"
+  *ngIf="!hideMenu"
+  (scroll)="checkEdge($event)"
+>
   <br />
   <br />
   <div class="row">
