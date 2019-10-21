@@ -1,33 +1,63 @@
 <div>
   <div class="panel-body" style="padding:0px!important;">
     <ul class="list-group" *ngIf="links">
-      <li class="list-group-item" style="cursor:pointer;"  title="{{link.name}}"  *ngFor="let link of links">
-        <table style="width: 270px" >
+      <li
+        class="list-group-item"
+        style="cursor:pointer;"
+        title="{{ link.name }}"
+        *ngFor="let link of links"
+      >
+        <table style="width: 270px">
           <tr>
-            <td class="pull-left"  (click)="redirectLink(link.url, $event)"><span [innerHtml]="link.marker"></span>&nbsp;{{link.name}}</td>
+            <td class="pull-left" (click)="redirectLink(link.url, $event)">
+              <span [innerHtml]="link.marker"></span>&nbsp;{{ link.name }}
+            </td>
             <td class="pull-right">
-              <a class="btn btn-default btn-xs" (click)="deleteLink(link)"><i
-                class="fa fa-trash alert-danger"></i></a>
-              <a class="btn btn-default btn-xs" (click)="editLink(link)"><i
-                class="fa fa-pencil alert-warning"></i></a>
-              <a class="btn btn-default btn-xs" (click)="hideLink(link)" *ngIf="!link.hidden"><i
-                class="fa fa-minus alert-link"></i></a>
-              <a class="btn btn-default btn-xs" (click)="showLink(link)" *ngIf="link.hidden"><i
-                class="fa fa-plus alert-success"></i></a>
+              <a class="btn btn-default btn-xs" (click)="deleteLink(link)"
+                ><i class="fa fa-trash alert-danger"></i
+              ></a>
+              <a class="btn btn-default btn-xs" (click)="editLink(link)"
+                ><i class="fa fa-pencil alert-warning"></i
+              ></a>
+              <a
+                class="btn btn-default btn-xs"
+                (click)="hideLink(link)"
+                *ngIf="!link.hidden"
+                ><i class="fa fa-minus alert-link"></i
+              ></a>
+              <a
+                class="btn btn-default btn-xs"
+                (click)="showLink(link)"
+                *ngIf="link.hidden"
+                ><i class="fa fa-plus alert-success"></i
+              ></a>
             </td>
           </tr>
         </table>
       </li>
     </ul>
-    <div *ngIf="links && links.length==0" class="col-lg-12 col-md-12 col-xs-12">
+    <div
+      *ngIf="links && links.length == 0"
+      class="col-lg-12 col-md-12 col-xs-12"
+    >
       <div class="alert alert-info">No links available</div>
     </div>
     <div *ngIf="!links" style="padding: 10px">
-      <div class="alert alert-info"><img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp;loading links please wait</div>
-    </div>
-    <div *ngIf="actionLoading.isHappening"  class="col-lg-12 col-md-12 col-xs-12">
       <div class="alert alert-info">
-        <i class="fa fa-spinner fa-spin"></i> &nbsp; {{actionLoading.actionMessage}}
+        <img
+          [ngStyle]="{ height: '30px' }"
+          src="assets/img/balls-5.svg"
+          alt=""
+        />&nbsp;loading links please wait
+      </div>
+    </div>
+    <div
+      *ngIf="actionLoading.isHappening"
+      class="col-lg-12 col-md-12 col-xs-12"
+    >
+      <div class="alert alert-info">
+        <i class="fa fa-spinner fa-spin"></i> &nbsp;
+        {{ actionLoading.actionMessage }}
       </div>
     </div>
     <app-links-update
@@ -36,12 +66,17 @@
       (linkUpdated)="onLinkUpdatedEvent()"
       (updateCancelled)="onUpdateCancelledEvent()"
     ></app-links-update>
-    <div class="popover fade bottom in" role="tooltip" id="popover258016"
-         style="top: 24392px; left: 557.602px; display: block;">
+    <div
+      class="popover fade bottom in"
+      role="tooltip"
+      id="popover258016"
+      style="top: 792px; left: 557.602px; display: block;"
+    >
       <div class="arrow" style="left: 50%;"></div>
       <h3 class="popover-title" style="display: block;"></h3>
-      <div class="popover-content">Vivamus sagittis lacus vel augue laoreet rutrum faucibus.</div>
+      <div class="popover-content">
+        Vivamus sagittis lacus vel augue laoreet rutrum faucibus.
+      </div>
     </div>
-
   </div>
 </div>

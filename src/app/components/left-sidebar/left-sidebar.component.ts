@@ -16,8 +16,8 @@ import {
 export class LeftSidebarComponent implements OnInit {
   sidebarConfiguration: any = {
     normalWidth: '300px',
-    largeWidth: '300px',
-    hideWidth: '5px'
+    largeWidth: '340px',
+    hideWidth: '35px'
   };
 
   @ViewChild('analysis') analysis: ElementRef;
@@ -27,6 +27,7 @@ export class LeftSidebarComponent implements OnInit {
   @Output() onWidthChange: EventEmitter<string> = new EventEmitter<string>();
 
   currentWidth: any;
+  currentPanel: string;
   hideMenu: boolean = false;
   isMaxSize: boolean = false;
   isMinSize: boolean = false;
@@ -35,42 +36,49 @@ export class LeftSidebarComponent implements OnInit {
 
   ngOnInit() {
     this.currentWidth = this.sidebarConfiguration.normalWidth;
+    this.currentPanel = 'dataAnalysis';
   }
 
   resize(resizeOption) {
-    if (resizeOption == 'expand') {
-      if (this.currentWidth == this.sidebarConfiguration.hideWidth) {
-        this.isMaxSize = false;
-        this.isMinSize = false;
-        this.hideMenu = false;
-        this.currentWidth = this.sidebarConfiguration.normalWidth;
-      } else {
-        this.hideMenu = false;
-        this.isMaxSize = true;
-        this.isMinSize = false;
-        this.currentWidth = this.sidebarConfiguration.largeWidth;
-      }
-    } else if (resizeOption == 'minimize') {
-      if (this.currentWidth == this.sidebarConfiguration.largeWidth) {
-        this.isMaxSize = false;
-        this.isMinSize = false;
-        this.hideMenu = false;
-        this.currentWidth = this.sidebarConfiguration.normalWidth;
-      } else {
-        this.isMaxSize = false;
-        this.isMinSize = true;
+    console.log(resizeOption);
+
+    if (resizeOption == 'minimize') {
+      if (this.currentWidth == this.sidebarConfiguration.normalWidth) {
         this.currentWidth = this.sidebarConfiguration.hideWidth;
+        this.isMinSize = true;
+        this.isMaxSize = false;
         this.hideMenu = true;
+      } else {
+        this.currentWidth = this.sidebarConfiguration.normalWidth;
+        this.isMinSize = false;
+        this.isMaxSize = false;
+        this.hideMenu = false;
+      }
+    } else if (resizeOption == 'expand') {
+      if (this.currentWidth == this.sidebarConfiguration.normalWidth) {
+        this.currentWidth = this.sidebarConfiguration.largeWidth;
+        this.isMinSize = false;
+        this.isMaxSize = true;
+        this.hideMenu = false;
+      } else {
+        this.currentWidth = this.sidebarConfiguration.normalWidth;
+        this.isMinSize = false;
+        this.isMaxSize = false;
+        this.hideMenu = false;
       }
     }
-
-    this.onWidthChange.emit(this.currentWidth);
   }
-
   getArrowLeftWidth(currentWidth) {
     const width = parseInt(currentWidth.slice(0, -2));
     const newWidth = width > 40 ? width - 40 : 5;
     return newWidth + 'px';
+  }
+
+  onTogglePanel(panelName, event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.currentPanel = this.currentPanel != panelName ? panelName : '';
   }
 
   clickAccordon(menu, event) {

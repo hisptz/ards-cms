@@ -1,33 +1,72 @@
 <div>
   <div class="panel-body" style="padding:0px!important;">
     <div *ngIf="loading" style="padding: 10px">
-      <div class="alert alert-info"><img [ngStyle]="{height:'30px'}" src="assets/img/balls-5.svg" alt="">&nbsp;{{message}} documents please wait</div>
+      <div class="alert alert-info">
+        <img
+          [ngStyle]="{ height: '30px' }"
+          src="assets/img/balls-5.svg"
+          alt=""
+        />&nbsp;{{ message }} documents please wait
+      </div>
     </div>
-    <ul class="list-group" *ngIf="documents&&!loading">
-      <li class="list-group-item"  title="{{document.name}}"  *ngFor="let document of documents">
-        <table style="width: 270px" >
+    <ul class="list-group" *ngIf="documents && !loading">
+      <li
+        class="list-group-item"
+        title="{{ document.name }}"
+        *ngFor="let document of documents"
+      >
+        <table style="width: 270px">
           <tr>
-            <td class="pull-left" style="cursor:pointer;" (click)="previewDocument('../../../api/documents/'+document.id+'/data',$event)">{{document.displayName}}</td>
+            <td
+              class="pull-left"
+              style="cursor:pointer;"
+              (click)="
+                previewDocument(
+                  '../../../api/documents/' + document.id + '/data',
+                  $event
+                )
+              "
+            >
+              {{ document.displayName }}
+            </td>
             <td class="pull-right">
-              <a class="btn btn-default btn-xs" (click)="deleteDocument(document)"><i
-                class="fa fa-trash alert-danger"></i></a>
-              <a class="btn btn-default btn-xs" (click)="hideDocument(document)" *ngIf="!document.hidden"><i
-                class="fa fa-minus alert-warning"></i></a>
-              <a class="btn btn-default btn-xs" (click)="showDocument(document)" *ngIf="document.hidden"><i
-                class="fa fa-plus alert-success"></i></a>
+              <a
+                class="btn btn-default btn-xs"
+                (click)="deleteDocument(document)"
+                ><i class="fa fa-trash alert-danger"></i
+              ></a>
+              <a
+                class="btn btn-default btn-xs"
+                (click)="hideDocument(document)"
+                *ngIf="!document.hidden"
+                ><i class="fa fa-minus alert-warning"></i
+              ></a>
+              <a
+                class="btn btn-default btn-xs"
+                (click)="showDocument(document)"
+                *ngIf="document.hidden"
+                ><i class="fa fa-plus alert-success"></i
+              ></a>
             </td>
           </tr>
         </table>
       </li>
     </ul>
 
-    <app-document-update (documentUploadedSuccessfull)="onDocumentUploadedSuccessfull($event)"></app-document-update>
-    <div class="popover fade bottom in" role="tooltip" id="popover258016"
-         style="top: 24392px; left: 557.602px; display: block;">
+    <app-document-update
+      (documentUploadedSuccessfull)="onDocumentUploadedSuccessfull($event)"
+    ></app-document-update>
+    <div
+      class="popover fade bottom in"
+      role="tooltip"
+      id="popover258016"
+      style="top: 739px; left: 557.602px; display: block;"
+    >
       <div class="arrow" style="left: 50%;"></div>
       <h3 class="popover-title" style="display: block;"></h3>
-      <div class="popover-content">Vivamus sagittis lacus vel augue laoreet rutrum faucibus.</div>
+      <div class="popover-content">
+        Vivamus sagittis lacus vel augue laoreet rutrum faucibus.
+      </div>
     </div>
-
   </div>
 </div>
